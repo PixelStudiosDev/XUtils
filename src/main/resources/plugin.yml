@@ -1,0 +1,4 @@
+main: me.cubecrafter.xutils.XUtils
+version: ${version}
+name: XUtils
+api-version: 1.19
