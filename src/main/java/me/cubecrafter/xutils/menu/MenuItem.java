@@ -1,7 +1,8 @@
 package me.cubecrafter.xutils.menu;
 
-import com.cryptomorin.xseries.XSound;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import me.cubecrafter.xutils.SoundUtil;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
@@ -13,21 +14,17 @@ import java.util.Map;
 import java.util.function.Consumer;
 
 @Getter
+@RequiredArgsConstructor
 public class MenuItem {
 
     private static final ClickType[] DEFAULT_CLICK_TYPES = { ClickType.LEFT, ClickType.SHIFT_LEFT, ClickType.RIGHT, ClickType.SHIFT_RIGHT };
 
     private final ItemStack item;
     private final Map<ClickType, Consumer<InventoryClickEvent>> actions = new HashMap<>();
-
-    private String sound;
     private boolean cancelClick = true;
+    private String clickSound;
 
-    private MenuItem(ItemStack item) {
-        this.item = item;
-    }
-
-    public MenuItem action(Consumer<InventoryClickEvent> action, ClickType... clickTypes) {
+    public MenuItem addAction(Consumer<InventoryClickEvent> action, ClickType... clickTypes) {
         if (clickTypes.length == 0) {
             clickTypes = DEFAULT_CLICK_TYPES;
         }
@@ -37,29 +34,24 @@ public class MenuItem {
         return this;
     }
 
-    public MenuItem cancelClick(boolean cancelClick) {
-        this.cancelClick = cancelClick;
+    public MenuItem setCancelClick(boolean cancel) {
+        this.cancelClick = cancel;
         return this;
     }
 
-    public MenuItem sound(String sound) {
-        this.sound = sound;
+    public MenuItem setClickSound(String sound) {
+        this.clickSound = sound;
         return this;
     }
 
     public void onClick(InventoryClickEvent event) {
-        if (sound != null) {
-            Player player = (Player) event.getWhoClicked();
-            XSound.play(player, sound);
+        if (clickSound != null) {
+            SoundUtil.play((Player) event.getWhoClicked(), clickSound);
         }
         if (actions.containsKey(event.getClick())) {
             actions.get(event.getClick()).accept(event);
         }
         event.setCancelled(cancelClick);
-    }
-
-    public static MenuItem of(ItemStack item) {
-        return new MenuItem(item);
     }
 
     public static MenuItem empty() {

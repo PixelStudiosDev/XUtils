@@ -1,6 +1,7 @@
 package me.cubecrafter.xutils.menu;
 
 import lombok.Getter;
+import lombok.Setter;
 import me.cubecrafter.xutils.Events;
 import me.cubecrafter.xutils.Tasks;
 import me.cubecrafter.xutils.TextUtil;
@@ -15,6 +16,7 @@ import org.bukkit.scheduler.BukkitTask;
 import java.util.HashMap;
 import java.util.Map;
 
+@Getter
 public abstract class Menu implements InventoryHolder {
 
     static {
@@ -33,24 +35,30 @@ public abstract class Menu implements InventoryHolder {
         Events.subscribe(InventoryCloseEvent.class, event -> {
             if (event.getInventory().getHolder() instanceof Menu) {
                 Menu menu = (Menu) event.getInventory().getHolder();
-                menu.getUpdateTask().cancel();
+                BukkitTask task = menu.getUpdateTask();
+                if (task != null) {
+                    task.cancel();
+                }
             }
         });
     }
 
-    @Getter
     private final Player player;
-
     private final Inventory inventory;
     private final Map<Integer, MenuItem> items = new HashMap<>();
 
-    @Getter
-    private final BukkitTask updateTask;
+    @Setter private boolean autoUpdate = true;
+    @Setter private int updateInterval = 20;
+
+    private BukkitTask updateTask;
 
     public Menu(Player player) {
         this.player = player;
         this.inventory = Bukkit.createInventory(this, getRows() * 9, TextUtil.color(TextUtil.parsePlaceholders(player, getTitle())));
-        this.updateTask = Tasks.repeat(this::updateInventory, 0, 20);
+        updateInventory();
+        if (autoUpdate) {
+            this.updateTask = Tasks.repeat(this::updateInventory, updateInterval, updateInterval);
+        }
     }
 
     public MenuItem getItem(int slot) {

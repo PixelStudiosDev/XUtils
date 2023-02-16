@@ -9,8 +9,7 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface SubCommand {
 
-    String name();
-    String permission() default "";
+    String value();
 
 }
 

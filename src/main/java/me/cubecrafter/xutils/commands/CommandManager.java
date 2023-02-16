@@ -2,22 +2,27 @@ package me.cubecrafter.xutils.commands;
 
 import lombok.Getter;
 import me.cubecrafter.xutils.ReflectionUtil;
+import me.cubecrafter.xutils.TextUtil;
 import me.cubecrafter.xutils.XUtils;
 import me.cubecrafter.xutils.commands.annotations.Command;
+import me.cubecrafter.xutils.commands.annotations.Default;
+import me.cubecrafter.xutils.commands.annotations.Permission;
 import me.cubecrafter.xutils.commands.annotations.SubCommand;
 import me.cubecrafter.xutils.commands.annotations.Usage;
-import me.cubecrafter.xutils.commands.argument.ArgumentParser;
-import me.cubecrafter.xutils.commands.argument.ArgumentProvider;
+import me.cubecrafter.xutils.objects.Pair;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandMap;
 import org.bukkit.command.CommandSender;
 
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 import java.util.function.BiFunction;
+import java.util.function.Function;
 
 public final class CommandManager {
 
@@ -33,27 +38,64 @@ public final class CommandManager {
     public CommandManager registerCommand(Object handler) {
         Class<?> clazz = handler.getClass();
         if (!clazz.isAnnotationPresent(Command.class)) {
-            return null;
+            return this;
         }
+
         Command command = clazz.getAnnotation(Command.class);
-        Method baseMethod = Arrays.stream(clazz.getDeclaredMethods())
-                .filter(m -> m.isAnnotationPresent(SubCommand.class))
-                .filter(m -> m.getAnnotation(SubCommand.class).name().isEmpty())
-                .findAny().orElse(null);
-        CommandWrapper container = new CommandWrapper(handler, baseMethod, command.name(), command.permission(), command.aliases());
+        Method defaultMethod = Arrays.stream(clazz.getDeclaredMethods()).filter(method -> method.isAnnotationPresent(Default.class)).findAny().orElse(null);
+
+        CommandWrapper container = new CommandWrapper(command.name(), handler, defaultMethod);
+        container.setAliases(Arrays.asList(command.aliases()));
+
+        if (defaultMethod != null) {
+            if (defaultMethod.isAnnotationPresent(Usage.class)) {
+                container.setUsage(defaultMethod.getAnnotation(Usage.class).value());
+            }
+            if (defaultMethod.isAnnotationPresent(Permission.class)) {
+                container.setPermission(defaultMethod.getAnnotation(Permission.class).value());
+            }
+        }
 
         commands.put(command.name().toLowerCase(), container);
+
+        Map<Integer, List<Pair<String, CommandWrapper>>> subCommands = new TreeMap<>();
 
         for (Method method : clazz.getDeclaredMethods()) {
             if (!method.isAnnotationPresent(SubCommand.class)) continue;
             SubCommand subCommand = method.getAnnotation(SubCommand.class);
-            CommandWrapper wrapper = new CommandWrapper(handler, method, subCommand.name(), subCommand.permission());
+
+            String[] split = subCommand.value().toLowerCase().split(" ");
+            String commandName = split[split.length - 1];
+
+            CommandWrapper wrapper = new CommandWrapper(commandName, handler, method);
             if (method.isAnnotationPresent(Usage.class)) {
                 wrapper.setUsage(method.getAnnotation(Usage.class).value());
             }
-            container.registerSub(wrapper);
+            if (method.isAnnotationPresent(Permission.class)) {
+                wrapper.setPermission(method.getAnnotation(Permission.class).value());
+            }
+
+            List<Pair<String, CommandWrapper>> list = subCommands.getOrDefault(split.length, new ArrayList<>());
+            list.add(new Pair<>(subCommand.value(), wrapper));
+            subCommands.put(split.length, list);
         }
 
+        for (List<Pair<String, CommandWrapper>> list : subCommands.values()) {
+            for (Pair<String, CommandWrapper> pair : list) {
+                String commandPath = pair.getFirst();
+                if (!commandPath.contains(" ")) {
+                    container.registerSub(pair.getSecond());
+                    continue;
+                }
+                CommandWrapper parent = getCommand(command.name() + " " + commandPath.substring(0, commandPath.lastIndexOf(" ")));
+                if (parent != null) {
+                    parent.registerSub(pair.getSecond());
+                } else {
+                    TextUtil.error("Could not register sub command '" + commandPath + "' to the command '" + command.name() + "'");
+                }
+            }
+        }
+        /*
         if (commandMap.getCommand(command.name()) != null) {
             commandMap.getCommand(command.name()).unregister(commandMap);
         }
@@ -62,6 +104,7 @@ public final class CommandManager {
                 commandMap.getCommand(alias).unregister(commandMap);
             }
         }
+        */
         commandMap.register(XUtils.getPlugin().getName().toLowerCase(), container);
 
         return this;
@@ -82,8 +125,9 @@ public final class CommandManager {
         return this;
     }
 
-    public void registerProvider(ArgumentProvider<?> provider) {
-        parser.getProviders().add(provider);
+    public <T> CommandManager registerProvider(Class<T> type, Function<String, T> provider) {
+        parser.getProviders().put(type, provider);
+        return this;
     }
 
     public CommandWrapper getCommand(String command) {

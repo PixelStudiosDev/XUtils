@@ -1,4 +1,4 @@
-package me.cubecrafter.xutils.commands.argument;
+package me.cubecrafter.xutils.commands;
 
 import lombok.Getter;
 import org.bukkit.command.CommandSender;
@@ -11,12 +11,10 @@ public class CommandArgs {
 
     @Getter
     private final CommandSender sender;
-    private final String[] args;
     private final Iterator<String> iterator;
 
     public CommandArgs(CommandSender sender, String[] args) {
         this.sender = sender;
-        this.args = args;
         this.iterator = Arrays.asList(args).iterator();
     }
 
@@ -26,10 +24,6 @@ public class CommandArgs {
 
     public String next() {
         return iterator.next();
-    }
-
-    public int count() {
-        return args.length;
     }
 
     public boolean isPlayer() {

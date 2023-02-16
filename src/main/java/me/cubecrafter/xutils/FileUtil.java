@@ -3,6 +3,7 @@ package me.cubecrafter.xutils;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import lombok.experimental.UtilityClass;
+import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
 import java.io.IOException;
@@ -43,8 +44,8 @@ public class FileUtil {
     }
 
     public static void copy(File source, File target) {
-        Path targetPath = target.toPath();
         Path sourcePath = source.toPath();
+        Path targetPath = target.toPath();
         try {
             Files.createDirectories(targetPath.getParent());
             Files.walkFileTree(source.toPath(), new SimpleFileVisitor<Path>() {
@@ -118,6 +119,13 @@ public class FileUtil {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public static YamlConfiguration loadConfig(String name, File file) {
+        if (!file.exists()) {
+            copy(XUtils.getPlugin().getResource(name), file);
+        }
+        return YamlConfiguration.loadConfiguration(file);
     }
 
 }

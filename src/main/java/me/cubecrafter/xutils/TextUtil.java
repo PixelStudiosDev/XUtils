@@ -147,4 +147,16 @@ public class TextUtil {
         return LocalDateTime.ofInstant(instant, ZoneId.systemDefault()).format(formatter);
     }
 
+    public void info(String message) {
+        XUtils.getPlugin().getLogger().info(message);
+    }
+
+    public void warn(String message) {
+        XUtils.getPlugin().getLogger().warning(message);
+    }
+
+    public void error(String message) {
+        XUtils.getPlugin().getLogger().severe(message);
+    }
+
 }
