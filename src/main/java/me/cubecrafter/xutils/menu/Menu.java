@@ -46,16 +46,14 @@ public abstract class Menu implements InventoryHolder {
     private final Player player;
     private final Inventory inventory;
     private final Map<Integer, MenuItem> items = new HashMap<>();
+    private BukkitTask updateTask;
 
     @Setter private boolean autoUpdate = true;
     @Setter private int updateInterval = 20;
 
-    private BukkitTask updateTask;
-
     public Menu(Player player) {
         this.player = player;
         this.inventory = Bukkit.createInventory(this, getRows() * 9, TextUtil.color(TextUtil.parsePlaceholders(player, getTitle())));
-        updateInventory();
         if (autoUpdate) {
             this.updateTask = Tasks.repeat(this::updateInventory, updateInterval, updateInterval);
         }
@@ -79,14 +77,8 @@ public abstract class Menu implements InventoryHolder {
         }
     }
 
-    private void updateInventory() {
-        items.clear();
-        inventory.clear();
-        update();
-        items.forEach((slot, item) -> inventory.setItem(slot, TextUtil.parsePlaceholders(player, item.getItem())));
-    }
-
     public void open() {
+        updateInventory();
         player.openInventory(inventory);
     }
 
@@ -97,6 +89,13 @@ public abstract class Menu implements InventoryHolder {
     public abstract void update();
     public abstract int getRows();
     public abstract String getTitle();
+
+    private void updateInventory() {
+        items.clear();
+        inventory.clear();
+        update();
+        items.forEach((slot, item) -> inventory.setItem(slot, TextUtil.parsePlaceholders(player, item.getItem())));
+    }
 
     @Override
     public Inventory getInventory() {

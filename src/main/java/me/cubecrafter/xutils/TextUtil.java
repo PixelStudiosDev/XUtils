@@ -159,4 +159,8 @@ public class TextUtil {
         XUtils.getPlugin().getLogger().severe(message);
     }
 
+    public String stripColor(String text) {
+        return ChatColor.stripColor(color(text));
+    }
+
 }

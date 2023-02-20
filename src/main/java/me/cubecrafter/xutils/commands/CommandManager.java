@@ -95,16 +95,7 @@ public final class CommandManager {
                 }
             }
         }
-        /*
-        if (commandMap.getCommand(command.name()) != null) {
-            commandMap.getCommand(command.name()).unregister(commandMap);
-        }
-        for (String alias : command.aliases()) {
-            if (commandMap.getCommand(alias) != null) {
-                commandMap.getCommand(alias).unregister(commandMap);
-            }
-        }
-        */
+
         commandMap.register(XUtils.getPlugin().getName().toLowerCase(), container);
 
         return this;
