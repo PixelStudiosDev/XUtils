@@ -21,13 +21,13 @@ public class Configuration {
     private YamlConfiguration config;
 
     public Configuration(String name) {
-        this.name = name;
-        this.file = new File(plugin.getDataFolder(), name + ".yml");
+        this.name = name.endsWith(".yml") ? name : name + ".yml";
+        this.file = new File(plugin.getDataFolder(), this.name);
     }
 
     public void load() {
         if (!file.exists()) {
-            FileUtil.copy(plugin.getResource(name + ".yml"), file);
+            FileUtil.copy(plugin.getResource(name), file);
         }
         config = YamlConfiguration.loadConfiguration(file);
     }
