@@ -12,6 +12,7 @@ import org.bukkit.entity.Player;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.function.Function;
 
@@ -53,7 +54,7 @@ public class ArgumentParser {
         providers.put(Player.class, Bukkit::getPlayer);
     }
 
-    public Object[] parseArguments(CommandWrapper command, CommandArgs args) {
+    public Object[] parseArguments(CommandWrapper command, CommandSender sender, Iterator<String> args) {
         Method method = command.getMethod();
         Object[] parameters = new Object[method.getParameterCount()];
 
@@ -63,10 +64,10 @@ public class ArgumentParser {
 
             if (parameter.isAnnotationPresent(Sender.class)) {
                 if (type == CommandSender.class) {
-                    parameters[i] = args.getSender();
+                    parameters[i] = sender;
                 } else if (type == Player.class) {
-                    if (args.isPlayer()) {
-                        parameters[i] = args.getSender();
+                    if (sender instanceof Player) {
+                        parameters[i] = sender;
                     } else {
                         TextUtil.info("You must be a player to use this command!");
                         return null;
@@ -81,6 +82,16 @@ public class ArgumentParser {
                     builder.append(args.next()).append(" ");
                 }
                 parameters[i] = builder.toString().trim();
+                continue;
+            }
+
+            if (type.isEnum()) {
+                Object[] constants = type.getEnumConstants();
+                for (Object constant : constants) {
+                    if (constant.toString().equalsIgnoreCase(args.next())) {
+                        parameters[i] = constant;
+                    }
+                }
                 continue;
             }
 
@@ -99,14 +110,14 @@ public class ArgumentParser {
                         continue;
                     }
                 } else {
-                    command.sendUsage(args.getSender());
+                    command.sendUsage(sender);
                     return null;
                 }
             }
 
             Object value = provider.apply(arg != null ? arg : args.next());
             if (value == null) {
-                command.sendUsage(args.getSender());
+                command.sendUsage(sender);
                 return null;
             }
             parameters[i] = value;

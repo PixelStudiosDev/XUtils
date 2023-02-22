@@ -121,11 +121,4 @@ public class FileUtil {
         }
     }
 
-    public static YamlConfiguration loadConfig(String name, File file) {
-        if (!file.exists()) {
-            copy(XUtils.getPlugin().getResource(name), file);
-        }
-        return YamlConfiguration.loadConfiguration(file);
-    }
-
 }

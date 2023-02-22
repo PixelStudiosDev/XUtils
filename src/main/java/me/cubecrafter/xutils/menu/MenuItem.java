@@ -3,7 +3,6 @@ package me.cubecrafter.xutils.menu;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import me.cubecrafter.xutils.SoundUtil;
-import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -52,10 +51,6 @@ public class MenuItem {
             actions.get(event.getClick()).accept(event);
         }
         event.setCancelled(cancelClick);
-    }
-
-    public static MenuItem empty() {
-        return new MenuItem(new ItemStack(Material.AIR));
     }
 
 }

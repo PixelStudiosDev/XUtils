@@ -5,6 +5,7 @@ import lombok.Setter;
 import me.cubecrafter.xutils.Events;
 import me.cubecrafter.xutils.Tasks;
 import me.cubecrafter.xutils.TextUtil;
+import me.cubecrafter.xutils.config.ConfigManager;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -54,9 +55,6 @@ public abstract class Menu implements InventoryHolder {
     public Menu(Player player) {
         this.player = player;
         this.inventory = Bukkit.createInventory(this, getRows() * 9, TextUtil.color(TextUtil.parsePlaceholders(player, getTitle())));
-        if (autoUpdate) {
-            this.updateTask = Tasks.repeat(this::updateInventory, updateInterval, updateInterval);
-        }
     }
 
     public MenuItem getItem(int slot) {
@@ -79,6 +77,9 @@ public abstract class Menu implements InventoryHolder {
 
     public void open() {
         updateInventory();
+        if (autoUpdate) {
+            this.updateTask = Tasks.repeat(this::updateInventory, updateInterval, updateInterval);
+        }
         player.openInventory(inventory);
     }
 

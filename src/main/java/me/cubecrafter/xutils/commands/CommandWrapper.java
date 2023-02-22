@@ -71,7 +71,7 @@ public class CommandWrapper extends Command implements PluginIdentifiableCommand
         }
 
         if (method != null) {
-            Object[] parameters = parser.parseArguments(this, new CommandArgs(sender, args));
+            Object[] parameters = parser.parseArguments(this, sender, Arrays.asList(args).iterator());
             if (parameters == null) return true;
             ReflectionUtil.invokeMethod(method, handler, parameters);
             return true;
