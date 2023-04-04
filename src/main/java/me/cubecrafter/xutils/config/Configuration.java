@@ -8,6 +8,7 @@ import org.bukkit.plugin.Plugin;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.List;
 import java.util.Set;
 
@@ -26,10 +27,17 @@ public class Configuration {
     }
 
     public void load() {
+        load(false);
+    }
+
+    public void load(boolean update) {
         if (!file.exists()) {
             FileUtil.copy(plugin.getResource(name), file);
         }
         config = YamlConfiguration.loadConfiguration(file);
+        if (update) {
+            update();
+        }
     }
 
     public void save() {
@@ -38,6 +46,21 @@ public class Configuration {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public boolean update() {
+        boolean updated = false;
+        YamlConfiguration defaultConfig = YamlConfiguration.loadConfiguration(new InputStreamReader(plugin.getResource(name)));
+        for (String key : defaultConfig.getKeys(true)) {
+            if (!config.contains(key)) {
+                config.set(key, defaultConfig.get(key));
+                updated = true;
+            }
+        }
+        if (updated) {
+            save();
+        }
+        return updated;
     }
 
     public int getInt(String path) {

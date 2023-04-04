@@ -4,6 +4,7 @@ import lombok.experimental.UtilityClass;
 import me.clip.placeholderapi.PlaceholderAPI;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -93,6 +94,14 @@ public class TextUtil {
         senders.forEach(sender -> sendMessages(sender, messages));
     }
 
+    public static void broadcast(String message) {
+        Bukkit.getOnlinePlayers().forEach(player -> sendMessage(player, message));
+    }
+
+    public static void broadcast(List<String> messages) {
+        Bukkit.getOnlinePlayers().forEach(player -> sendMessages(player, messages));
+    }
+
     /**
      * Parse PlaceholderAPI placeholders
      *
@@ -161,6 +170,15 @@ public class TextUtil {
 
     public String stripColor(String text) {
         return ChatColor.stripColor(color(text));
+    }
+
+    public String serializeLocation(Location location) {
+        return location.getWorld().getName() + ":" + location.getX() + ":" + location.getY() + ":" + location.getZ() + ":" + location.getYaw() + ":" + location.getPitch();
+    }
+
+    public Location deserializeLocation(String location) {
+        String[] split = location.split(":");
+        return new Location(Bukkit.getWorld(split[0]), Double.parseDouble(split[1]), Double.parseDouble(split[2]), Double.parseDouble(split[3]), Float.parseFloat(split[4]), Float.parseFloat(split[5]));
     }
 
 }
