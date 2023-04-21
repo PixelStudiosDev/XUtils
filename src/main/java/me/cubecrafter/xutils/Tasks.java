@@ -4,6 +4,7 @@ import lombok.experimental.UtilityClass;
 import org.bukkit.Bukkit;
 import org.bukkit.scheduler.BukkitTask;
 
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 
 @UtilityClass
@@ -49,12 +50,32 @@ public class Tasks {
         Bukkit.getScheduler().runTaskTimer(XUtils.getPlugin(), task, delay, period);
     }
 
+    public static void repeatTimes(Runnable task, long delay, long period, int times) {
+        AtomicInteger timer = new AtomicInteger(times);
+        repeat(bukkitTask -> {
+            task.run();
+            if (timer.decrementAndGet() == 0) {
+                bukkitTask.cancel();
+            }
+        }, delay, period);
+    }
+
     public static BukkitTask repeatAsync(Runnable task, long delay, long period) {
         return Bukkit.getScheduler().runTaskTimerAsynchronously(XUtils.getPlugin(), task, delay, period);
     }
 
     public static void repeatAsync(Consumer<BukkitTask> task, long delay, long period) {
         Bukkit.getScheduler().runTaskTimerAsynchronously(XUtils.getPlugin(), task, delay, period);
+    }
+
+    public static void repeatAsyncTimes(Runnable task, long delay, long period, int times) {
+        AtomicInteger timer = new AtomicInteger(times);
+        repeatAsync(bukkitTask -> {
+            task.run();
+            if (timer.decrementAndGet() == 0) {
+                bukkitTask.cancel();
+            }
+        }, delay, period);
     }
 
     public static void cancelAll() {
