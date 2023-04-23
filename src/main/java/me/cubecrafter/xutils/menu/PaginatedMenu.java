@@ -6,7 +6,7 @@ import org.bukkit.entity.Player;
 public abstract class PaginatedMenu extends Menu {
 
     @Getter
-    private int page = 1;
+    private int page;
 
     public PaginatedMenu(Player player) {
         super(player);
@@ -18,7 +18,7 @@ public abstract class PaginatedMenu extends Menu {
     }
 
     public boolean nextPage() {
-        if (page < Math.max(1, getMaxPages())) {
+        if (page < Math.max(0, getMaxPages() - 1)) {
             update(++page);
             return true;
         }
@@ -26,7 +26,7 @@ public abstract class PaginatedMenu extends Menu {
     }
 
     public boolean previousPage() {
-        if (page > 1) {
+        if (page > 0) {
             update(--page);
             return true;
         }
@@ -34,11 +34,11 @@ public abstract class PaginatedMenu extends Menu {
     }
 
     public boolean isFirstPage() {
-        return page == 1;
+        return page == 0;
     }
 
     public boolean isLastPage() {
-        return page == Math.max(1, getMaxPages());
+        return page == getMaxPages() - 1;
     }
 
     public abstract int getMaxPages();

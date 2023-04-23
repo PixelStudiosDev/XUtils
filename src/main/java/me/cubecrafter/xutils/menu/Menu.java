@@ -5,7 +5,6 @@ import lombok.Setter;
 import me.cubecrafter.xutils.Events;
 import me.cubecrafter.xutils.Tasks;
 import me.cubecrafter.xutils.TextUtil;
-import me.cubecrafter.xutils.config.ConfigManager;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;

@@ -1,5 +1,6 @@
 package me.cubecrafter.xutils;
 
+import com.cryptomorin.xseries.messages.Titles;
 import lombok.experimental.UtilityClass;
 import me.clip.placeholderapi.PlaceholderAPI;
 import net.md_5.bungee.api.ChatColor;
@@ -172,13 +173,21 @@ public class TextUtil {
         return ChatColor.stripColor(color(text));
     }
 
-    public String serializeLocation(Location location) {
+    public String fromLocation(Location location) {
         return location.getWorld().getName() + ":" + location.getX() + ":" + location.getY() + ":" + location.getZ() + ":" + location.getYaw() + ":" + location.getPitch();
     }
 
-    public Location deserializeLocation(String location) {
+    public Location parseLocation(String location) {
         String[] split = location.split(":");
         return new Location(Bukkit.getWorld(split[0]), Double.parseDouble(split[1]), Double.parseDouble(split[2]), Double.parseDouble(split[3]), Float.parseFloat(split[4]), Float.parseFloat(split[5]));
+    }
+
+    public void sendTitle(Player player, String title, String subtitle, int fadeIn, int stay, int fadeOut) {
+        if (ReflectionUtil.supports(11)) {
+            player.sendTitle(color(title), color(subtitle), fadeIn, stay, fadeOut);
+        } else {
+            Titles.sendTitle(player, fadeIn, stay, fadeOut, color(title), color(subtitle));
+        }
     }
 
 }
