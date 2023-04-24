@@ -5,7 +5,7 @@ plugins {
 }
 
 group = 'me.cubecrafter'
-version = '1.0.3'
+version = '1.0.4'
 
 repositories {
     mavenCentral()
@@ -17,9 +17,11 @@ repositories {
 
 dependencies {
     implementation 'com.github.cryptomorin:XSeries:9.1.0'
+
     compileOnly 'org.spigotmc:spigot-api:1.19.4-R0.1-SNAPSHOT'
     compileOnly 'me.clip:placeholderapi:2.11.2'
     compileOnly 'org.projectlombok:lombok:1.18.24'
+
     annotationProcessor 'org.projectlombok:lombok:1.18.24'
 }
 

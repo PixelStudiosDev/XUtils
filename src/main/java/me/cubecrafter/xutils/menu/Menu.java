@@ -13,7 +13,9 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.scheduler.BukkitTask;
 
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Getter
@@ -60,10 +62,14 @@ public abstract class Menu implements InventoryHolder {
         return items.get(slot);
     }
 
-    public void setItem(MenuItem item, int... slots) {
+    public void setItem(MenuItem item, List<Integer> slots) {
         for (int slot : slots) {
             items.put(slot, item);
         }
+    }
+
+    public void setItem(MenuItem item, Integer... slots) {
+        setItem(item, Arrays.asList(slots));
     }
 
     public void fillBorders(MenuItem item) {
