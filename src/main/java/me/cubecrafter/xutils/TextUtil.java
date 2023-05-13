@@ -1,5 +1,6 @@
 package me.cubecrafter.xutils;
 
+import com.cryptomorin.xseries.messages.ActionBar;
 import com.cryptomorin.xseries.messages.Titles;
 import lombok.experimental.UtilityClass;
 import me.clip.placeholderapi.PlaceholderAPI;
@@ -17,6 +18,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.concurrent.Callable;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -188,6 +190,14 @@ public class TextUtil {
         } else {
             Titles.sendTitle(player, fadeIn, stay, fadeOut, color(title), color(subtitle));
         }
+    }
+
+    public void sendActionBar(Player player, String message) {
+        ActionBar.sendActionBar(player, color(message));
+    }
+
+    public void sendActionBarWhile(Player player, String message, Callable<Boolean> condition) {
+        ActionBar.sendActionBarWhile(XUtils.getPlugin(), player, color(message), condition);
     }
 
 }
