@@ -1,6 +1,7 @@
 package me.cubecrafter.xutils.menu;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import me.cubecrafter.xutils.Events;
 import me.cubecrafter.xutils.Tasks;
@@ -19,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 
 @Getter
+@RequiredArgsConstructor
 public abstract class Menu implements InventoryHolder {
 
     static {
@@ -46,17 +48,13 @@ public abstract class Menu implements InventoryHolder {
     }
 
     private final Player player;
-    private final Inventory inventory;
-    private final Map<Integer, MenuItem> items = new HashMap<>();
+    private Inventory inventory;
     private BukkitTask updateTask;
+
+    private final Map<Integer, MenuItem> items = new HashMap<>();
 
     @Setter private boolean autoUpdate = true;
     @Setter private int updateInterval = 20;
-
-    public Menu(Player player) {
-        this.player = player;
-        this.inventory = Bukkit.createInventory(this, getRows() * 9, TextUtil.color(TextUtil.parsePlaceholders(player, getTitle())));
-    }
 
     public MenuItem getItem(int slot) {
         return items.get(slot);
@@ -81,11 +79,17 @@ public abstract class Menu implements InventoryHolder {
     }
 
     public void open() {
-        updateInventory();
-        if (autoUpdate) {
-            this.updateTask = Tasks.repeat(this::updateInventory, updateInterval, updateInterval);
-        }
-        player.openInventory(inventory);
+        Tasks.sync(() -> {
+            if (inventory == null) {
+                inventory = Bukkit.createInventory(this, getRows() * 9, TextUtil.color(TextUtil.parsePlaceholders(player, getTitle())));
+            }
+            if (autoUpdate) {
+                updateTask = Tasks.repeat(this::updateInventory, 0L, updateInterval);
+            } else {
+                updateInventory();
+            }
+            player.openInventory(inventory);
+        });
     }
 
     public void close() {
