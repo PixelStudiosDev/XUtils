@@ -176,11 +176,19 @@ public class TextUtil {
     }
 
     public String fromLocation(Location location) {
-        return location.getWorld().getName() + ":" + location.getX() + ":" + location.getY() + ":" + location.getZ() + ":" + location.getYaw() + ":" + location.getPitch();
+        StringBuilder builder = new StringBuilder();
+        builder.append(location.getWorld().getName()).append(":").append(location.getX()).append(":").append(location.getY()).append(":").append(location.getZ());
+        if (location.getYaw() != 0 && location.getPitch() != 0) {
+            builder.append(":").append(location.getYaw()).append(":").append(location.getPitch());
+        }
+        return builder.toString();
     }
 
     public Location parseLocation(String location) {
         String[] split = location.split(":");
+        if (split.length == 4) {
+            return new Location(Bukkit.getWorld(split[0]), Double.parseDouble(split[1]), Double.parseDouble(split[2]), Double.parseDouble(split[3]));
+        }
         return new Location(Bukkit.getWorld(split[0]), Double.parseDouble(split[1]), Double.parseDouble(split[2]), Double.parseDouble(split[3]), Float.parseFloat(split[4]), Float.parseFloat(split[5]));
     }
 
