@@ -7,6 +7,7 @@ import org.bukkit.scheduler.BukkitTask;
 
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 @UtilityClass
 public class Tasks {
@@ -57,6 +58,32 @@ public class Tasks {
                 if (--remaining == 0) {
                     cancel();
                 }
+            }
+        }.runTaskTimerAsynchronously(XUtils.getPlugin(), delay, period);
+    }
+
+    public static void repeat(Runnable task, long delay, long period, Supplier<Boolean> condition) {
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                if (!condition.get()) {
+                    cancel();
+                    return;
+                }
+                task.run();
+            }
+        }.runTaskTimer(XUtils.getPlugin(), delay, period);
+    }
+
+    public static void repeatAsync(Runnable task, long delay, long period, Supplier<Boolean> condition) {
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                if (!condition.get()) {
+                    cancel();
+                    return;
+                }
+                task.run();
             }
         }.runTaskTimerAsynchronously(XUtils.getPlugin(), delay, period);
     }
