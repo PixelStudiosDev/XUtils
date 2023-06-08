@@ -17,13 +17,13 @@ public class Configuration {
     private static final Plugin plugin = XUtils.getPlugin();
 
     private final File file;
-    private final String name;
+    private final String path;
 
     private YamlConfiguration config;
 
-    public Configuration(String name) {
-        this.name = name.endsWith(".yml") ? name : name + ".yml";
-        this.file = new File(plugin.getDataFolder(), this.name);
+    public Configuration(String path) {
+        this.path = path;
+        this.file = new File(plugin.getDataFolder(), path);
     }
 
     public void load() {
@@ -32,7 +32,7 @@ public class Configuration {
 
     public void load(boolean update) {
         if (!file.exists()) {
-            FileUtil.copy(plugin.getResource(name), file);
+            FileUtil.copy(plugin.getResource(path), file);
         }
         config = YamlConfiguration.loadConfiguration(file);
         if (update) {
@@ -49,14 +49,17 @@ public class Configuration {
     }
 
     public boolean update() {
+        InputStreamReader reader = new InputStreamReader(plugin.getResource(path));
+        YamlConfiguration defaultConfig = YamlConfiguration.loadConfiguration(reader);
+
         boolean updated = false;
-        YamlConfiguration defaultConfig = YamlConfiguration.loadConfiguration(new InputStreamReader(plugin.getResource(name)));
         for (String key : defaultConfig.getKeys(true)) {
             if (!config.contains(key)) {
                 config.set(key, defaultConfig.get(key));
                 updated = true;
             }
         }
+
         if (updated) {
             save();
         }
@@ -65,6 +68,10 @@ public class Configuration {
 
     public int getInt(String path) {
         return config.getInt(path);
+    }
+
+    public List<Integer> getIntegerList(String path) {
+        return config.getIntegerList(path);
     }
 
     public boolean getBoolean(String path) {
@@ -101,6 +108,10 @@ public class Configuration {
 
     public void set(String path, Object value) {
         config.set(path, value);
+    }
+
+    public boolean contains(String path) {
+        return config.contains(path);
     }
 
 }

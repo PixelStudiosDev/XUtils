@@ -11,14 +11,20 @@ public class ConfigManager {
 
     private ConfigManager() {}
 
-    public Configuration load(String name) {
-        if (configurations.containsKey(name)) {
-            return configurations.get(name);
+    public Configuration load(String path, boolean update) {
+        if (configurations.containsKey(path)) {
+            return configurations.get(path);
         }
-        Configuration config = new Configuration(name);
-        config.load();
-        configurations.put(name, config);
+
+        Configuration config = new Configuration(path);
+        config.load(update);
+
+        configurations.put(path, config);
         return config;
+    }
+
+    public Configuration load(String path) {
+        return load(path, false);
     }
 
     public void reloadAll() {
