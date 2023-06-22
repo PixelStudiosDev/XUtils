@@ -1,5 +1,6 @@
 package me.cubecrafter.xutils;
 
+import com.cryptomorin.xseries.XPotion;
 import com.cryptomorin.xseries.messages.ActionBar;
 import com.cryptomorin.xseries.messages.Titles;
 import lombok.experimental.UtilityClass;
@@ -12,6 +13,8 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -159,23 +162,23 @@ public class TextUtil {
         return LocalDateTime.ofInstant(instant, ZoneId.systemDefault()).format(formatter);
     }
 
-    public void info(String message) {
+    public static void info(String message) {
         XUtils.getPlugin().getLogger().info(message);
     }
 
-    public void warn(String message) {
+    public static void warn(String message) {
         XUtils.getPlugin().getLogger().warning(message);
     }
 
-    public void error(String message) {
+    public static void error(String message) {
         XUtils.getPlugin().getLogger().severe(message);
     }
 
-    public String stripColor(String text) {
+    public static String stripColor(String text) {
         return ChatColor.stripColor(color(text));
     }
 
-    public String fromLocation(Location location) {
+    public static String fromLocation(Location location) {
         StringBuilder builder = new StringBuilder();
         builder.append(location.getWorld().getName()).append(":").append(location.getX()).append(":").append(location.getY()).append(":").append(location.getZ());
         if (location.getYaw() != 0 && location.getPitch() != 0) {
@@ -184,7 +187,7 @@ public class TextUtil {
         return builder.toString();
     }
 
-    public Location parseLocation(String location) {
+    public static Location parseLocation(String location) {
         String[] split = location.split(":");
         if (split.length == 4) {
             return new Location(Bukkit.getWorld(split[0]), Double.parseDouble(split[1]), Double.parseDouble(split[2]), Double.parseDouble(split[3]));
@@ -192,7 +195,7 @@ public class TextUtil {
         return new Location(Bukkit.getWorld(split[0]), Double.parseDouble(split[1]), Double.parseDouble(split[2]), Double.parseDouble(split[3]), Float.parseFloat(split[4]), Float.parseFloat(split[5]));
     }
 
-    public void sendTitle(Player player, String title, String subtitle, int fadeIn, int stay, int fadeOut) {
+    public static void sendTitle(Player player, String title, String subtitle, int fadeIn, int stay, int fadeOut) {
         if (ReflectionUtil.supports(11)) {
             player.sendTitle(color(title), color(subtitle), fadeIn, stay, fadeOut);
         } else {
@@ -200,12 +203,63 @@ public class TextUtil {
         }
     }
 
-    public void sendActionBar(Player player, String message) {
+    public static void sendActionBar(Player player, String message) {
         ActionBar.sendActionBar(player, color(message));
     }
 
-    public void sendActionBarWhile(Player player, String message, Callable<Boolean> condition) {
+    public static void sendActionBarWhile(Player player, String message, Callable<Boolean> condition) {
         ActionBar.sendActionBarWhile(XUtils.getPlugin(), player, color(message), condition);
+    }
+
+    public static String getCenteredMessage(String message) {
+        if (message == null || message.equals("")) return "";
+
+        message = TextUtil.color(message.replace("<center>", "").replace("</center>", ""));
+        int messagePxSize = 0;
+        boolean previousCode = false;
+        boolean isBold = false;
+        for (char c : message.toCharArray()) {
+            if (c == '§') {
+                previousCode = true;
+            } else if (previousCode) {
+                previousCode = false;
+                isBold = c == 'l' || c == 'L';
+            } else {
+                FontInfo fontInfo = FontInfo.getFontInfo(c);
+                messagePxSize += isBold ? fontInfo.getBoldLength() : fontInfo.getLength();
+                messagePxSize++;
+            }
+        }
+        int halvedMessageSize = messagePxSize / 2;
+        int toCompensate = 154 - halvedMessageSize;
+        int spaceLength = FontInfo.SPACE.getLength() + 1;
+        int compensated = 0;
+        StringBuilder builder = new StringBuilder();
+        while (compensated < toCompensate) {
+            builder.append(" ");
+            compensated += spaceLength;
+        }
+        return builder + message;
+    }
+
+    /**
+     * Parse a potion effect from a string
+     * Format: <type>,<duration>,<amplifier>
+     * @param serialized The serialized string
+     * @return The potion effect
+     * @throws IllegalArgumentException If the string is not in the correct format
+     */
+    public static PotionEffect parseEffect(String serialized) {
+        String[] effect = serialized.split(",");
+        if (effect.length < 1) {
+            throw new IllegalArgumentException("Invalid effect format: " + serialized);
+        }
+
+        PotionEffectType type = XPotion.matchXPotion(effect[0]).orElse(XPotion.SPEED).getPotionEffectType();
+        int duration = effect.length > 1 ? Integer.parseInt(effect[1]) * 20 : 10 * 20;
+        int amplifier = effect.length > 2 ? Integer.parseInt(effect[2]) - 1 : 0;
+
+        return new PotionEffect(type, duration, amplifier);
     }
 
 }
