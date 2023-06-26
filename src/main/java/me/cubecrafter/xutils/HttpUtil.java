@@ -2,6 +2,7 @@ package me.cubecrafter.xutils;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.sun.net.httpserver.Headers;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.UtilityClass;
 
@@ -11,20 +12,27 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 @UtilityClass
 public class HttpUtil {
 
-    public static CompletableFuture<Response> get(String url, String... headers) {
+    public static CompletableFuture<Response> get(String url) {
+        return get(url, new Headers());
+    }
+
+    public static CompletableFuture<Response> get(String url, Headers headers) {
         return CompletableFuture.supplyAsync(() -> {
             try {
                 HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
                 connection.setRequestMethod("GET");
                 connection.setConnectTimeout(5000);
                 connection.setReadTimeout(5000);
-                for (int i = 0; i < headers.length; i += 2) {
-                    connection.setRequestProperty(headers[i], headers[i + 1]);
+                connection.setRequestProperty("User-Agent", "XUtils/1.0");
+                for (Map.Entry<String, List<String>> entry : headers.entrySet()) {
+                    connection.setRequestProperty(entry.getKey(), entry.getValue().get(0));
                 }
                 return new Response(connection.getResponseCode(), read(connection.getInputStream()));
             } catch (IOException e) {
@@ -34,19 +42,24 @@ public class HttpUtil {
         });
     }
 
-    public static CompletableFuture<Response> post(String url, String body, String... headers) {
+    public static CompletableFuture<Response> post(String url, JsonObject body) {
+        return post(url, body, new Headers());
+    }
+
+    public static CompletableFuture<Response> post(String url, JsonObject body, Headers headers) {
         return CompletableFuture.supplyAsync(() -> {
             try {
                 HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
                 connection.setRequestMethod("POST");
                 connection.setConnectTimeout(5000);
                 connection.setReadTimeout(5000);
-                for (int i = 0; i < headers.length; i += 2) {
-                    connection.setRequestProperty(headers[i], headers[i + 1]);
+                connection.setRequestProperty("User-Agent", "XUtils/1.0");
+                connection.setRequestProperty("Content-Length", String.valueOf(body.toString().length()));
+                for (Map.Entry<String, List<String>> entry : headers.entrySet()) {
+                    connection.setRequestProperty(entry.getKey(), entry.getValue().get(0));
                 }
-                connection.setRequestProperty("Content-Length", String.valueOf(body.length()));
                 connection.setDoOutput(true);
-                connection.getOutputStream().write(body.getBytes());
+                connection.getOutputStream().write(body.toString().getBytes());
                 return new Response(connection.getResponseCode(), read(connection.getInputStream()));
             } catch (IOException e) {
                 e.printStackTrace();
