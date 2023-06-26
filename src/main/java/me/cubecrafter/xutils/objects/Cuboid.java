@@ -15,21 +15,40 @@ import java.util.concurrent.ThreadLocalRandom;
 @Getter
 public class Cuboid implements Iterable<Block> {
 
-    private final World world;
-    private final int xMin, xMax, yMin, yMax, zMin, zMax;
-    private final Location first, second;
+    private World world;
+    private int xMin, xMax, yMin, yMax, zMin, zMax;
+    private Location first, second;
 
     public Cuboid(Location first, Location second) {
-        this.first = first;
-        this.second = second;
+        setFirst(first);
+        setSecond(second);
+    }
 
+    public Cuboid() {
+    }
+
+    public void setFirst(Location first) {
+        this.first = first;
         this.world = first.getWorld();
-        this.xMin = Math.min(first.getBlockX(), second.getBlockX());
-        this.xMax = Math.max(first.getBlockX(), second.getBlockX());
-        this.yMin = Math.min(first.getBlockY(), second.getBlockY());
-        this.yMax = Math.max(first.getBlockY(), second.getBlockY());
-        this.zMin = Math.min(first.getBlockZ(), second.getBlockZ());
-        this.zMax = Math.max(first.getBlockZ(), second.getBlockZ());
+
+        this.xMin = Math.min(first.getBlockX(), second == null ? 0 : second.getBlockX());
+        this.xMax = Math.max(first.getBlockX(), second == null ? 0 : second.getBlockX());
+        this.yMin = Math.min(first.getBlockY(), second == null ? 0 : second.getBlockY());
+        this.yMax = Math.max(first.getBlockY(), second == null ? 0 : second.getBlockY());
+        this.zMin = Math.min(first.getBlockZ(), second == null ? 0 : second.getBlockZ());
+        this.zMax = Math.max(first.getBlockZ(), second == null ? 0 : second.getBlockZ());
+    }
+
+    public void setSecond(Location second) {
+        this.second = second;
+        this.world = second.getWorld();
+
+        this.xMin = Math.min(first == null ? 0 : first.getBlockX(), second.getBlockX());
+        this.xMax = Math.max(first == null ? 0 : first.getBlockX(), second.getBlockX());
+        this.yMin = Math.min(first == null ? 0 : first.getBlockY(), second.getBlockY());
+        this.yMax = Math.max(first == null ? 0 : first.getBlockY(), second.getBlockY());
+        this.zMin = Math.min(first == null ? 0 : first.getBlockZ(), second.getBlockZ());
+        this.zMax = Math.max(first == null ? 0 : first.getBlockZ(), second.getBlockZ());
     }
 
     public List<Block> getBlocks() {
@@ -58,6 +77,7 @@ public class Cuboid implements Iterable<Block> {
     }
 
     public boolean isInside(Location location) {
+        if (!isSet()) return false;
         return location.getWorld().equals(world)
                 && location.getBlockX() >= xMin
                 && location.getBlockX() <= xMax
@@ -69,6 +89,10 @@ public class Cuboid implements Iterable<Block> {
 
     public int getBlockCount() {
         return (xMax - xMin + 1) * (yMax - yMin + 1) * (zMax - zMin + 1);
+    }
+
+    public boolean isSet() {
+        return first != null && second != null;
     }
 
     @Override
