@@ -1,10 +1,12 @@
-package me.cubecrafter.xutils;
+package me.cubecrafter.xutils.text;
 
 import com.cryptomorin.xseries.XPotion;
 import com.cryptomorin.xseries.messages.ActionBar;
 import com.cryptomorin.xseries.messages.Titles;
 import lombok.experimental.UtilityClass;
 import me.clip.placeholderapi.PlaceholderAPI;
+import me.cubecrafter.xutils.ReflectionUtil;
+import me.cubecrafter.xutils.XUtils;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;

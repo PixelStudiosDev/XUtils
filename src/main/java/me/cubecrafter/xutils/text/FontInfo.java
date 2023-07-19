@@ -1,4 +1,4 @@
-package me.cubecrafter.xutils;
+package me.cubecrafter.xutils.text;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

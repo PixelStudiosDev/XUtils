@@ -1,7 +1,7 @@
 package me.cubecrafter.xutils.objects;
 
 import lombok.Getter;
-import me.cubecrafter.xutils.TextUtil;
+import me.cubecrafter.xutils.text.TextUtil;
 import org.bukkit.Location;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.EntityType;

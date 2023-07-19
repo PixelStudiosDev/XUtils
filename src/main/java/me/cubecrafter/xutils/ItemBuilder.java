@@ -3,6 +3,7 @@ package me.cubecrafter.xutils;
 import com.cryptomorin.xseries.SkullUtils;
 import com.cryptomorin.xseries.XMaterial;
 import lombok.Getter;
+import me.cubecrafter.xutils.text.TextUtil;
 import org.bukkit.Color;
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
@@ -22,7 +23,6 @@ import org.bukkit.potion.PotionEffectType;
 import java.util.Arrays;
 import java.util.List;
 
-@Getter
 public class ItemBuilder {
 
     private ItemStack item;

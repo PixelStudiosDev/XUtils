@@ -1,7 +1,7 @@
 package me.cubecrafter.xutils.commands;
 
 import lombok.Getter;
-import me.cubecrafter.xutils.TextUtil;
+import me.cubecrafter.xutils.text.TextUtil;
 import me.cubecrafter.xutils.XUtils;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
