@@ -1,6 +1,7 @@
 package me.cubecrafter.xutils.menu;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import me.cubecrafter.xutils.ReflectionUtil;
 import me.cubecrafter.xutils.Tasks;
 import me.cubecrafter.xutils.text.TextUtil;
@@ -13,20 +14,23 @@ import org.bukkit.scheduler.BukkitTask;
 
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
-@Data
+@Getter @Setter
 public abstract class Menu implements InventoryHolder {
 
-    private final Player player;
+    protected final Player player;
     private final Map<Integer, MenuItem> items = new HashMap<>();
 
     private Inventory inventory;
     private BukkitTask updateTask;
+    private Set<Integer> draggableSlots = new HashSet<>();
 
     private boolean autoUpdate = true;
-    private boolean parsePlaceholders = false;
+    private boolean parsePlaceholders;
     private int updateInterval = 20;
 
     public Menu(Player player) {
@@ -101,6 +105,17 @@ public abstract class Menu implements InventoryHolder {
 
             inventory.setItem(slot, stack);
         });
+    }
+
+    public void addDraggableSlots(Integer... slots) {
+        draggableSlots.addAll(Arrays.asList(slots));
+    }
+
+    public void updateTitle() {
+        setTitle(getTitle());
+    }
+
+    public void onClose() {
     }
 
     @Override

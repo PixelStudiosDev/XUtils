@@ -1,14 +1,19 @@
 package me.cubecrafter.xutils.menu;
 
 import lombok.Getter;
+import lombok.Setter;
+import me.cubecrafter.xutils.SoundUtil;
+import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 
 import java.util.List;
 
-@Getter
+@Getter @Setter
 public abstract class PaginatedMenu extends Menu {
 
     private int page;
+    private String switchPageSound;
+    private boolean updateTitle;
 
     public PaginatedMenu(Player player) {
         super(player);
@@ -19,10 +24,30 @@ public abstract class PaginatedMenu extends Menu {
         update(page);
     }
 
+    public boolean setPage(int page) {
+        if (page >= 0 && page < getMaxPages()) {
+            this.page = page;
+            updateInventory();
+
+            if (updateTitle) {
+                setTitle(getTitle());
+            }
+            return true;
+        }
+        return false;
+    }
+
     public boolean nextPage() {
         if (page < Math.max(0, getMaxPages() - 1)) {
             page++;
             updateInventory();
+
+            if (switchPageSound != null) {
+                SoundUtil.play(player, switchPageSound);
+            }
+            if (updateTitle) {
+                setTitle(getTitle());
+            }
             return true;
         }
         return false;
@@ -32,13 +57,16 @@ public abstract class PaginatedMenu extends Menu {
         if (page > 0) {
             page--;
             updateInventory();
+
+            if (switchPageSound != null) {
+                SoundUtil.play(player, switchPageSound);
+            }
+            if (updateTitle) {
+                setTitle(getTitle());
+            }
             return true;
         }
         return false;
-    }
-
-    public void setPage(int page) {
-        this.page = page;
     }
 
     public boolean isFirstPage() {
@@ -47,6 +75,14 @@ public abstract class PaginatedMenu extends Menu {
 
     public boolean isLastPage() {
         return page == getMaxPages() - 1;
+    }
+
+    public void setSwitchPageSound(Sound sound) {
+        this.switchPageSound = sound.toString();
+    }
+
+    public void setSwitchPageSound(String sound) {
+        this.switchPageSound = sound;
     }
 
     public abstract int getMaxPages();
