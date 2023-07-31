@@ -68,7 +68,11 @@ public class TextUtil {
      * @param message The message to send
      */
     public static void sendMessage(CommandSender sender, String message) {
+        if (message.startsWith("<center>") && message.endsWith("</center>")) {
+            message = getCenteredMessage(message);
+        }
         message = parsePlaceholders(sender instanceof Player ? (Player) sender : null, message);
+
         sender.sendMessage(color(message));
     }
 
@@ -214,12 +218,14 @@ public class TextUtil {
     }
 
     public static String getCenteredMessage(String message) {
-        if (message == null || message.equals("")) return "";
+        if (message == null || message.isEmpty()) return "";
 
         message = TextUtil.color(message.replace("<center>", "").replace("</center>", ""));
-        int messagePxSize = 0;
+
+        int messageSize = 0;
         boolean previousCode = false;
         boolean isBold = false;
+
         for (char c : message.toCharArray()) {
             if (c == '§') {
                 previousCode = true;
@@ -228,19 +234,23 @@ public class TextUtil {
                 isBold = c == 'l' || c == 'L';
             } else {
                 FontInfo fontInfo = FontInfo.getFontInfo(c);
-                messagePxSize += isBold ? fontInfo.getBoldLength() : fontInfo.getLength();
-                messagePxSize++;
+                messageSize += isBold ? fontInfo.getBoldLength() : fontInfo.getLength();
+                messageSize++;
             }
         }
-        int halvedMessageSize = messagePxSize / 2;
+
+        int halvedMessageSize = messageSize / 2;
         int toCompensate = 154 - halvedMessageSize;
         int spaceLength = FontInfo.SPACE.getLength() + 1;
-        int compensated = 0;
+
         StringBuilder builder = new StringBuilder();
+        int compensated = 0;
+
         while (compensated < toCompensate) {
             builder.append(" ");
             compensated += spaceLength;
         }
+
         return builder + message;
     }
 

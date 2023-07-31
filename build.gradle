@@ -5,7 +5,7 @@ plugins {
 }
 
 group = 'me.cubecrafter'
-version = '1.2.0'
+version = '1.2.1'
 
 repositories {
     mavenCentral()
@@ -16,8 +16,7 @@ repositories {
 }
 
 dependencies {
-    implementation 'com.github.cryptomorin:XSeries:9.4.0'
-
+    compileOnly 'com.github.cryptomorin:XSeries:9.4.0'
     compileOnly 'org.spigotmc:spigot-api:1.20.1-R0.1-SNAPSHOT'
     compileOnly 'me.clip:placeholderapi:2.11.2'
     compileOnly 'org.projectlombok:lombok:1.18.26'
@@ -28,6 +27,7 @@ dependencies {
 shadowJar {
     relocate 'com.cryptomorin.xseries', 'me.cubecrafter.xutils.libs.xseries'
     exclude 'META-INF/**'
+
     minimize()
 }
 
