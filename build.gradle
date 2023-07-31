@@ -25,9 +25,7 @@ dependencies {
 }
 
 shadowJar {
-    relocate 'com.cryptomorin.xseries', 'me.cubecrafter.xutils.libs.xseries'
     exclude 'META-INF/**'
-
     minimize()
 }
 
