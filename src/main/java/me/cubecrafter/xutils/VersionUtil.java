@@ -1,6 +1,5 @@
 package me.cubecrafter.xutils;
 
-import com.cryptomorin.xseries.ReflectionUtils;
 import lombok.experimental.UtilityClass;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -25,7 +24,7 @@ public class VersionUtil {
     public static void setUnbreakable(ItemStack item, boolean unbreakable) {
         ItemMeta meta = item.getItemMeta();
 
-        if (ReflectionUtils.supports(12)) {
+        if (ReflectionUtil.supports(12)) {
             meta.setUnbreakable(unbreakable);
         } else {
             Object spigot = ReflectionUtil.invokeMethod(SPIGOT, meta);
