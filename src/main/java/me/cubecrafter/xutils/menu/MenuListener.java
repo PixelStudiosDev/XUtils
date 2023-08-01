@@ -4,6 +4,7 @@ import me.cubecrafter.xutils.XUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
@@ -21,7 +22,13 @@ public class MenuListener implements Listener {
         if (menu == null) return;
 
         int slot = event.getRawSlot();
-        if (slot >= event.getInventory().getSize()) return;
+
+        if (slot >= event.getInventory().getSize()) {
+            if (event.getAction() == InventoryAction.MOVE_TO_OTHER_INVENTORY) {
+                event.setCancelled(true);
+            }
+            return;
+        }
 
         MenuItem item = menu.getItem(slot);
 
