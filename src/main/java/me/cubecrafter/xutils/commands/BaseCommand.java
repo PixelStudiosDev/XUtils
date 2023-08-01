@@ -1,5 +1,6 @@
 package me.cubecrafter.xutils.commands;
 
+import lombok.Getter;
 import me.cubecrafter.xutils.XUtils;
 import me.cubecrafter.xutils.text.TextUtil;
 import org.bukkit.command.Command;
@@ -17,6 +18,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+@Getter
 public abstract class BaseCommand extends Command implements PluginIdentifiableCommand {
 
     private static final CommandManager commandManager = CommandManager.get();
