@@ -3,7 +3,7 @@ package me.cubecrafter.xutils.config;
 import java.util.HashMap;
 import java.util.Map;
 
-public class ConfigManager {
+public final class ConfigManager {
 
     private static ConfigManager instance;
 
@@ -27,16 +27,16 @@ public class ConfigManager {
         return load(path, false);
     }
 
+    public void invalidate(String name) {
+        configurations.remove(name);
+    }
+
     public void reloadAll() {
         configurations.values().forEach(Configuration::load);
     }
 
     public void saveAll() {
         configurations.values().forEach(Configuration::save);
-    }
-
-    public void invalidate(String name) {
-        configurations.remove(name);
     }
 
     public void invalidateAll() {

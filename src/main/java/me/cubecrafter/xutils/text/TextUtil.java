@@ -40,7 +40,7 @@ public class TextUtil {
      * @return The colorized text
      */
     public static String color(String text) {
-        if (ReflectionUtil.VERSION >= 16) {
+        if (ReflectionUtil.supports(16)) {
             Matcher matcher = HEX_PATTERN.matcher(text);
             while (matcher.find()) {
                 String color = matcher.group();
@@ -68,6 +68,8 @@ public class TextUtil {
      * @param message The message to send
      */
     public static void sendMessage(CommandSender sender, String message) {
+        if (message == null) return;
+
         if (message.startsWith("<center>") && message.endsWith("</center>")) {
             message = getCenteredMessage(message);
         }
