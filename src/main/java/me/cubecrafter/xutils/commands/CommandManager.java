@@ -31,7 +31,7 @@ public final class CommandManager {
     }
 
     public CommandWrapper getCommand(String name) {
-        return commands.get(name);
+        return commands.get(name.toLowerCase());
     }
 
     public static CommandManager get() {

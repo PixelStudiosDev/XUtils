@@ -9,6 +9,7 @@ import me.cubecrafter.xutils.ReflectionUtil;
 import me.cubecrafter.xutils.XUtils;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
+import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
@@ -274,6 +275,15 @@ public class TextUtil {
         int amplifier = effect.length > 2 ? Integer.parseInt(effect[2]) - 1 : 0;
 
         return new PotionEffect(type, duration, amplifier);
+    }
+
+    public static Color parseColor(String rgb) {
+        String[] split = rgb.replace(" ", "").split(",");
+        if (split.length != 3) {
+            throw new IllegalArgumentException("Invalid RGB format: " + rgb);
+        }
+
+        return Color.fromRGB(Integer.parseInt(split[0]), Integer.parseInt(split[1]), Integer.parseInt(split[2]));
     }
 
 }

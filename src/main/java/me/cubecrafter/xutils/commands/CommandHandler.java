@@ -11,10 +11,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
-public final class CommandExecutor {
+public final class CommandHandler {
 
     private final CommandWrapper command;
 
@@ -45,6 +44,7 @@ public final class CommandExecutor {
         if (sender instanceof Player && command.getPlayerExecutor() != null) {
             command.getPlayerExecutor().accept((Player) sender, args);
         }
+
         return true;
     }
 
@@ -56,9 +56,14 @@ public final class CommandExecutor {
                 return subCommand.tabComplete(sender, null, Arrays.copyOfRange(args, 1, args.length));
             }
         } else if (args.length == 1) {
-            List<String> completions = command.getSubCommands().stream()
-                    .filter(command -> command.hasPermission(sender))
-                    .map(CommandWrapper::getName).collect(Collectors.toList());
+            List<String> completions = new ArrayList<>();
+
+            for (CommandWrapper subCommand : command.getSubCommands()) {
+                if (!subCommand.hasPermission(sender)) continue;
+
+                completions.add(subCommand.getName());
+                completions.addAll(subCommand.getAliases());
+            }
 
             if (command.getTabCompleter() != null) {
                 completions.addAll(command.getTabCompleter().apply(sender, args));

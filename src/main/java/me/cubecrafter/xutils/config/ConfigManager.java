@@ -1,5 +1,7 @@
 package me.cubecrafter.xutils.config;
 
+import me.cubecrafter.xutils.commands.CommandWrapper;
+
 import java.util.HashMap;
 import java.util.Map;
 

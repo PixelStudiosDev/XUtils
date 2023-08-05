@@ -16,14 +16,15 @@ import java.util.function.BiFunction;
 @Setter
 @Accessors(chain = true, fluent = true)
 @RequiredArgsConstructor
-public class CommandBuilder {
+public final class CommandBuilder {
 
     private final String name;
+
     private final List<CommandWrapper> subCommands = new ArrayList<>();
+    private final List<String> aliases = new ArrayList<>();
 
     private String permission;
     private String description;
-    private List<String> aliases = new ArrayList<>();
 
     private BiConsumer<CommandSender, String[]> executes;
     private BiConsumer<ConsoleCommandSender, String[]> executesConsole;
@@ -31,7 +32,7 @@ public class CommandBuilder {
     private BiFunction<CommandSender, String[], List<String>> tabComplete;
 
     public CommandBuilder aliases(String... aliases) {
-        this.aliases = Arrays.asList(aliases);
+        this.aliases.addAll(Arrays.asList(aliases));
         return this;
     }
 

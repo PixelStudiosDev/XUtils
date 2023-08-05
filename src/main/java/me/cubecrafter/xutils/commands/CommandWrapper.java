@@ -17,17 +17,19 @@ import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 
 @Getter
-public class CommandWrapper extends Command implements PluginIdentifiableCommand {
+public final class CommandWrapper extends Command implements PluginIdentifiableCommand {
 
-    private final CommandExecutor commandExecutor = new CommandExecutor(this);
+    private final CommandHandler commandHandler = new CommandHandler(this);
+
     private final Map<String, CommandWrapper> subCommands = new HashMap<>();
+    private final Map<String, CommandWrapper> commandAliases = new HashMap<>();
 
     private final BiConsumer<CommandSender, String[]> executor;
     private final BiConsumer<ConsoleCommandSender, String[]> consoleExecutor;
     private final BiConsumer<Player, String[]> playerExecutor;
     private final BiFunction<CommandSender, String[], List<String>> tabCompleter;
 
-    protected CommandWrapper(
+    CommandWrapper(
             String name,
             String permission,
             String description,
@@ -50,16 +52,24 @@ public class CommandWrapper extends Command implements PluginIdentifiableCommand
         this.tabCompleter = tabCompleter;
 
         for (CommandWrapper command : subCommands) {
-            this.subCommands.put(command.getName().toLowerCase(), command);
+            this.subCommands.put(command.getName(), command);
+
+            for (String alias : command.getAliases()) {
+                this.commandAliases.put(alias.toLowerCase(), command);
+            }
         }
     }
 
     public CommandWrapper getSubCommand(String name) {
-        return subCommands.get(name.toLowerCase());
+        CommandWrapper command = this.subCommands.get(name.toLowerCase());
+        if (command == null) {
+            command = this.commandAliases.get(name.toLowerCase());
+        }
+        return command;
     }
 
     public Collection<CommandWrapper> getSubCommands() {
-        return subCommands.values();
+        return this.subCommands.values();
     }
 
     public boolean hasPermission(CommandSender sender) {
@@ -68,12 +78,12 @@ public class CommandWrapper extends Command implements PluginIdentifiableCommand
 
     @Override
     public boolean execute(CommandSender sender, String commandLabel, String[] args) {
-        return commandExecutor.execute(sender, args);
+        return this.commandHandler.execute(sender, args);
     }
 
     @Override
     public List<String> tabComplete(CommandSender sender, String alias, String[] args) {
-        return commandExecutor.tabComplete(sender, args);
+        return this.commandHandler.tabComplete(sender, args);
     }
 
     @Override

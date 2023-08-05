@@ -1,6 +1,7 @@
 package me.cubecrafter.xutils.config;
 
 import me.cubecrafter.xutils.FileUtil;
+import me.cubecrafter.xutils.ItemBuilder;
 import me.cubecrafter.xutils.XUtils;
 import me.cubecrafter.xutils.text.TextUtil;
 import org.bukkit.Location;
@@ -70,6 +71,21 @@ public class Configuration extends YamlConfiguration {
 
     public Location getLocation(String path) {
         return TextUtil.parseLocation(getString(path));
+    }
+
+    public ItemBuilder getItem(String path) {
+        return ItemBuilder.fromConfig(getConfigurationSection(path));
+    }
+
+    @Override
+    public void set(String path, Object value) {
+        if (value instanceof Location) {
+            Location location = (Location) value;
+            set(path, TextUtil.fromLocation(location));
+            return;
+        }
+
+        super.set(path, value);
     }
 
 }

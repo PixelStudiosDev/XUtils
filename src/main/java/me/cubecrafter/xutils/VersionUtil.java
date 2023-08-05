@@ -21,17 +21,13 @@ public class VersionUtil {
         }
     }
 
-    public static void setUnbreakable(ItemStack item, boolean unbreakable) {
-        ItemMeta meta = item.getItemMeta();
-
+    public static void setUnbreakable(ItemMeta meta, boolean unbreakable) {
         if (ReflectionUtil.supports(12)) {
             meta.setUnbreakable(unbreakable);
         } else {
             Object spigot = ReflectionUtil.invokeMethod(SPIGOT, meta);
             ReflectionUtil.invokeMethod(SET_UNBREAKABLE, spigot, unbreakable);
         }
-
-        item.setItemMeta(meta);
     }
 
     public static void showPlayer(Player viewer, Player target) {
