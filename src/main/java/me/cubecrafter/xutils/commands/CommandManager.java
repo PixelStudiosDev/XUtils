@@ -14,22 +14,23 @@ public final class CommandManager {
 
     private static CommandManager instance;
 
-    private final Map<String, BaseCommand> commands = new HashMap<>();
-    private final CommandMap commandMap = (CommandMap) ReflectionUtil.getFieldValue(Bukkit.getServer().getClass(), "commandMap", Bukkit.getServer());
+    private final Map<String, CommandWrapper> commands = new HashMap<>();
+    private final CommandMap commandMap;
 
-    private String playerOnlyMessage = "&cThis command can be executed only by players!";
-    private String permissionMessage = "&cYou don't have the permission to do this!";
-    private String unknownCommandMessage = "&cUnknown command!";
+    private String permissionMessage;
+    private String unknownCommandMessage;
 
-    private CommandManager() {}
+    private CommandManager() {
+        this.commandMap = (CommandMap) ReflectionUtil.getFieldValue(Bukkit.getServer().getClass(), "commandMap", Bukkit.getServer());
+    }
 
-    public BaseCommand register(BaseCommand command) {
+    public CommandWrapper register(CommandWrapper command) {
         commands.put(command.getName(), command);
         commandMap.register(command.getPlugin().getName(), command);
         return command;
     }
 
-    public BaseCommand getCommand(String name) {
+    public CommandWrapper getCommand(String name) {
         return commands.get(name);
     }
 
