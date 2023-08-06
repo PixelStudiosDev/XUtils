@@ -17,8 +17,7 @@ public final class CommandManager {
     private final Map<String, CommandWrapper> commands = new HashMap<>();
     private final CommandMap commandMap;
 
-    private String permissionMessage;
-    private String unknownCommandMessage;
+    private String permissionMessage, unknownCommandMessage, playerOnlyMessage, consoleOnlyMessage;
 
     private CommandManager() {
         this.commandMap = (CommandMap) ReflectionUtil.getFieldValue(Bukkit.getServer().getClass(), "commandMap", Bukkit.getServer());
