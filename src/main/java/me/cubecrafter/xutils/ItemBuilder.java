@@ -2,7 +2,6 @@ package me.cubecrafter.xutils;
 
 import com.cryptomorin.xseries.SkullUtils;
 import com.cryptomorin.xseries.XEnchantment;
-import com.cryptomorin.xseries.XItemStack;
 import com.cryptomorin.xseries.XMaterial;
 import de.tr7zw.changeme.nbtapi.NBT;
 import me.cubecrafter.xutils.text.TextUtil;
@@ -10,8 +9,11 @@ import org.bukkit.Color;
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
+import org.bukkit.attribute.Attribute;
+import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.enchantments.Enchantment;
+import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.Damageable;
@@ -29,15 +31,16 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 @SuppressWarnings("deprecation")
-public class ItemBuilder {
+public final class ItemBuilder {
 
     private final ItemStack item;
     private ItemMeta meta;
 
     private final Map<String, String> placeholders = new HashMap<>();
-    private boolean legacyPotion;
+    private boolean legacySplash;
 
     public ItemBuilder(ItemStack item) {
         this.item = item;
@@ -50,7 +53,7 @@ public class ItemBuilder {
 
     public ItemBuilder(String material) {
         if (material.equalsIgnoreCase("SPLASH_POTION") && !XMaterial.SPLASH_POTION.isSupported()) {
-            this.legacyPotion = true;
+            this.legacySplash = true;
             this.item = new ItemStack(Material.POTION);
         } else {
             this.item = XMaterial.matchXMaterial(material).orElse(XMaterial.STONE).parseItem();
@@ -87,7 +90,7 @@ public class ItemBuilder {
         return this;
     }
 
-    public ItemBuilder setColor(Color color) {
+    public ItemBuilder setArmorColor(Color color) {
         ((LeatherArmorMeta) meta).setColor(color);
         return this;
     }
@@ -101,6 +104,8 @@ public class ItemBuilder {
         if (glow) {
             meta.addEnchant(Enchantment.DURABILITY, 1, true);
             meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+        } else {
+            meta.removeEnchant(Enchantment.DURABILITY);
         }
         return this;
     }
@@ -108,25 +113,36 @@ public class ItemBuilder {
     public ItemBuilder addPotionEffect(PotionEffect effect) {
         PotionType potionType = PotionType.getByEffect(effect.getType());
 
-        if (legacyPotion) {
+        if (legacySplash) {
             new Potion(potionType, effect.getAmplifier() + 1, true, effect.getDuration() > 200).apply(item);
         } else {
             PotionMeta meta = (PotionMeta) this.meta;
             meta.addCustomEffect(effect, true);
-            if (potionType != null) {
-                meta.setBasePotionData(new PotionData(potionType));
+
+            if (ReflectionUtil.supports(9)) {
+                if (potionType != null) {
+                    meta.setBasePotionData(new PotionData(potionType));
+                }
+            } else {
+                meta.setMainEffect(effect.getType());
             }
         }
         return this;
     }
 
     public ItemBuilder setPotionColor(Color color) {
+        if (!ReflectionUtil.supports(11)) {
+            return this;
+        }
         ((PotionMeta) meta).setColor(color);
         return this;
     }
 
-    public ItemBuilder setCustomModelData(int customModelData) {
-        meta.setCustomModelData(customModelData);
+    public ItemBuilder setCustomModelData(int modelData) {
+        if (!ReflectionUtil.supports(14)) {
+            return this;
+        }
+        meta.setCustomModelData(modelData);
         return this;
     }
 
@@ -161,6 +177,14 @@ public class ItemBuilder {
             });
             meta = item.getItemMeta();
         }
+        return this;
+    }
+
+    public ItemBuilder addAttributeModifier(Attribute attribute, AttributeModifier modifier) {
+        if (!ReflectionUtil.supports(13)) {
+            return this;
+        }
+        meta.addAttributeModifier(attribute, modifier);
         return this;
     }
 
@@ -214,23 +238,20 @@ public class ItemBuilder {
         if (section.contains("amount")) {
             builder.setAmount(section.getInt("amount"));
         }
-        if (section.contains("effect")) {
-            builder.addPotionEffect(TextUtil.parseEffect(section.getString("effect")));
-        }
         if (section.contains("custom-model-data")) {
             builder.setCustomModelData(section.getInt("custom-model-data"));
         }
         if (section.contains("unbreakable")) {
             builder.setUnbreakable(section.getBoolean("unbreakable"));
         }
-        if (section.contains("dye-color")) {
-            builder.setDyeColor(DyeColor.valueOf(section.getString("dye-color").toUpperCase()));
-        }
         if (section.contains("durability")) {
             builder.setDurability((short) section.getInt("durability"));
         }
+        if (section.contains("dye-color")) {
+            builder.setDyeColor(DyeColor.valueOf(section.getString("dye-color").toUpperCase()));
+        }
         if (section.contains("armor-color")) {
-            builder.setColor(TextUtil.parseColor(section.getString("armor-color")));
+            builder.setArmorColor(TextUtil.parseColor(section.getString("armor-color")));
         }
         if (section.contains("potion-color")) {
             builder.setPotionColor(TextUtil.parseColor(section.getString("potion-color")));
@@ -240,11 +261,38 @@ public class ItemBuilder {
                 builder.addItemFlags(ItemFlag.valueOf(flag.toUpperCase()));
             }
         }
+        if (section.contains("effects")) {
+            for (String effect : section.getStringList("effects")) {
+                builder.addPotionEffect(TextUtil.parseEffect(effect));
+            }
+        }
         if (section.contains("enchantments")) {
             for (String enchantment : section.getStringList("enchantments")) {
                 String[] split = enchantment.split(",");
+                if (split.length < 1) {
+                    throw new IllegalArgumentException("Invalid enchantment format: " + enchantment);
+                }
+
                 Enchantment enchant = XEnchantment.matchXEnchantment(split[0]).orElse(XEnchantment.DURABILITY).getEnchant();
-                builder.addEnchant(enchant, split.length < 2 ? 1 : Integer.parseInt(split[1]));
+                builder.addEnchant(enchant, split.length == 1 ? 1 : Integer.parseInt(split[1]));
+            }
+        }
+        if (section.contains("modifiers")) {
+            for (String modifier : section.getStringList("modifiers")) {
+                String[] split = modifier.split(",");
+                if (split.length < 2) {
+                    throw new IllegalArgumentException("Invalid attribute modifier format: " + modifier);
+                }
+
+                builder.addAttributeModifier(Attribute.valueOf(split[0].toUpperCase()),
+                        new AttributeModifier(
+                            UUID.randomUUID(),
+                            "custom_modifier",
+                            Double.parseDouble(split[1]),
+                            AttributeModifier.Operation.ADD_NUMBER,
+                            split.length == 3 ? EquipmentSlot.valueOf(split[2].toUpperCase()) : null
+                        )
+                );
             }
         }
 

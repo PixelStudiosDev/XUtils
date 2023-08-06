@@ -1,10 +1,12 @@
 package me.cubecrafter.xutils;
 
+import lombok.Setter;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public final class XUtils extends JavaPlugin {
 
+    @Setter
     private static Plugin plugin;
 
     @Override
