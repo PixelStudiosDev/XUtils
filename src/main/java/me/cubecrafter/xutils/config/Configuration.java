@@ -1,7 +1,7 @@
 package me.cubecrafter.xutils.config;
 
 import me.cubecrafter.xutils.FileUtil;
-import me.cubecrafter.xutils.ItemBuilder;
+import me.cubecrafter.xutils.item.ItemBuilder;
 import me.cubecrafter.xutils.XUtils;
 import me.cubecrafter.xutils.text.TextUtil;
 import org.bukkit.Color;

@@ -2,7 +2,7 @@ package me.cubecrafter.xutils.menu;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import me.cubecrafter.xutils.ItemBuilder;
+import me.cubecrafter.xutils.item.ItemBuilder;
 import me.cubecrafter.xutils.SoundUtil;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;

@@ -1,9 +1,12 @@
-package me.cubecrafter.xutils;
+package me.cubecrafter.xutils.item;
 
 import com.cryptomorin.xseries.SkullUtils;
 import com.cryptomorin.xseries.XEnchantment;
 import com.cryptomorin.xseries.XMaterial;
 import de.tr7zw.changeme.nbtapi.NBT;
+import me.cubecrafter.xutils.ReflectionUtil;
+import me.cubecrafter.xutils.VersionUtil;
+import me.cubecrafter.xutils.XUtils;
 import me.cubecrafter.xutils.text.TextUtil;
 import org.bukkit.Color;
 import org.bukkit.DyeColor;
@@ -208,15 +211,6 @@ public final class ItemBuilder {
         return item;
     }
 
-    public static String getTag(ItemStack item, String key) {
-        if (ReflectionUtil.supports(14)) {
-            NamespacedKey namespacedKey = new NamespacedKey(XUtils.getPlugin(), key);
-            return item.getItemMeta().getPersistentDataContainer().get(namespacedKey, PersistentDataType.STRING);
-        } else {
-            return NBT.get(item, nbt -> nbt.getString(key));
-        }
-    }
-
     public static ItemBuilder fromConfig(ConfigurationSection section) {
         if (!section.contains("material")) {
             throw new IllegalArgumentException("Missing material property");
@@ -268,7 +262,7 @@ public final class ItemBuilder {
         }
         if (section.contains("enchantments")) {
             for (String enchantment : section.getStringList("enchantments")) {
-                String[] split = enchantment.split(",");
+                String[] split = enchantment.replace(" ", "").split(",");
                 if (split.length < 1) {
                     throw new IllegalArgumentException("Invalid enchantment format: " + enchantment);
                 }
@@ -279,7 +273,7 @@ public final class ItemBuilder {
         }
         if (section.contains("modifiers")) {
             for (String modifier : section.getStringList("modifiers")) {
-                String[] split = modifier.split(",");
+                String[] split = modifier.replace(" ", "").split(",");
                 if (split.length < 2) {
                     throw new IllegalArgumentException("Invalid attribute modifier format: " + modifier);
                 }

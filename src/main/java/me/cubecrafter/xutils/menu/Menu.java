@@ -2,6 +2,7 @@ package me.cubecrafter.xutils.menu;
 
 import lombok.Getter;
 import lombok.Setter;
+import me.cubecrafter.xutils.item.ItemUtil;
 import me.cubecrafter.xutils.ReflectionUtil;
 import me.cubecrafter.xutils.Tasks;
 import me.cubecrafter.xutils.text.TextUtil;
@@ -100,7 +101,7 @@ public abstract class Menu implements InventoryHolder {
             ItemStack stack = item.getItem();
 
             if (parsePlaceholders) {
-                stack = TextUtil.parsePlaceholders(player, item.getItem());
+                stack = ItemUtil.parsePlaceholders(player, item.getItem());
             }
 
             inventory.setItem(slot, stack);

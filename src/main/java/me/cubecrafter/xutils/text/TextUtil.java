@@ -145,27 +145,6 @@ public class TextUtil {
         return text.substring(0, 1).toUpperCase() + text.substring(1).toLowerCase();
     }
 
-    /**
-     * Parse PlaceholderAPI placeholders in the item's display name and lore
-     *
-     * @param player The player to parse the placeholders for
-     * @param item The item to parse the placeholders in
-     * @return The item with parsed placeholders
-     */
-    public static ItemStack parsePlaceholders(OfflinePlayer player, ItemStack item) {
-        if (Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI")) {
-            ItemMeta meta = item.getItemMeta();
-            if (meta.hasDisplayName()) {
-                meta.setDisplayName(PlaceholderAPI.setPlaceholders(player, meta.getDisplayName()));
-            }
-            if (meta.hasLore()) {
-                meta.setLore(PlaceholderAPI.setPlaceholders(player, meta.getLore()));
-            }
-            item.setItemMeta(meta);
-        }
-        return item;
-    }
-
     public static String getCurrentDate(String format) {
         return getDate(format, Instant.now());
     }
@@ -200,8 +179,11 @@ public class TextUtil {
         return builder.toString();
     }
 
-    public static Location parseLocation(String location) {
-        String[] split = location.split(":");
+    public static Location parseLocation(String serialized) {
+        String[] split = serialized.replace(" ", "").split(":");
+        if (split.length != 4 && split.length != 6) {
+            throw new IllegalArgumentException("Invalid location format: " + serialized);
+        }
         if (split.length == 4) {
             return new Location(Bukkit.getWorld(split[0]), Double.parseDouble(split[1]), Double.parseDouble(split[2]), Double.parseDouble(split[3]));
         }
@@ -269,7 +251,7 @@ public class TextUtil {
      * @throws IllegalArgumentException If the string is not in the correct format
      */
     public static PotionEffect parseEffect(String serialized) {
-        String[] effect = serialized.split(",");
+        String[] effect = serialized.replace(" ", "").split(",");
         if (effect.length < 1) {
             throw new IllegalArgumentException("Invalid effect format: " + serialized);
         }
