@@ -1,10 +1,10 @@
 package me.cubecrafter.xutils;
 
 import com.google.gson.JsonObject;
-import com.sun.net.httpserver.Headers;
 import lombok.Value;
 import lombok.experimental.UtilityClass;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
@@ -27,8 +27,8 @@ public class SkinUtil {
         request.addProperty("visibility", "0");
         request.addProperty("url", url);
 
-        Headers headers = new Headers();
-        headers.add("Content-Type", "application/json");
+        Map<String, String> headers = new HashMap<>();
+        headers.put("Content-Type", "application/json");
 
         return HttpUtil.post(MINESKIN_URL, request, headers).thenApply(response -> {
             if (!response.success()) {
