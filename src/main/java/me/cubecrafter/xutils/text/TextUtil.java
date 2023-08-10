@@ -86,11 +86,11 @@ public class TextUtil {
     /**
      * Send a messages to a list of players
      *
-     * @param senders The players to send the messages to
+     * @param players The players to send the messages to
      * @param message The messages to send
      */
-    public static void sendMessage(List<CommandSender> senders, String message) {
-        senders.forEach(sender -> sendMessage(sender, message));
+    public static void sendMessage(List<Player> players, String message) {
+        players.forEach(player -> sendMessage(player, message));
     }
 
     /**
@@ -106,11 +106,11 @@ public class TextUtil {
     /**
      * Send a list of messages to a list of players
      *
-     * @param senders The players to send the messages to
+     * @param players The players to send the messages to
      * @param messages The messages to send
      */
-    public static void sendMessages(List<CommandSender> senders, List<String> messages) {
-        senders.forEach(sender -> sendMessages(sender, messages));
+    public static void sendMessages(List<Player> players, List<String> messages) {
+        players.forEach(player -> sendMessages(player, messages));
     }
 
     public static void broadcast(String message) {
