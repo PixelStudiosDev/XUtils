@@ -94,9 +94,10 @@ public abstract class Menu implements InventoryHolder {
 
     public void updateInventory() {
         items.clear();
+        inventory.clear();
+
         update();
 
-        inventory.clear();
         items.forEach((slot, item) -> {
             ItemStack stack = item.getItem();
 
