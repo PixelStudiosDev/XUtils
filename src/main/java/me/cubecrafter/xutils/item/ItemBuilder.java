@@ -3,15 +3,13 @@ package me.cubecrafter.xutils.item;
 import com.cryptomorin.xseries.SkullUtils;
 import com.cryptomorin.xseries.XEnchantment;
 import com.cryptomorin.xseries.XMaterial;
-import de.tr7zw.changeme.nbtapi.NBT;
+import lombok.Setter;
 import me.cubecrafter.xutils.ReflectionUtil;
 import me.cubecrafter.xutils.VersionUtil;
-import me.cubecrafter.xutils.XUtils;
 import me.cubecrafter.xutils.text.TextUtil;
 import org.bukkit.Color;
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
-import org.bukkit.NamespacedKey;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.configuration.ConfigurationSection;
@@ -24,7 +22,6 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
 import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.material.Colorable;
-import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.potion.Potion;
 import org.bukkit.potion.PotionData;
 import org.bukkit.potion.PotionEffect;
@@ -43,6 +40,7 @@ public final class ItemBuilder {
     private ItemMeta meta;
 
     private final Map<String, String> placeholders = new HashMap<>();
+
     private boolean legacySplash;
 
     public ItemBuilder(ItemStack item) {
@@ -170,16 +168,9 @@ public final class ItemBuilder {
     }
 
     public ItemBuilder setTag(String key, String value) {
-        if (ReflectionUtil.supports(14)) {
-            NamespacedKey namespacedKey = new NamespacedKey(XUtils.getPlugin(), key);
-            meta.getPersistentDataContainer().set(namespacedKey, PersistentDataType.STRING, value);
-        } else {
-            item.setItemMeta(meta);
-            NBT.modify(item, nbt -> {
-                nbt.setString(key, value);
-            });
-            meta = item.getItemMeta();
-        }
+        item.setItemMeta(meta);
+        TagHandler.handler().set(item, key, value);
+        meta = item.getItemMeta();
         return this;
     }
 
