@@ -54,3 +54,9 @@ processResources {
         expand version: version
     }
 }
+
+tasks.register('printVersion') {
+    doLast {
+        println version
+    }
+}
