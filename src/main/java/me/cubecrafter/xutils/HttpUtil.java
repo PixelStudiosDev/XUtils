@@ -11,17 +11,29 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.HashMap;
+import java.util.Collections;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 @UtilityClass
 public class HttpUtil {
 
+    /**
+     * Performs a GET request to the given URL.
+     * @param url the request URL
+     * @return a response object
+     */
     public static CompletableFuture<Response> get(String url) {
-        return get(url, new HashMap<>());
+        return get(url, Collections.emptyMap());
     }
 
+
+    /**
+     * Performs a GET request to the given URL.
+     * @param url the request URL
+     * @param headers the request headers
+     * @return a response object
+     */
     public static CompletableFuture<Response> get(String url, Map<String, String> headers) {
         return CompletableFuture.supplyAsync(() -> {
             try {
@@ -42,10 +54,24 @@ public class HttpUtil {
         });
     }
 
+    /**
+     * Performs a POST request to the given URL.
+     * @param url the request URL
+     * @param body the request body
+     * @return a response object
+     */
     public static CompletableFuture<Response> post(String url, JsonObject body) {
-        return post(url, body, new HashMap<>());
+        return post(url, body, Collections.emptyMap());
     }
 
+
+    /**
+     * Performs a POST request to the given URL.
+     * @param url the request URL
+     * @param body the request body
+     * @param headers the request headers
+     * @return a response object
+     */
     public static CompletableFuture<Response> post(String url, JsonObject body, Map<String, String> headers) {
         return CompletableFuture.supplyAsync(() -> {
             try {
@@ -88,18 +114,34 @@ public class HttpUtil {
         private final int code;
         private final String body;
 
+        /**
+         * Returns the response body as a string.
+         * @return the response body
+         */
         public String text() {
             return body;
         }
 
+        /**
+         * Returns the response code.
+         * @return the response code
+         */
         public int code() {
             return code;
         }
 
+        /**
+         * Returns the response body as a JsonObject.
+         * @return the response body
+         */
         public JsonObject json() {
             return JsonParser.parseString(body).getAsJsonObject();
         }
 
+        /**
+         * Returns whether the request was successful.
+         * @return true if the request was successful, false otherwise
+         */
         public boolean success() {
             return code >= 200 && code < 300;
         }

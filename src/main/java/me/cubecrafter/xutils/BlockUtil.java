@@ -1,5 +1,6 @@
 package me.cubecrafter.xutils;
 
+import com.cryptomorin.xseries.ReflectionUtils;
 import lombok.experimental.UtilityClass;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -15,9 +16,9 @@ public class BlockUtil {
     private static final BlockFace[] AXIS = { BlockFace.NORTH, BlockFace.EAST, BlockFace.SOUTH, BlockFace.WEST };
 
     /**
-     * Get the BlockFace targeted by a player
-     * @param player The player
-     * @return The targeted BlockFace, or null if the block isn't occluding
+     * Get the BlockFace targeted by a player.
+     * @param player the player
+     * @return the targeted BlockFace, or null if the block isn't occluding
      */
     public static BlockFace getTargetedFace(Player player) {
         List<Block> targets = player.getLastTwoTargetBlocks((Set<Material>) null, 100);
@@ -30,9 +31,9 @@ public class BlockUtil {
     }
 
     /**
-     * Get the closest cardinal direction a player is facing
-     * @param player The player
-     * @return The direction the player is facing
+     * Get the closest cardinal direction a player is facing.
+     * @param player the player
+     * @return the direction the player is facing
      */
     public static BlockFace getFacing(Player player) {
         if (ReflectionUtil.supports(13)) {

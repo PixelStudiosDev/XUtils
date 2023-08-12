@@ -16,6 +16,11 @@ public class SkinUtil {
     private static final String MINESKIN_URL = "https://api.mineskin.org/generate/url";
     private static final Map<String, SkinProperties> CACHE = new ConcurrentHashMap<>();
 
+    /**
+     * Fetches the skin properties from the given texture url.
+     * @param url the url of the texture
+     * @return the properties of the skin
+     */
     public static CompletableFuture<SkinProperties> fetchSkin(String url) {
         if (CACHE.containsKey(url)) {
             return CompletableFuture.completedFuture(CACHE.get(url));
