@@ -9,7 +9,7 @@ jobs:
     steps:
       - name: Get version information
         id: vars
-        run: echo "version=${./gradlew -q printVersion}" >> $GITHUB_OUTPUT
+        run: echo "version=$(./gradlew -q printVersion)" >> $GITHUB_OUTPUT
 
       - name: Publish release
         uses: softprops/action-gh-release@v1
