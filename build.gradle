@@ -17,8 +17,9 @@ repositories {
 }
 
 dependencies {
-    compileOnly 'com.github.cryptomorin:XSeries:9.4.0'
     compileOnly 'org.spigotmc:spigot-api:1.20.1-R0.1-SNAPSHOT'
+
+    compileOnly 'com.github.cryptomorin:XSeries:9.4.0'
     compileOnly 'me.clip:placeholderapi:2.11.2'
     compileOnly 'de.tr7zw:item-nbt-api:2.11.3'
     compileOnly 'org.projectlombok:lombok:1.18.26'
@@ -51,5 +52,11 @@ processResources {
     filteringCharset 'UTF-8'
     filesMatching('plugin.yml') {
         expand version: version
+    }
+}
+
+tasks.register('printVersion') {
+    doLast {
+        println version
     }
 }

@@ -29,6 +29,9 @@ public final class CommandWrapper extends Command implements PluginIdentifiableC
     private final BiConsumer<Player, String[]> playerExecutor;
     private final BiFunction<CommandSender, String[], List<String>> tabCompleter;
 
+    private final boolean playerOnly;
+    private final boolean consoleOnly;
+
     CommandWrapper(
             String name,
             String permission,
@@ -58,6 +61,9 @@ public final class CommandWrapper extends Command implements PluginIdentifiableC
                 this.commandAliases.put(alias.toLowerCase(), command);
             }
         }
+
+        this.playerOnly = playerExecutor != null && executor == null && consoleExecutor == null;
+        this.consoleOnly = consoleExecutor != null && executor == null && playerExecutor == null;
     }
 
     public CommandWrapper getSubCommand(String name) {

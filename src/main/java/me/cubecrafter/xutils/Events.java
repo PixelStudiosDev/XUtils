@@ -37,6 +37,12 @@ public class Events<T extends Event> implements EventExecutor, Listener {
         return event instanceof Cancellable && ((Cancellable) event).isCancelled();
     }
 
+    public static void register(Listener... listeners) {
+        for (Listener listener : listeners) {
+            Bukkit.getPluginManager().registerEvents(listener, XUtils.getPlugin());
+        }
+    }
+
     @SuppressWarnings("unchecked")
     @Override
     public void execute(Listener listener, Event event) {

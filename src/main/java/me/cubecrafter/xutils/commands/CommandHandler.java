@@ -35,6 +35,16 @@ public final class CommandHandler {
             return true;
         }
 
+        if (!(sender instanceof Player) && command.isPlayerOnly()) {
+            TextUtil.sendMessage(sender, CommandManager.get().getPlayerOnlyMessage());
+            return true;
+        }
+
+        if (!(sender instanceof ConsoleCommandSender) && command.isConsoleOnly()) {
+            TextUtil.sendMessage(sender, CommandManager.get().getConsoleOnlyMessage());
+            return true;
+        }
+
         if (command.getExecutor() != null) {
             command.getExecutor().accept(sender, args);
         }

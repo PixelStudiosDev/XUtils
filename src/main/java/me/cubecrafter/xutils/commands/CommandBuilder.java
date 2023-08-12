@@ -36,7 +36,7 @@ public final class CommandBuilder {
         return this;
     }
 
-    public CommandBuilder registerSub(CommandWrapper... subCommands) {
+    public CommandBuilder subCommand(CommandWrapper... subCommands) {
         this.subCommands.addAll(Arrays.asList(subCommands));
         return this;
     }

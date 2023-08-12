@@ -2,7 +2,6 @@ package me.cubecrafter.xutils;
 
 import lombok.experimental.UtilityClass;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.lang.reflect.Method;

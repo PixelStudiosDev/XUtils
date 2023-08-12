@@ -7,13 +7,16 @@ import lombok.experimental.UtilityClass;
 import me.clip.placeholderapi.PlaceholderAPI;
 import me.cubecrafter.xutils.ReflectionUtil;
 import me.cubecrafter.xutils.XUtils;
+import me.cubecrafter.xutils.config.ConfigManager;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.potion.PotionEffect;
@@ -24,6 +27,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.Callable;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -82,11 +86,11 @@ public class TextUtil {
     /**
      * Send a messages to a list of players
      *
-     * @param senders The players to send the messages to
+     * @param players The players to send the messages to
      * @param message The messages to send
      */
-    public static void sendMessage(List<CommandSender> senders, String message) {
-        senders.forEach(sender -> sendMessage(sender, message));
+    public static void sendMessage(List<Player> players, String message) {
+        players.forEach(player -> sendMessage(player, message));
     }
 
     /**
@@ -102,11 +106,11 @@ public class TextUtil {
     /**
      * Send a list of messages to a list of players
      *
-     * @param senders The players to send the messages to
+     * @param players The players to send the messages to
      * @param messages The messages to send
      */
-    public static void sendMessages(List<CommandSender> senders, List<String> messages) {
-        senders.forEach(sender -> sendMessages(sender, messages));
+    public static void sendMessages(List<Player> players, List<String> messages) {
+        players.forEach(player -> sendMessages(player, messages));
     }
 
     public static void broadcast(String message) {
@@ -139,27 +143,6 @@ public class TextUtil {
      */
     public static String capitalize(String text) {
         return text.substring(0, 1).toUpperCase() + text.substring(1).toLowerCase();
-    }
-
-    /**
-     * Parse PlaceholderAPI placeholders in the item's display name and lore
-     *
-     * @param player The player to parse the placeholders for
-     * @param item The item to parse the placeholders in
-     * @return The item with parsed placeholders
-     */
-    public static ItemStack parsePlaceholders(OfflinePlayer player, ItemStack item) {
-        if (Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI")) {
-            ItemMeta meta = item.getItemMeta();
-            if (meta.hasDisplayName()) {
-                meta.setDisplayName(PlaceholderAPI.setPlaceholders(player, meta.getDisplayName()));
-            }
-            if (meta.hasLore()) {
-                meta.setLore(PlaceholderAPI.setPlaceholders(player, meta.getLore()));
-            }
-            item.setItemMeta(meta);
-        }
-        return item;
     }
 
     public static String getCurrentDate(String format) {
@@ -196,8 +179,11 @@ public class TextUtil {
         return builder.toString();
     }
 
-    public static Location parseLocation(String location) {
-        String[] split = location.split(":");
+    public static Location parseLocation(String serialized) {
+        String[] split = serialized.replace(" ", "").split(":");
+        if (split.length != 4 && split.length != 6) {
+            throw new IllegalArgumentException("Invalid location format: " + serialized);
+        }
         if (split.length == 4) {
             return new Location(Bukkit.getWorld(split[0]), Double.parseDouble(split[1]), Double.parseDouble(split[2]), Double.parseDouble(split[3]));
         }
@@ -265,7 +251,7 @@ public class TextUtil {
      * @throws IllegalArgumentException If the string is not in the correct format
      */
     public static PotionEffect parseEffect(String serialized) {
-        String[] effect = serialized.split(",");
+        String[] effect = serialized.replace(" ", "").split(",");
         if (effect.length < 1) {
             throw new IllegalArgumentException("Invalid effect format: " + serialized);
         }
