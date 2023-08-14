@@ -14,15 +14,21 @@ public class ItemUtil {
         return TagHandler.handler().get(item, key);
     }
 
+    public static boolean hasTag(ItemStack item, String key) {
+        return TagHandler.handler().get(item, key) != null;
+    }
+
     public static ItemStack parsePlaceholders(OfflinePlayer player, ItemStack item) {
         if (Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI")) {
             ItemMeta meta = item.getItemMeta();
+
             if (meta.hasDisplayName()) {
                 meta.setDisplayName(PlaceholderAPI.setPlaceholders(player, meta.getDisplayName()));
             }
             if (meta.hasLore()) {
                 meta.setLore(PlaceholderAPI.setPlaceholders(player, meta.getLore()));
             }
+
             item.setItemMeta(meta);
         }
         return item;

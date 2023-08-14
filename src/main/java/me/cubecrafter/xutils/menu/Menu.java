@@ -66,7 +66,7 @@ public abstract class Menu implements InventoryHolder {
         Tasks.sync(() -> {
             if (inventory == null) {
                 String title = parsePlaceholders ? TextUtil.parsePlaceholders(player, getTitle()) : getTitle();
-                this.inventory = Bukkit.createInventory(this, getRows() * 9, title);
+                this.inventory = Bukkit.createInventory(this, getRows() * 9, TextUtil.color(title));
             }
 
             if (autoUpdate) {
