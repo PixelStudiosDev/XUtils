@@ -9,16 +9,17 @@ import org.bukkit.persistence.PersistentDataType;
 
 public interface TagHandler {
 
-    void set(ItemStack item, String key, String value);
+    ItemStack set(ItemStack item, String key, String value);
     String get(ItemStack item, String key);
 
     static TagHandler modern() {
         return new TagHandler() {
 
             @Override
-            public void set(ItemStack item, String key, String value) {
+            public ItemStack set(ItemStack item, String key, String value) {
                 NamespacedKey namespacedKey = new NamespacedKey(XUtils.getPlugin(), key);
                 item.getItemMeta().getPersistentDataContainer().set(namespacedKey, PersistentDataType.STRING, value);
+                return item;
             }
 
             @Override
@@ -34,10 +35,11 @@ public interface TagHandler {
         return new TagHandler() {
 
             @Override
-            public void set(ItemStack item, String key, String value) {
+            public ItemStack set(ItemStack item, String key, String value) {
                 NBT.modify(item, nbt -> {
                     nbt.setString(key, value);
                 });
+                return item;
             }
 
             @Override
