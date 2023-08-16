@@ -3,7 +3,6 @@ package me.cubecrafter.xutils.item;
 import com.cryptomorin.xseries.SkullUtils;
 import com.cryptomorin.xseries.XEnchantment;
 import com.cryptomorin.xseries.XMaterial;
-import lombok.Setter;
 import me.cubecrafter.xutils.ReflectionUtil;
 import me.cubecrafter.xutils.VersionUtil;
 import me.cubecrafter.xutils.text.TextUtil;
@@ -36,7 +35,7 @@ import java.util.UUID;
 @SuppressWarnings("deprecation")
 public final class ItemBuilder {
 
-    private final ItemStack item;
+    private ItemStack item;
     private ItemMeta meta;
 
     private final Map<String, String> placeholders = new HashMap<>();
@@ -168,9 +167,9 @@ public final class ItemBuilder {
     }
 
     public ItemBuilder setTag(String key, String value) {
-        item.setItemMeta(meta);
-        TagHandler.handler().set(item, key, value);
-        meta = item.getItemMeta();
+        this.item.setItemMeta(meta);
+        this.item = TagHandler.handler().set(item, key, value);
+        this.meta = item.getItemMeta();
         return this;
     }
 
