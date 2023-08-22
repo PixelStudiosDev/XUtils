@@ -111,21 +111,11 @@ public final class ItemBuilder {
     }
 
     public ItemBuilder addPotionEffect(PotionEffect effect) {
-        PotionType potionType = PotionType.getByEffect(effect.getType());
-
         if (legacySplash) {
-            new Potion(potionType, effect.getAmplifier() + 1, true, effect.getDuration() > 200).apply(item);
+            PotionType type = PotionType.getByEffect(effect.getType());
+            new Potion(type, effect.getAmplifier() + 1, true, effect.getDuration() > 200).apply(item);
         } else {
-            PotionMeta meta = (PotionMeta) this.meta;
-            meta.addCustomEffect(effect, true);
-
-            if (ReflectionUtil.supports(9)) {
-                if (potionType != null) {
-                    meta.setBasePotionData(new PotionData(potionType));
-                }
-            } else {
-                meta.setMainEffect(effect.getType());
-            }
+            ((PotionMeta) meta).addCustomEffect(effect, true);
         }
         return this;
     }

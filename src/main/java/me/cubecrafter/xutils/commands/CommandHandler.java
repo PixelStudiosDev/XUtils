@@ -28,11 +28,8 @@ public final class CommandHandler {
 
             if (subCommand != null) {
                 subCommand.execute(sender, null, Arrays.copyOfRange(args, 1, args.length));
-            } else {
-                TextUtil.sendMessage(sender, CommandManager.get().getUnknownCommandMessage());
+                return true;
             }
-
-            return true;
         }
 
         if (!(sender instanceof Player) && command.isPlayerOnly()) {
@@ -76,7 +73,10 @@ public final class CommandHandler {
             }
 
             if (command.getTabCompleter() != null) {
-                completions.addAll(command.getTabCompleter().apply(sender, args));
+                List<String> commandCompletions = command.getTabCompleter().apply(sender, args);
+                if (commandCompletions != null) {
+                    completions.addAll(commandCompletions);
+                }
             }
 
             return StringUtil.copyPartialMatches(args[0], completions, new ArrayList<>());
