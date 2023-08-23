@@ -5,6 +5,7 @@ import com.cryptomorin.xseries.XEnchantment;
 import com.cryptomorin.xseries.XMaterial;
 import me.cubecrafter.xutils.ReflectionUtil;
 import me.cubecrafter.xutils.VersionUtil;
+import me.cubecrafter.xutils.objects.PlaceholderMap;
 import me.cubecrafter.xutils.text.TextUtil;
 import org.bukkit.Color;
 import org.bukkit.DyeColor;
@@ -22,14 +23,11 @@ import org.bukkit.inventory.meta.LeatherArmorMeta;
 import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.material.Colorable;
 import org.bukkit.potion.Potion;
-import org.bukkit.potion.PotionData;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionType;
 
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 @SuppressWarnings("deprecation")
@@ -38,8 +36,7 @@ public final class ItemBuilder {
     private ItemStack item;
     private ItemMeta meta;
 
-    private final Map<String, String> placeholders = new HashMap<>();
-
+    private PlaceholderMap placeholders = new PlaceholderMap();
     private boolean legacySplash;
 
     public ItemBuilder(ItemStack item) {
@@ -176,16 +173,17 @@ public final class ItemBuilder {
         return this;
     }
 
+    public ItemBuilder setPlaceholders(PlaceholderMap placeholders) {
+        this.placeholders = placeholders;
+        return this;
+    }
+
     public ItemStack build() {
-        for (Map.Entry<String, String> entry : placeholders.entrySet()) {
-            String name = meta.getDisplayName();
-            setDisplayName(name.replace(entry.getKey(), entry.getValue()));
-
-            if (!meta.hasLore()) continue;
-
-            List<String> lore = meta.getLore();
-            lore.replaceAll(line -> line.replace(entry.getKey(), entry.getValue()));
-            setLore(lore);
+        if (meta.hasDisplayName()) {
+            meta.setDisplayName(placeholders.parse(meta.getDisplayName()));
+        }
+        if (meta.hasLore()) {
+            meta.setLore(placeholders.parse(meta.getLore()));
         }
         item.setItemMeta(meta);
         return item;

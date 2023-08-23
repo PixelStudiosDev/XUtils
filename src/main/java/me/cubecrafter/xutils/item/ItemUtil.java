@@ -15,7 +15,8 @@ public class ItemUtil {
     }
 
     public static boolean hasTag(ItemStack item, String key) {
-        return TagHandler.handler().get(item, key) != null;
+        String result = TagHandler.handler().get(item, key);
+        return result != null && !result.isEmpty();
     }
 
     public static ItemStack parsePlaceholders(OfflinePlayer player, ItemStack item) {
