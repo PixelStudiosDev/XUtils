@@ -5,6 +5,7 @@ import me.cubecrafter.xutils.ReflectionUtil;
 import me.cubecrafter.xutils.XUtils;
 import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 
 public interface TagHandler {
@@ -18,7 +19,9 @@ public interface TagHandler {
             @Override
             public ItemStack set(ItemStack item, String key, String value) {
                 NamespacedKey namespacedKey = new NamespacedKey(XUtils.getPlugin(), key);
-                item.getItemMeta().getPersistentDataContainer().set(namespacedKey, PersistentDataType.STRING, value);
+                ItemMeta meta = item.getItemMeta();
+                meta.getPersistentDataContainer().set(namespacedKey, PersistentDataType.STRING, value);
+                item.setItemMeta(meta);
                 return item;
             }
 
