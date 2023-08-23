@@ -180,10 +180,10 @@ public final class ItemBuilder {
 
     public ItemStack build() {
         if (meta.hasDisplayName()) {
-            meta.setDisplayName(placeholders.parse(meta.getDisplayName()));
+            setDisplayName(placeholders.parse(meta.getDisplayName()));
         }
         if (meta.hasLore()) {
-            meta.setLore(placeholders.parse(meta.getLore()));
+            setLore(placeholders.parse(meta.getLore()));
         }
         item.setItemMeta(meta);
         return item;
