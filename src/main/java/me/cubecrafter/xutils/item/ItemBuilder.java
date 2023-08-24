@@ -23,16 +23,29 @@ import org.bukkit.inventory.meta.LeatherArmorMeta;
 import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.material.Colorable;
 import org.bukkit.potion.Potion;
-import org.bukkit.potion.PotionData;
 import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 import org.bukkit.potion.PotionType;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @SuppressWarnings("deprecation")
 public final class ItemBuilder {
+
+    private static final Map<PotionEffectType, String> EFFECT_NAMES = new HashMap<>();
+
+    static {
+        EFFECT_NAMES.put(PotionEffectType.HARM, "Harming");
+        EFFECT_NAMES.put(PotionEffectType.HEAL, "Healing");
+        EFFECT_NAMES.put(PotionEffectType.SPEED, "Swiftness");
+        EFFECT_NAMES.put(PotionEffectType.SLOW, "Slowness");
+        EFFECT_NAMES.put(PotionEffectType.JUMP, "Leaping");
+        EFFECT_NAMES.put(PotionEffectType.INCREASE_DAMAGE, "Strength");
+    }
 
     private ItemStack item;
     private ItemMeta meta;
@@ -114,6 +127,15 @@ public final class ItemBuilder {
             new Potion(type, effect.getAmplifier() + 1, true, effect.getDuration() > 200).apply(item);
         } else {
             ((PotionMeta) meta).addCustomEffect(effect, true);
+
+            if (ReflectionUtil.supports(11)) {
+                setPotionColor(effect.getType().getColor());
+            }
+            if (!meta.hasDisplayName()) {
+                String material = TextUtil.formatEnumName(item.getType().toString());
+                String potion = EFFECT_NAMES.getOrDefault(effect.getType(), TextUtil.formatEnumName(effect.getType().getName()));
+                setDisplayName("&f" + material + " of " + potion);
+            }
         }
         return this;
     }

@@ -139,13 +139,28 @@ public class TextUtil {
         return text.substring(0, 1).toUpperCase() + text.substring(1).toLowerCase();
     }
 
-    public static String getCurrentDate(String format) {
-        return getDate(format, Instant.now());
+    public static String formatDate(String format) {
+        return formatDate(format, Instant.now());
     }
 
-    public static String getDate(String format, Instant instant) {
+    public static String formatDate(String format, Instant instant) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern(format);
         return LocalDateTime.ofInstant(instant, ZoneId.systemDefault()).format(formatter);
+    }
+
+    public static String formatEnumName(String name) {
+        StringBuilder builder = new StringBuilder();
+        boolean capitalize = true;
+        for (char c : name.toCharArray()) {
+            if (c == '_') {
+                builder.append(' ');
+                capitalize = true;
+            } else {
+                builder.append(capitalize ? Character.toUpperCase(c) : Character.toLowerCase(c));
+                capitalize = false;
+            }
+        }
+        return builder.toString();
     }
 
     public static void info(String message) {
@@ -164,7 +179,7 @@ public class TextUtil {
         return ChatColor.stripColor(color(text));
     }
 
-    public static String fromLocation(Location location) {
+    public static String serializeLocation(Location location) {
         StringBuilder builder = new StringBuilder();
         builder.append(location.getWorld().getName()).append(":").append(location.getX()).append(":").append(location.getY()).append(":").append(location.getZ());
         if (location.getYaw() != 0 && location.getPitch() != 0) {
@@ -182,6 +197,10 @@ public class TextUtil {
             return new Location(Bukkit.getWorld(split[0]), Double.parseDouble(split[1]), Double.parseDouble(split[2]), Double.parseDouble(split[3]));
         }
         return new Location(Bukkit.getWorld(split[0]), Double.parseDouble(split[1]), Double.parseDouble(split[2]), Double.parseDouble(split[3]), Float.parseFloat(split[4]), Float.parseFloat(split[5]));
+    }
+
+    public static String formatLocation(Location location) {
+        return location.getWorld().getName() + ", x: " + location.getBlockX() + ", y: " + location.getBlockY() + ", z: " + location.getBlockZ();
     }
 
     public static void sendTitle(Player player, String title, String subtitle, int fadeIn, int stay, int fadeOut) {
