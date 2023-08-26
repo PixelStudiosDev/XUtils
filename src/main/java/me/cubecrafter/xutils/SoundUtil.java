@@ -19,6 +19,9 @@ public class SoundUtil {
     }
 
     public static void play(Player player, String sound, float volume, float pitch) {
+        if (sound == null || sound.isEmpty()) {
+            return;
+        }
         XSound.matchXSound(sound).ifPresent(xSound -> xSound.play(player, volume, pitch));
     }
 
