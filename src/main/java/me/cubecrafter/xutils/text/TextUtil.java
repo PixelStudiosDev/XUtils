@@ -13,6 +13,10 @@ import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
+import org.bukkit.conversations.ConversationContext;
+import org.bukkit.conversations.ConversationFactory;
+import org.bukkit.conversations.Prompt;
+import org.bukkit.conversations.StringPrompt;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -23,6 +27,7 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.concurrent.Callable;
+import java.util.concurrent.CompletableFuture;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -283,6 +288,30 @@ public class TextUtil {
         }
 
         return Color.fromRGB(Integer.parseInt(split[0]), Integer.parseInt(split[1]), Integer.parseInt(split[2]));
+    }
+
+    public static CompletableFuture<String> getChatInput(Player player, String prompt, int timeout) {
+        CompletableFuture<String> future = new CompletableFuture<>();
+
+        ConversationFactory factory = new ConversationFactory(XUtils.getPlugin());
+        factory.withLocalEcho(false);
+        factory.withTimeout(timeout);
+        factory.withFirstPrompt(new StringPrompt() {
+
+            @Override
+            public String getPromptText(ConversationContext context) {
+                return TextUtil.color(prompt);
+            }
+            @Override
+            public Prompt acceptInput(ConversationContext context, String input) {
+                future.complete(input);
+                return Prompt.END_OF_CONVERSATION;
+            }
+
+        });
+        factory.buildConversation(player).begin();
+
+        return future;
     }
 
 }
