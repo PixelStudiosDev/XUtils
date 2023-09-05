@@ -99,4 +99,12 @@ public enum FontInfo {
         return Arrays.stream(VALUES).filter(font -> font.getCharacter() == character).findAny().orElse(FontInfo.DEFAULT);
     }
 
+    public static int getLength(String text) {
+        int length = 0;
+        for (char c : text.toCharArray()) {
+            length += FontInfo.getFontInfo(c).getLength();
+        }
+        return length;
+    }
+
 }
