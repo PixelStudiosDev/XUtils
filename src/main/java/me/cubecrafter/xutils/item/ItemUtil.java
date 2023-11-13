@@ -14,9 +14,13 @@ public class ItemUtil {
         return TagHandler.handler().get(item, key);
     }
 
+    public static ItemStack setTag(ItemStack item, String key, String value) {
+        return TagHandler.handler().set(item, key, value);
+    }
+
     public static boolean hasTag(ItemStack item, String key) {
-        String result = TagHandler.handler().get(item, key);
-        return result != null && !result.isEmpty();
+        String tag = getTag(item, key);
+        return tag != null && !tag.isEmpty();
     }
 
     public static ItemStack parsePlaceholders(OfflinePlayer player, ItemStack item) {

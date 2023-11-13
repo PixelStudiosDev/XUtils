@@ -178,7 +178,7 @@ public final class ItemBuilder {
 
     public ItemBuilder setTag(String key, String value) {
         this.item.setItemMeta(meta);
-        this.item = TagHandler.handler().set(item, key, value);
+        this.item = ItemUtil.setTag(item, key, value);
         this.meta = item.getItemMeta();
         return this;
     }

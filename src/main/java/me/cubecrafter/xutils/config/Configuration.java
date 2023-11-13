@@ -18,16 +18,23 @@ import java.util.List;
 public class Configuration extends YamlConfiguration {
 
     private final File file;
-    private final String path;
+    private final String name;
 
-    public Configuration(String path) {
-        this.path = path;
-        this.file = new File(XUtils.getPlugin().getDataFolder(), path);
+    public Configuration(String name, String destination) {
+        this.name = name.endsWith(".yml") ? name : name + ".yml";
+        if (destination == null) {
+            destination = XUtils.getPlugin().getDataFolder().getAbsolutePath();
+        }
+        this.file = new File(destination, this.name);
+    }
+
+    public Configuration(String name) {
+        this(name, null);
     }
 
     public void load() {
         if (!file.exists()) {
-            FileUtil.copy(XUtils.getPlugin().getResource(path), file);
+            FileUtil.copy(XUtils.getPlugin().getResource(name), file);
         }
         try {
             load(file);
@@ -49,7 +56,7 @@ public class Configuration extends YamlConfiguration {
     }
 
     public boolean update(List<String> ignoredKeys) {
-        InputStreamReader reader = new InputStreamReader(XUtils.getPlugin().getResource(path));
+        InputStreamReader reader = new InputStreamReader(XUtils.getPlugin().getResource(name));
         YamlConfiguration defaultConfig = YamlConfiguration.loadConfiguration(reader);
 
         boolean updated = false;
@@ -68,7 +75,7 @@ public class Configuration extends YamlConfiguration {
     }
 
     public void invalidate() {
-        ConfigManager.get().invalidate(path);
+        ConfigManager.get().invalidate(name);
     }
 
     public Location getLocation(String path) {

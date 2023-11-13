@@ -13,27 +13,41 @@ public final class ConfigManager {
 
     private ConfigManager() {}
 
-    public Configuration load(String path) {
-        if (configurations.containsKey(path)) {
-            return configurations.get(path);
+    public Configuration load(String name, String destination) {
+        name = name.endsWith(".yml") ? name : name + ".yml";
+
+        if (configurations.containsKey(name)) {
+            return configurations.get(name);
         }
 
-        Configuration config = new Configuration(path);
+        Configuration config = new Configuration(name, destination);
         config.load();
-        configurations.put(path, config);
+        configurations.put(name, config);
 
         return config;
     }
 
-    public Configuration update(String path, List<String> ignoredKeys) {
-        Configuration config = load(path);
+    public Configuration load(String name) {
+        return load(name, null);
+    }
+
+    public Configuration update(String name, String destination, List<String> ignoredKeys) {
+        Configuration config = load(name, destination);
         config.update(ignoredKeys);
 
         return config;
     }
 
-    public Configuration update(String path) {
-        return update(path, Collections.emptyList());
+    public Configuration update(String name, List<String> ignoredKeys) {
+        return update(name, null, ignoredKeys);
+    }
+
+    public Configuration update(String name, String destination) {
+        return update(name, destination, Collections.emptyList());
+    }
+
+    public Configuration update(String name) {
+        return update(name, Collections.emptyList());
     }
 
     public void invalidate(String path) {

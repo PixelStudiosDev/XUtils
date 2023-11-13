@@ -47,7 +47,9 @@ public interface TagHandler {
 
             @Override
             public String get(ItemStack item, String key) {
-                return NBT.get(item, nbt -> nbt.getString(key));
+                return NBT.get(item, nbt -> {
+                    return nbt.getString(key);
+                });
             }
 
         };
