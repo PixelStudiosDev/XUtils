@@ -314,4 +314,10 @@ public class TextUtil {
         return future;
     }
 
+    public static String formatTime(int seconds) {
+        int minutes = (seconds / 60) % 60;
+        int secondsLeft = seconds % 60;
+        return (minutes < 10 ? "0" : "") + minutes + ":" + (secondsLeft < 10 ? "0" : "") + secondsLeft;
+    }
+
 }
