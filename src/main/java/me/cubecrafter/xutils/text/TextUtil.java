@@ -315,9 +315,16 @@ public class TextUtil {
     }
 
     public static String formatTime(int seconds) {
-        int minutes = (seconds / 60) % 60;
-        int secondsLeft = seconds % 60;
-        return (minutes < 10 ? "0" : "") + minutes + ":" + (secondsLeft < 10 ? "0" : "") + secondsLeft;
+        int hours = seconds / 3600;
+        int minutes = (seconds % 3600) / 60;
+        seconds = seconds % 60;
+
+        String formatted = "";
+        if (hours > 0) {
+            formatted += hours > 9 ? hours : "0" + hours;
+            formatted += ":";
+        }
+        return formatted + (minutes > 9 ? minutes : "0" + minutes) + ":" + (seconds > 9 ? seconds : "0" + seconds);
     }
 
 }
