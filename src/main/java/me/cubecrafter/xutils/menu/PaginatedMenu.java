@@ -30,7 +30,7 @@ public abstract class PaginatedMenu extends Menu {
             updateInventory();
 
             if (updateTitle) {
-                setTitle(getTitle());
+                updateTitle();
             }
             return true;
         }
@@ -46,7 +46,7 @@ public abstract class PaginatedMenu extends Menu {
                 SoundUtil.play(player, switchPageSound);
             }
             if (updateTitle) {
-                setTitle(getTitle());
+                updateTitle();
             }
             return true;
         }
@@ -62,7 +62,7 @@ public abstract class PaginatedMenu extends Menu {
                 SoundUtil.play(player, switchPageSound);
             }
             if (updateTitle) {
-                setTitle(getTitle());
+                updateTitle();
             }
             return true;
         }

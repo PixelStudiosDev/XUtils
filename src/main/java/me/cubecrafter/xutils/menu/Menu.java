@@ -89,7 +89,7 @@ public abstract class Menu implements InventoryHolder {
             title = TextUtil.parsePlaceholders(player, title);
         }
 
-        player.getOpenInventory().setTitle(title);
+        player.getOpenInventory().setTitle(TextUtil.color(title));
     }
 
     public void updateInventory() {
