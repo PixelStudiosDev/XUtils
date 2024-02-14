@@ -192,7 +192,7 @@ public final class ItemBuilder {
     }
 
     public ItemBuilder addPlaceholder(String target, String replacement) {
-        placeholders.put(target, replacement);
+        placeholders.add(target, replacement);
         return this;
     }
 
