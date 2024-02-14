@@ -10,12 +10,14 @@ public class PlaceholderMap {
 
     private final Map<String, Supplier<String>> placeholders = new HashMap<>();
 
-    public void put(String key, Supplier<String> value) {
+    public PlaceholderMap add(String key, Supplier<String> value) {
         placeholders.put(key, value);
+        return this;
     }
 
-    public void put(String key, String value) {
+    public PlaceholderMap add(String key, String value) {
         placeholders.put(key, () -> value);
+        return this;
     }
 
     public String parse(String text) {

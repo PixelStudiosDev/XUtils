@@ -5,6 +5,7 @@ import lombok.Setter;
 import me.cubecrafter.xutils.item.ItemUtil;
 import me.cubecrafter.xutils.ReflectionUtil;
 import me.cubecrafter.xutils.Tasks;
+import me.cubecrafter.xutils.objects.PlaceholderMap;
 import me.cubecrafter.xutils.text.TextUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -24,6 +25,7 @@ import java.util.Set;
 public abstract class Menu implements InventoryHolder {
 
     protected final Player player;
+
     private final Map<Integer, MenuItem> items = new HashMap<>();
 
     private Inventory inventory;
@@ -31,8 +33,10 @@ public abstract class Menu implements InventoryHolder {
     private Set<Integer> draggableSlots = new HashSet<>();
 
     private boolean autoUpdate = true;
-    private boolean parsePlaceholders;
     private int updateInterval = 20;
+
+    private PlaceholderMap placeholders = new PlaceholderMap();
+    private boolean parsePlaceholders = true;
 
     public Menu(Player player) {
         this.player = player;
@@ -99,18 +103,24 @@ public abstract class Menu implements InventoryHolder {
         update();
 
         items.forEach((slot, item) -> {
-            ItemStack stack = item.getItem();
+            ItemStack parsed = item.getItem().clone();
+            
+            ItemUtil.parsePlaceholders(parsed, placeholders);
 
             if (parsePlaceholders) {
-                stack = ItemUtil.parsePlaceholders(player, item.getItem());
+                ItemUtil.parsePlaceholders(parsed, player);
             }
 
-            inventory.setItem(slot, stack);
+            inventory.setItem(slot, parsed);
         });
     }
 
     public void addDraggableSlots(Integer... slots) {
         draggableSlots.addAll(Arrays.asList(slots));
+    }
+
+    public void addPlaceholder(String key, String value) {
+        placeholders.add(key, value);
     }
 
     public void updateTitle() {
