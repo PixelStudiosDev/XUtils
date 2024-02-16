@@ -63,8 +63,13 @@ public class NumberUtil {
         return String.format("%,d", number).replace(',', separator);
     }
 
+    public static String formatNumber(int number) {
+        return String.format("%,d", number);
+    }
+
     public static int getPercentage(int value, int max) {
-        return (value / max) * 100;
+        if (max == 0) return 0;
+        return (int) ((value / (double) max) * 100);
     }
 
 }
