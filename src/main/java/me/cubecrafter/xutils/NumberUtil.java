@@ -59,11 +59,11 @@ public class NumberUtil {
         return ThreadLocalRandom.current().nextInt(100) < chance;
     }
 
-    public static String formatNumber(int number, char separator) {
+    public static String format(int number, char separator) {
         return String.format("%,d", number).replace(',', separator);
     }
 
-    public static String formatNumber(int number) {
+    public static String commas(int number) {
         return String.format("%,d", number);
     }
 
