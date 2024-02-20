@@ -1,5 +1,5 @@
 name: XUtils
-main: me.cubecrafter.xutils.XUtils
+main: dev.pixelstudios.xutils.XUtils
 version: ${version}
 api-version: "1.20"
-author: CubeCrafter
+author: PixelStudios

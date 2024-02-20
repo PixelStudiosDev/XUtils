@@ -4,8 +4,8 @@ plugins {
     id 'com.github.johnrengelman.shadow' version '7.1.2'
 }
 
-group = 'me.cubecrafter'
-version = '1.5.11'
+group = 'dev.pixelstudios'
+version = '1.6.0'
 
 repositories {
     mavenCentral()
