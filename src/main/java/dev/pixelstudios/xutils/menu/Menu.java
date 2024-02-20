@@ -1,5 +1,6 @@
 package dev.pixelstudios.xutils.menu;
 
+import dev.pixelstudios.xutils.item.ItemBuilder;
 import dev.pixelstudios.xutils.item.ItemUtil;
 import lombok.Getter;
 import lombok.Setter;

@@ -34,7 +34,7 @@ import java.util.Map;
 import java.util.UUID;
 
 @SuppressWarnings("deprecation")
-public final class ItemBuilder {
+public final class ItemBuilder implements Cloneable {
 
     private static final Map<PotionEffectType, String> EFFECT_NAMES = new HashMap<>();
 
@@ -213,10 +213,21 @@ public final class ItemBuilder {
     }
 
     public static ItemBuilder fromConfig(ConfigurationSection section) {
-        if (!section.contains("material")) {
+        return fromConfig(section, null);
+    }
+
+    public static ItemBuilder fromConfig(ConfigurationSection section, ItemBuilder defaultItem) {
+        if (!section.contains("material") && defaultItem == null) {
             throw new IllegalArgumentException("Missing material property");
         }
-        ItemBuilder builder = new ItemBuilder(section.getString("material"));
+
+        ItemBuilder builder;
+
+        if (section.contains("material")) {
+            builder = new ItemBuilder(section.getString("material"));
+        } else {
+            builder = defaultItem.clone();
+        }
 
         if (section.contains("name")) {
             builder.setDisplayName(section.getString("name"));
@@ -292,6 +303,15 @@ public final class ItemBuilder {
         }
 
         return builder;
+    }
+
+    @Override
+    public ItemBuilder clone() {
+        try {
+            return (ItemBuilder) super.clone();
+        } catch (CloneNotSupportedException e) {
+            return null;
+        }
     }
 
 }
