@@ -307,11 +307,13 @@ public final class ItemBuilder implements Cloneable {
 
     @Override
     public ItemBuilder clone() {
-        try {
-            return (ItemBuilder) super.clone();
-        } catch (CloneNotSupportedException e) {
-            return null;
-        }
+        ItemBuilder clone = new ItemBuilder(this.item.clone());
+
+        clone.meta = this.meta.clone();
+        clone.placeholders = this.placeholders.clone();
+        clone.legacySplash = this.legacySplash;
+
+        return clone;
     }
 
 }

@@ -6,7 +6,7 @@ import java.util.Map;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
-public class PlaceholderMap {
+public class PlaceholderMap implements Cloneable {
 
     private final Map<String, Supplier<String>> placeholders = new HashMap<>();
 
@@ -29,6 +29,13 @@ public class PlaceholderMap {
 
     public List<String> parse(List<String> text) {
         return text.stream().map(this::parse).collect(Collectors.toList());
+    }
+
+    @Override
+    public PlaceholderMap clone() {
+        PlaceholderMap map = new PlaceholderMap();
+        map.placeholders.putAll(this.placeholders);
+        return map;
     }
 
 }
