@@ -69,7 +69,12 @@ public abstract class Menu implements InventoryHolder {
     public void open() {
         Tasks.sync(() -> {
             if (inventory == null) {
-                String title = parsePlaceholders ? TextUtil.parsePlaceholders(player, getTitle()) : getTitle();
+                String title = placeholders.parse(getTitle());
+
+                if (parsePlaceholders) {
+                    title = TextUtil.parsePlaceholders(player, title);
+                }
+
                 this.inventory = Bukkit.createInventory(this, getRows() * 9, TextUtil.color(title));
             }
 
@@ -88,6 +93,8 @@ public abstract class Menu implements InventoryHolder {
 
     public void setTitle(String title) {
         if (!ReflectionUtil.supports(20)) return;
+
+        title = placeholders.parse(title);
 
         if (parsePlaceholders) {
             title = TextUtil.parsePlaceholders(player, title);
