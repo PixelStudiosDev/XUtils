@@ -12,6 +12,8 @@ import java.util.List;
 public abstract class PaginatedMenu extends Menu {
 
     private int page;
+
+    private int itemsPerPage;
     private String switchPageSound;
     private boolean updateTitle;
 
@@ -91,10 +93,9 @@ public abstract class PaginatedMenu extends Menu {
     /**
      * Returns a sublist of the given list based on the current page and the items per page.
      * @param list The list to get the sublist from
-     * @param itemsPerPage The amount of items per page
      * @return The sublist
      */
-    public <T> List<T> getPageItems(List<T> list, int itemsPerPage) {
+    public <T> List<T> getPageItems(List<T> list) {
         int fromIndex = Math.min(page * itemsPerPage, list.size());
         int toIndex = Math.min((page + 1) * itemsPerPage, list.size());
         return list.subList(fromIndex, toIndex);
@@ -103,10 +104,9 @@ public abstract class PaginatedMenu extends Menu {
     /**
      * Calculates the maximum amount of pages based on the total amount of items and the items per page.
      * @param items The list of items
-     * @param itemsPerPage The amount of items per page
      * @return The maximum amount of pages
      */
-    public int calculateMaxPages(List<?> items, int itemsPerPage) {
+    public int calculateMaxPages(List<?> items) {
         return (int) Math.max(Math.ceil(items.size() / (double) itemsPerPage), 1);
     }
 
