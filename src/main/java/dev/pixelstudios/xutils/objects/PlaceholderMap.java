@@ -1,12 +1,10 @@
 package dev.pixelstudios.xutils.objects;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
 
 public class PlaceholderMap implements Cloneable {
 
@@ -59,7 +57,7 @@ public class PlaceholderMap implements Cloneable {
                 parsed.add(parse(line));
             }
         }
-        return text;
+        return parsed;
     }
 
     @Override
