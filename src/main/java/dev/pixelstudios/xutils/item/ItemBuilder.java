@@ -3,10 +3,12 @@ package dev.pixelstudios.xutils.item;
 import com.cryptomorin.xseries.SkullUtils;
 import com.cryptomorin.xseries.XEnchantment;
 import com.cryptomorin.xseries.XMaterial;
+import dev.lone.itemsadder.api.CustomStack;
 import dev.pixelstudios.xutils.VersionUtil;
 import dev.pixelstudios.xutils.objects.PlaceholderMap;
 import dev.pixelstudios.xutils.ReflectionUtil;
 import dev.pixelstudios.xutils.text.TextUtil;
+import io.th0rgal.oraxen.api.OraxenItems;
 import org.bukkit.Color;
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
@@ -63,13 +65,32 @@ public final class ItemBuilder implements Cloneable {
     }
 
     public ItemBuilder(String material) {
-        if (material.equalsIgnoreCase("SPLASH_POTION") && !XMaterial.SPLASH_POTION.isSupported()) {
-            this.legacySplash = true;
-            this.item = new ItemStack(Material.POTION);
-        } else {
-            this.item = XMaterial.matchXMaterial(material).orElse(XMaterial.STONE).parseItem();
+        String[] split = material.split(":", 2);
+
+        switch (split[0].toLowerCase()) {
+            case "texture":
+                this.item = XMaterial.PLAYER_HEAD.parseItem();
+                this.meta = this.item.getItemMeta();
+                this.setSkullTexture(split[1]);
+                break;
+            case "itemsadder":
+                this.item = CustomStack.getInstance(split[1]).getItemStack();
+                this.meta = item.getItemMeta();
+                break;
+            case "oraxen":
+                this.item = OraxenItems.getItemById(split[1]).build();
+                this.meta = item.getItemMeta();
+                break;
+            default:
+                if (material.equalsIgnoreCase("SPLASH_POTION") && !XMaterial.SPLASH_POTION.isSupported()) {
+                    this.legacySplash = true;
+                    this.item = new ItemStack(Material.POTION);
+                } else {
+                    this.item = XMaterial.matchXMaterial(material).orElse(XMaterial.STONE).parseItem();
+                }
+                this.meta = item.getItemMeta();
+                break;
         }
-        this.meta = item.getItemMeta();
     }
 
     public ItemBuilder setDisplayName(String name) {
