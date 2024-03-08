@@ -225,62 +225,62 @@ public final class ItemBuilder implements Cloneable {
     }
 
     public static ItemBuilder fromConfig(ConfigurationSection section, ItemBuilder defaultItem) {
-        if (!section.contains("material") && defaultItem == null) {
+        if (!section.isString("material") && defaultItem == null) {
             throw new IllegalArgumentException("Missing material property");
         }
 
         ItemBuilder builder;
 
-        if (section.contains("material")) {
+        if (section.isString("material")) {
             builder = new ItemBuilder(section.getString("material"));
         } else {
             builder = defaultItem.clone();
         }
 
-        if (section.contains("name")) {
+        if (section.isString("name")) {
             builder.setDisplayName(section.getString("name"));
         }
-        if (section.contains("lore")) {
+        if (section.isList("lore")) {
             builder.setLore(section.getStringList("lore"));
         }
-        if (section.contains("glow")) {
+        if (section.isBoolean("glow")) {
             builder.setGlow(section.getBoolean("glow"));
         }
-        if (section.contains("texture")) {
+        if (section.isString("texture")) {
             builder.setSkullTexture(section.getString("texture"));
         }
-        if (section.contains("amount")) {
+        if (section.isInt("amount")) {
             builder.setAmount(section.getInt("amount"));
         }
-        if (section.contains("custom-model-data")) {
+        if (section.isInt("custom-model-data")) {
             builder.setCustomModelData(section.getInt("custom-model-data"));
         }
-        if (section.contains("unbreakable")) {
+        if (section.isBoolean("unbreakable")) {
             builder.setUnbreakable(section.getBoolean("unbreakable"));
         }
-        if (section.contains("durability")) {
+        if (section.isInt("durability")) {
             builder.setDurability((short) section.getInt("durability"));
         }
-        if (section.contains("dye-color")) {
+        if (section.isString("dye-color")) {
             builder.setDyeColor(DyeColor.valueOf(section.getString("dye-color").toUpperCase()));
         }
-        if (section.contains("armor-color")) {
+        if (section.isString("armor-color")) {
             builder.setArmorColor(TextUtil.parseColor(section.getString("armor-color")));
         }
-        if (section.contains("potion-color")) {
+        if (section.isString("potion-color")) {
             builder.setPotionColor(TextUtil.parseColor(section.getString("potion-color")));
         }
-        if (section.contains("flags")) {
+        if (section.isList("flags")) {
             for (String flag : section.getStringList("flags")) {
                 builder.addItemFlags(ItemFlag.valueOf(flag.toUpperCase()));
             }
         }
-        if (section.contains("effects")) {
+        if (section.isList("effects")) {
             for (String effect : section.getStringList("effects")) {
                 builder.addPotionEffect(TextUtil.parseEffect(effect));
             }
         }
-        if (section.contains("enchantments")) {
+        if (section.isList("enchantments")) {
             for (String enchantment : section.getStringList("enchantments")) {
                 String[] split = enchantment.replace(" ", "").split(",");
                 if (split.length < 1) {
@@ -291,7 +291,7 @@ public final class ItemBuilder implements Cloneable {
                 builder.addEnchant(enchant, split.length == 1 ? 1 : Integer.parseInt(split[1]));
             }
         }
-        if (section.contains("modifiers")) {
+        if (section.isList("modifiers")) {
             for (String modifier : section.getStringList("modifiers")) {
                 String[] split = modifier.replace(" ", "").split(",");
                 if (split.length < 2) {
