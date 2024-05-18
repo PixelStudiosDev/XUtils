@@ -301,7 +301,7 @@ public final class ItemBuilder implements Cloneable {
                     throw new IllegalArgumentException("Invalid enchantment format: " + enchantment);
                 }
 
-                Enchantment enchant = XEnchantment.matchXEnchantment(split[0]).orElse(XEnchantment.DURABILITY).getEnchant();
+                Enchantment enchant = XEnchantment.matchXEnchantment(split[0]).orElse(XEnchantment.UNBREAKING).getEnchant();
                 builder.addEnchant(enchant, split.length == 1 ? 1 : Integer.parseInt(split[1]));
             }
         }
