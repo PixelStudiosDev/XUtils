@@ -10,8 +10,12 @@ import java.lang.reflect.Method;
 @UtilityClass
 public class ReflectionUtil {
 
-    public static final String VERSION_STRING = Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3];
-    public static final int VERSION = Integer.parseInt(VERSION_STRING.split("_")[1]);
+    public static final int VERSION;
+
+    static {
+        String[] parts = Bukkit.getBukkitVersion().split("-")[0].split("\\.");
+        VERSION = Integer.parseInt(parts[1]);
+    }
 
     public static boolean supports(int version) {
         return VERSION >= version;
@@ -46,6 +50,13 @@ public class ReflectionUtil {
         } catch (NoSuchMethodException e) {
             e.printStackTrace();
         }
+        return null;
+    }
+
+    public static Class<?> getClass(String className) {
+        try {
+            return Class.forName(className);
+        } catch (ClassNotFoundException ignored) {}
         return null;
     }
 

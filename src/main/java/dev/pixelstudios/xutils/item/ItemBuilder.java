@@ -13,6 +13,7 @@ import org.bukkit.Material;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.MemoryConfiguration;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemFlag;
@@ -28,6 +29,7 @@ import org.bukkit.potion.PotionEffectType;
 import org.bukkit.potion.PotionType;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -92,6 +94,18 @@ public final class ItemBuilder implements Cloneable {
 
     public ItemBuilder setLore(String... lore) {
         setLore(Arrays.asList(lore));
+        return this;
+    }
+
+    public ItemBuilder addLore(List<String> lines) {
+        List<String> current = meta.getLore();
+        current.addAll(TextUtil.color(lines));
+        meta.setLore(current);
+        return this;
+    }
+
+    public ItemBuilder addLore(String line) {
+        addLore(Collections.singletonList(line));
         return this;
     }
 

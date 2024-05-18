@@ -3,18 +3,16 @@ package dev.pixelstudios.xutils.menu;
 import dev.pixelstudios.xutils.SoundUtil;
 import lombok.Getter;
 import lombok.Setter;
-import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 
 import java.util.List;
 
 @Getter @Setter
-public abstract class PaginatedMenu extends Menu {
+public abstract class PaginatedMenu<T> extends Menu {
+
+    private static String SWITCH_PAGE_SOUND = "UI_BUTTON_CLICK";
 
     private int page;
-
-    private int itemsPerPage;
-    private String switchPageSound;
     private boolean updateTitle;
 
     public PaginatedMenu(Player player) {
@@ -23,6 +21,17 @@ public abstract class PaginatedMenu extends Menu {
 
     @Override
     public void update() {
+        List<T> items = getPageItems();
+        List<Integer> itemSlots = getItemSlots();
+
+        for (int i = 0; i < items.size(); i++) {
+            MenuItem item = getItem(items.get(i));
+
+            if (item != null) {
+                setItem(item, itemSlots.get(i));
+            }
+        }
+
         update(page);
     }
 
@@ -40,13 +49,12 @@ public abstract class PaginatedMenu extends Menu {
     }
 
     public boolean nextPage() {
-        if (page < Math.max(0, getMaxPages() - 1)) {
+        if (!isLastPage()) {
             page++;
             updateInventory();
 
-            if (switchPageSound != null) {
-                SoundUtil.play(player, switchPageSound);
-            }
+            SoundUtil.play(player, SWITCH_PAGE_SOUND);
+
             if (updateTitle) {
                 updateTitle();
             }
@@ -56,13 +64,12 @@ public abstract class PaginatedMenu extends Menu {
     }
 
     public boolean previousPage() {
-        if (page > 0) {
+        if (!isFirstPage()) {
             page--;
             updateInventory();
 
-            if (switchPageSound != null) {
-                SoundUtil.play(player, switchPageSound);
-            }
+            SoundUtil.play(player, SWITCH_PAGE_SOUND);
+
             if (updateTitle) {
                 updateTitle();
             }
@@ -79,35 +86,31 @@ public abstract class PaginatedMenu extends Menu {
         return page == getMaxPages() - 1;
     }
 
-    public void setSwitchPageSound(Sound sound) {
-        this.switchPageSound = sound.toString();
+    public int getMaxPages() {
+        List<T> items = getAllItems();
+        return (int) Math.max(Math.ceil(items.size() / (double) getItemSlots().size()), 1);
     }
 
-    public void setSwitchPageSound(String sound) {
-        this.switchPageSound = sound;
+    public List<T> getPageItems() {
+        List<T> items = getAllItems();
+        List<Integer> itemSlots = getItemSlots();
+
+        int from = Math.min(page * itemSlots.size(), items.size());
+        int to = Math.min((page + 1) * itemSlots.size(), items.size());
+
+        return items.subList(from, to);
     }
 
-    public abstract int getMaxPages();
     public abstract void update(int page);
 
-    /**
-     * Returns a sublist of the given list based on the current page and the items per page.
-     * @param list The list to get the sublist from
-     * @return The sublist
-     */
-    public <T> List<T> getPageItems(List<T> list) {
-        int fromIndex = Math.min(page * itemsPerPage, list.size());
-        int toIndex = Math.min((page + 1) * itemsPerPage, list.size());
-        return list.subList(fromIndex, toIndex);
-    }
+    public abstract List<T> getAllItems();
 
-    /**
-     * Calculates the maximum amount of pages based on the total amount of items and the items per page.
-     * @param items The list of items
-     * @return The maximum amount of pages
-     */
-    public int calculateMaxPages(List<?> items) {
-        return (int) Math.max(Math.ceil(items.size() / (double) itemsPerPage), 1);
+    public abstract List<Integer> getItemSlots();
+
+    public abstract MenuItem getItem(T object);
+
+    public static void setSwitchPageSound(String sound) {
+        SWITCH_PAGE_SOUND = sound;
     }
 
 }

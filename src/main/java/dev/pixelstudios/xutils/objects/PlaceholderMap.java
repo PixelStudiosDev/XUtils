@@ -1,5 +1,7 @@
 package dev.pixelstudios.xutils.objects;
 
+import dev.pixelstudios.xutils.text.TextUtil;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -35,7 +37,7 @@ public class PlaceholderMap implements Cloneable {
         for (Map.Entry<String, Supplier<String>> entry : placeholders.entrySet()) {
             text = text.replace(entry.getKey(), entry.getValue().get());
         }
-        return text;
+        return TextUtil.color(text);
     }
 
     public List<String> parse(List<String> text) {
@@ -57,7 +59,7 @@ public class PlaceholderMap implements Cloneable {
                 parsed.add(parse(line));
             }
         }
-        return parsed;
+        return TextUtil.color(parsed);
     }
 
     @Override

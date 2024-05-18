@@ -56,33 +56,32 @@ public final class CommandHandler {
     }
 
     public List<String> tabComplete(CommandSender sender, String[] args) {
+        List<String> completions = new ArrayList<>();
+
+        if (command.getTabCompleter() != null) {
+            List<String> commandCompletions = command.getTabCompleter().apply(sender, args);
+
+            if (commandCompletions != null) {
+                completions.addAll(commandCompletions);
+            }
+        }
+
         if (args.length > 1) {
             CommandWrapper subCommand = command.getSubCommand(args[0]);
 
             if (subCommand != null && subCommand.hasPermission(sender)) {
-                return subCommand.tabComplete(sender, null, Arrays.copyOfRange(args, 1, args.length));
+                completions.addAll(subCommand.tabComplete(sender, null, Arrays.copyOfRange(args, 1, args.length)));
             }
         } else if (args.length == 1) {
-            List<String> completions = new ArrayList<>();
-
             for (CommandWrapper subCommand : command.getSubCommands()) {
                 if (!subCommand.hasPermission(sender)) continue;
 
                 completions.add(subCommand.getName());
                 completions.addAll(subCommand.getAliases());
             }
-
-            if (command.getTabCompleter() != null) {
-                List<String> commandCompletions = command.getTabCompleter().apply(sender, args);
-                if (commandCompletions != null) {
-                    completions.addAll(commandCompletions);
-                }
-            }
-
-            return StringUtil.copyPartialMatches(args[0], completions, new ArrayList<>());
         }
 
-        return Collections.emptyList();
+        return StringUtil.copyPartialMatches(args[args.length - 1], completions, new ArrayList<>());
     }
 
 }

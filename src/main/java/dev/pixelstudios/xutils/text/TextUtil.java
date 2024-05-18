@@ -25,6 +25,7 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CompletableFuture;
@@ -88,7 +89,7 @@ public class TextUtil {
      * @param players The players to send the messages to
      * @param message The messages to send
      */
-    public static void sendMessage(List<Player> players, String message) {
+    public static void sendMessage(Collection<Player> players, String message) {
         players.forEach(player -> sendMessage(player, message));
     }
 
@@ -108,7 +109,7 @@ public class TextUtil {
      * @param players The players to send the messages to
      * @param messages The messages to send
      */
-    public static void sendMessages(List<Player> players, List<String> messages) {
+    public static void sendMessages(Collection<Player> players, List<String> messages) {
         players.forEach(player -> sendMessages(player, messages));
     }
 
@@ -294,14 +295,24 @@ public class TextUtil {
         CompletableFuture<String> future = new CompletableFuture<>();
 
         ConversationFactory factory = new ConversationFactory(XUtils.getPlugin());
+
         factory.withLocalEcho(false);
         factory.withTimeout(timeout);
+        factory.withEscapeSequence("cancel");
+
+        factory.addConversationAbandonedListener(event -> {
+            if (!event.gracefulExit()) {
+                future.complete(null);
+            }
+        });
+
         factory.withFirstPrompt(new StringPrompt() {
 
             @Override
             public String getPromptText(ConversationContext context) {
                 return TextUtil.color(prompt);
             }
+
             @Override
             public Prompt acceptInput(ConversationContext context, String input) {
                 future.complete(input);
@@ -309,6 +320,7 @@ public class TextUtil {
             }
 
         });
+
         factory.buildConversation(player).begin();
 
         return future;
