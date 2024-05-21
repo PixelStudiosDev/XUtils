@@ -60,4 +60,13 @@ public class ReflectionUtil {
         return null;
     }
 
+    public static boolean isMethodPresent(Class<?> clazz, String methodName, Class<?>... parameterTypes) {
+        try {
+            clazz.getDeclaredMethod(methodName, parameterTypes);
+            return true;
+        } catch (NoSuchMethodException e) {
+            return false;
+        }
+    }
+
 }
