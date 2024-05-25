@@ -5,7 +5,7 @@ plugins {
 }
 
 group = 'dev.pixelstudios'
-version = '1.7.10'
+version = '1.7.11'
 
 repositories {
     mavenCentral()
@@ -20,7 +20,7 @@ repositories {
 dependencies {
     compileOnly 'org.spigotmc:spigot-api:1.20.3-R0.1-SNAPSHOT'
 
-    compileOnly 'com.github.cryptomorin:XSeries:10.0.0'
+    compileOnly 'com.github.cryptomorin:XSeries:11.0.0-beta'
     compileOnly 'me.clip:placeholderapi:2.11.5'
     compileOnly 'de.tr7zw:item-nbt-api:2.12.4'
     compileOnly 'org.projectlombok:lombok:1.18.30'

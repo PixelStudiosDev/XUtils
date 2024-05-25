@@ -1,8 +1,8 @@
 package dev.pixelstudios.xutils.item;
 
-import com.cryptomorin.xseries.SkullUtils;
 import com.cryptomorin.xseries.XEnchantment;
 import com.cryptomorin.xseries.XMaterial;
+import com.cryptomorin.xseries.XSkull;
 import dev.pixelstudios.xutils.ReflectionUtil;
 import dev.pixelstudios.xutils.VersionUtil;
 import dev.pixelstudios.xutils.objects.PlaceholderMap;
@@ -13,7 +13,6 @@ import org.bukkit.Material;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.configuration.MemoryConfiguration;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemFlag;
@@ -184,7 +183,7 @@ public final class ItemBuilder implements Cloneable {
     }
 
     public ItemBuilder addEnchant(Enchantment enchantment, int level) {
-        meta.addEnchant(enchantment, level, true);
+        item.addUnsafeEnchantment(enchantment, level);
         return this;
     }
 
@@ -194,7 +193,7 @@ public final class ItemBuilder implements Cloneable {
     }
 
     public ItemBuilder setSkullTexture(String texture) {
-        SkullUtils.applySkin(meta, texture);
+        XSkull.applySkin(meta, texture);
         return this;
     }
 
