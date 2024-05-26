@@ -1,11 +1,11 @@
 plugins {
     id 'java'
     id 'maven-publish'
-    id 'com.github.johnrengelman.shadow' version '7.1.2'
+    id 'com.github.johnrengelman.shadow' version '8.1.1'
 }
 
 group = 'dev.pixelstudios'
-version = '1.7.11'
+version = '1.8.0'
 
 repositories {
     mavenCentral()
@@ -15,15 +15,23 @@ repositories {
     maven { url 'https://repo.extendedclip.com/content/repositories/placeholderapi/' }
     maven { url 'https://repo.codemc.org/repository/maven-public/' }
     maven { url 'https://jitpack.io' }
+
+    maven { url 'https://mvn.lumine.io/repository/maven-public/' }
+    maven { url 'https://repo.oraxen.com/releases' }
 }
 
 dependencies {
-    compileOnly 'org.spigotmc:spigot-api:1.20.3-R0.1-SNAPSHOT'
+    compileOnly 'org.spigotmc:spigot-api:1.20.4-R0.1-SNAPSHOT'
 
     compileOnly 'com.github.cryptomorin:XSeries:11.0.0-beta'
     compileOnly 'me.clip:placeholderapi:2.11.5'
     compileOnly 'de.tr7zw:item-nbt-api:2.12.4'
     compileOnly 'org.projectlombok:lombok:1.18.30'
+
+    compileOnly 'net.Indyuce:MMOItems:6.7.3'
+    compileOnly 'io.lumine:MythicLib-dist:1.4'
+    compileOnly 'com.github.LoneDev6:API-ItemsAdder:3.6.3-beta-14'
+    compileOnly 'io.th0rgal:oraxen:1.174.0'
 
     annotationProcessor 'org.projectlombok:lombok:1.18.30'
 }
@@ -34,7 +42,8 @@ shadowJar {
 }
 
 java {
-    toolchain.languageVersion.set(JavaLanguageVersion.of(8))
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
 }
 
 tasks.withType(JavaCompile).configureEach {

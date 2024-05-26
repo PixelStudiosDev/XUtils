@@ -2,11 +2,16 @@ package dev.pixelstudios.xutils.item;
 
 import com.cryptomorin.xseries.XEnchantment;
 import com.cryptomorin.xseries.XMaterial;
+import com.cryptomorin.xseries.XPotion;
 import com.cryptomorin.xseries.XSkull;
+import dev.lone.itemsadder.api.CustomStack;
 import dev.pixelstudios.xutils.ReflectionUtil;
 import dev.pixelstudios.xutils.VersionUtil;
 import dev.pixelstudios.xutils.objects.PlaceholderMap;
 import dev.pixelstudios.xutils.text.TextUtil;
+import io.th0rgal.oraxen.api.OraxenItems;
+import net.Indyuce.mmoitems.MMOItems;
+import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
@@ -40,12 +45,12 @@ public final class ItemBuilder implements Cloneable {
     private static final Map<PotionEffectType, String> EFFECT_NAMES = new HashMap<>();
 
     static {
-        EFFECT_NAMES.put(PotionEffectType.HARM, "Harming");
-        EFFECT_NAMES.put(PotionEffectType.HEAL, "Healing");
-        EFFECT_NAMES.put(PotionEffectType.SPEED, "Swiftness");
-        EFFECT_NAMES.put(PotionEffectType.SLOW, "Slowness");
-        EFFECT_NAMES.put(PotionEffectType.JUMP, "Leaping");
-        EFFECT_NAMES.put(PotionEffectType.INCREASE_DAMAGE, "Strength");
+        EFFECT_NAMES.put(XPotion.INSTANT_DAMAGE.getPotionEffectType(), "Harming");
+        EFFECT_NAMES.put(XPotion.INSTANT_HEALTH.getPotionEffectType(), "Healing");
+        EFFECT_NAMES.put(XPotion.SPEED.getPotionEffectType(), "Swiftness");
+        EFFECT_NAMES.put(XPotion.SLOWNESS.getPotionEffectType(), "Slowness");
+        EFFECT_NAMES.put(XPotion.JUMP_BOOST.getPotionEffectType(), "Leaping");
+        EFFECT_NAMES.put(XPotion.STRENGTH.getPotionEffectType(), "Strength");
     }
 
     private ItemStack item;
@@ -245,7 +250,24 @@ public final class ItemBuilder implements Cloneable {
         ItemBuilder builder;
 
         if (section.isString("material")) {
-            builder = new ItemBuilder(section.getString("material"));
+            String material = section.getString("material");
+
+            if (Bukkit.getPluginManager().isPluginEnabled("ItemsAdder")
+                    && (material.startsWith("itemsadder:") || material.startsWith("ia:"))) {
+                builder = new ItemBuilder(CustomStack.getInstance(material.split(":", 2)[1]).getItemStack());
+
+            } else if (Bukkit.getPluginManager().isPluginEnabled("Oraxen")
+                    && (material.startsWith("oraxen:") || material.startsWith("oxn:"))) {
+                builder = new ItemBuilder(OraxenItems.getItemById(material.split(":", 2)[1]).build());
+
+            } else if (Bukkit.getPluginManager().isPluginEnabled("MMOItems")
+                    && (material.startsWith("mmoitems:"))) {
+                String[] split = material.split(":", 3);
+                builder = new ItemBuilder(MMOItems.plugin.getItem(split[1], split[2]));
+
+            } else {
+                builder = new ItemBuilder(material);
+            }
         } else {
             builder = defaultItem.clone();
         }
