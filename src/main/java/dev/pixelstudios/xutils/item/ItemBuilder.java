@@ -28,6 +28,7 @@ import org.bukkit.inventory.meta.LeatherArmorMeta;
 import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.material.Colorable;
 import org.bukkit.potion.Potion;
+import org.bukkit.potion.PotionData;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.potion.PotionType;
@@ -71,10 +72,33 @@ public final class ItemBuilder implements Cloneable {
     public ItemBuilder(String material) {
         String[] split = material.split(":", 2);
 
-        if (split[0].equalsIgnoreCase("texture")) {
-            this.item = XMaterial.PLAYER_HEAD.parseItem();
-            this.meta = this.item.getItemMeta();
-            this.setSkullTexture(split[1]);
+        if (split.length == 2) {
+            switch (split[0].toLowerCase()) {
+                case "texture":
+                    this.item = XMaterial.PLAYER_HEAD.parseItem();
+                    this.meta = this.item.getItemMeta();
+
+                    this.setSkullTexture(split[1]);
+                    return;
+                case "itemsadder":
+                case "ia":
+                    this.item = CustomStack.getInstance(split[1]).getItemStack();
+                    this.meta = this.item.getItemMeta();
+                    return;
+                case "oraxen":
+                case "oxn":
+                    this.item = OraxenItems.getItemById(split[1]).build();
+                    this.meta = this.item.getItemMeta();
+                    return;
+                case "mmoitems":
+                    String[] item = split[1].split(":", 2);
+
+                    this.item = MMOItems.plugin.getItem(item[0], item[1]);
+                    this.meta = this.item.getItemMeta();
+                    return;
+                default:
+                    throw new IllegalArgumentException("Invalid material: " + material);
+            }
         } else {
             if (material.equalsIgnoreCase("SPLASH_POTION") && !XMaterial.SPLASH_POTION.isSupported()) {
                 this.legacySplash = true;
@@ -250,24 +274,7 @@ public final class ItemBuilder implements Cloneable {
         ItemBuilder builder;
 
         if (section.isString("material")) {
-            String material = section.getString("material");
-
-            if (Bukkit.getPluginManager().isPluginEnabled("ItemsAdder")
-                    && (material.startsWith("itemsadder:") || material.startsWith("ia:"))) {
-                builder = new ItemBuilder(CustomStack.getInstance(material.split(":", 2)[1]).getItemStack());
-
-            } else if (Bukkit.getPluginManager().isPluginEnabled("Oraxen")
-                    && (material.startsWith("oraxen:") || material.startsWith("oxn:"))) {
-                builder = new ItemBuilder(OraxenItems.getItemById(material.split(":", 2)[1]).build());
-
-            } else if (Bukkit.getPluginManager().isPluginEnabled("MMOItems")
-                    && (material.startsWith("mmoitems:"))) {
-                String[] split = material.split(":", 3);
-                builder = new ItemBuilder(MMOItems.plugin.getItem(split[1], split[2]));
-
-            } else {
-                builder = new ItemBuilder(material);
-            }
+            builder = new ItemBuilder(section.getString("material"));
         } else {
             builder = defaultItem.clone();
         }
