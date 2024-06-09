@@ -11,7 +11,6 @@ import dev.pixelstudios.xutils.objects.PlaceholderMap;
 import dev.pixelstudios.xutils.text.TextUtil;
 import io.th0rgal.oraxen.api.OraxenItems;
 import net.Indyuce.mmoitems.MMOItems;
-import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
@@ -28,7 +27,6 @@ import org.bukkit.inventory.meta.LeatherArmorMeta;
 import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.material.Colorable;
 import org.bukkit.potion.Potion;
-import org.bukkit.potion.PotionData;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.potion.PotionType;
@@ -222,7 +220,7 @@ public final class ItemBuilder implements Cloneable {
     }
 
     public ItemBuilder setSkullTexture(String texture) {
-        XSkull.applySkin(meta, texture);
+        XSkull.of(meta).profile(texture).apply();
         return this;
     }
 
