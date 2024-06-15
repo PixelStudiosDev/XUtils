@@ -21,6 +21,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
+import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -337,6 +338,39 @@ public class TextUtil {
             formatted += ":";
         }
         return formatted + (minutes > 9 ? minutes : "0" + minutes) + ":" + (seconds > 9 ? seconds : "0" + seconds);
+    }
+
+    public static String formatTime(
+            int seconds,
+            String daysFormat,
+            String hoursFormat,
+            String minutesFormat,
+            String secondsFormat
+    ) {
+        int days = seconds / 86400;
+        int hours = (seconds % 86400) / 3600;
+        int minutes = (seconds % 3600) / 60;
+        seconds = seconds % 60;
+
+        String formatted = "";
+
+        if (days > 0) {
+            formatted += daysFormat.replace("{days}", String.valueOf(days));
+            formatted += " ";
+        }
+        if (hours > 0) {
+            formatted += hoursFormat.replace("{hours}", String.valueOf(hours));
+            formatted += " ";
+        }
+        if (minutes > 0) {
+            formatted += minutesFormat.replace("{minutes}", String.valueOf(minutes));
+            formatted += " ";
+        }
+        if (seconds > 0) {
+            formatted += secondsFormat.replace("{seconds}", String.valueOf(seconds));
+        }
+
+        return formatted.trim();
     }
 
 }
