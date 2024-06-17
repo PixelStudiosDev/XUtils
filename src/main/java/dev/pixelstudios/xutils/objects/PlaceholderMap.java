@@ -23,6 +23,16 @@ public class PlaceholderMap implements Cloneable {
         return this;
     }
 
+    public PlaceholderMap addNumber(String key, Supplier<Number> value) {
+        placeholders.put(key, () -> String.valueOf(value.get()));
+        return this;
+    }
+
+    public PlaceholderMap addNumber(String key, Number value) {
+        placeholders.put(key, () -> String.valueOf(value));
+        return this;
+    }
+
     public PlaceholderMap addMultiple(String key, Supplier<List<String>> value) {
         multiLinePlaceholders.put(key, value);
         return this;
