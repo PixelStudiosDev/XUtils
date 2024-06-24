@@ -13,7 +13,9 @@ import io.th0rgal.oraxen.api.OraxenItems;
 import net.Indyuce.mmoitems.MMOItems;
 import org.bukkit.Color;
 import org.bukkit.DyeColor;
+import org.bukkit.FireworkEffect;
 import org.bukkit.Material;
+import org.bukkit.Registry;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.configuration.ConfigurationSection;
@@ -21,10 +23,13 @@ import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ArmorMeta;
 import org.bukkit.inventory.meta.Damageable;
+import org.bukkit.inventory.meta.FireworkMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
 import org.bukkit.inventory.meta.PotionMeta;
+import org.bukkit.inventory.meta.trim.ArmorTrim;
 import org.bukkit.material.Colorable;
 import org.bukkit.potion.Potion;
 import org.bukkit.potion.PotionEffect;
@@ -32,7 +37,6 @@ import org.bukkit.potion.PotionEffectType;
 import org.bukkit.potion.PotionType;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -76,7 +80,7 @@ public final class ItemBuilder implements Cloneable {
                     this.item = XMaterial.PLAYER_HEAD.parseItem();
                     this.meta = this.item.getItemMeta();
 
-                    this.setSkullTexture(split[1]);
+                    this.texture(split[1]);
                     return;
                 case "itemsadder":
                 case "ia":
@@ -108,39 +112,39 @@ public final class ItemBuilder implements Cloneable {
         }
     }
 
-    public ItemBuilder setDisplayName(String name) {
+    public ItemBuilder name(String name) {
         meta.setDisplayName(TextUtil.color(name));
         return this;
     }
 
-    public ItemBuilder setLore(List<String> lore) {
+    public ItemBuilder lore(List<String> lore) {
         meta.setLore(TextUtil.color(lore));
         return this;
     }
 
-    public ItemBuilder setLore(String... lore) {
-        setLore(Arrays.asList(lore));
+    public ItemBuilder lore(String... lore) {
+        lore(Arrays.asList(lore));
         return this;
     }
 
     public ItemBuilder addLore(List<String> lines) {
-        List<String> current = meta.getLore();
-        current.addAll(TextUtil.color(lines));
-        meta.setLore(current);
+        List<String> lore = meta.getLore();
+        lore.addAll(TextUtil.color(lines));
+        meta.setLore(lore);
         return this;
     }
 
-    public ItemBuilder addLore(String line) {
-        addLore(Collections.singletonList(line));
+    public ItemBuilder addLore(String... lines) {
+        addLore(Arrays.asList(lines));
         return this;
     }
 
-    public ItemBuilder setAmount(int amount) {
+    public ItemBuilder amount(int amount) {
         item.setAmount(amount);
         return this;
     }
 
-    public ItemBuilder setDurability(short durability) {
+    public ItemBuilder durability(short durability) {
         if (ReflectionUtil.supports(13)) {
             ((Damageable) meta).setDamage(durability);
         } else {
@@ -149,27 +153,32 @@ public final class ItemBuilder implements Cloneable {
         return this;
     }
 
-    public ItemBuilder setArmorColor(Color color) {
-        ((LeatherArmorMeta) meta).setColor(color);
-        return this;
-    }
+    public ItemBuilder color(Color color) {
+        if (item.getData() instanceof Colorable) {
+            ((Colorable) item.getData()).setColor(DyeColor.getByColor(color));
 
-    public ItemBuilder setDyeColor(DyeColor color) {
-        ((Colorable) item.getData()).setColor(color);
-        return this;
-    }
+        } else if (meta instanceof LeatherArmorMeta) {
+            ((LeatherArmorMeta) meta).setColor(color);
 
-    public ItemBuilder setGlow(boolean glow) {
-        if (glow) {
-            meta.addEnchant(Enchantment.DURABILITY, 1, true);
-            meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
-        } else {
-            meta.removeEnchant(Enchantment.DURABILITY);
+        } else if (meta instanceof FireworkMeta) {
+            ((FireworkMeta) meta).addEffect(FireworkEffect.builder().withColor(color).build());
+
+        } else if (meta instanceof PotionMeta) {
+            if (ReflectionUtil.supports(11)) {
+                ((PotionMeta) meta).setColor(color);
+            }
         }
         return this;
     }
 
-    public ItemBuilder addPotionEffect(PotionEffect effect) {
+    public ItemBuilder trim(ArmorTrim trim) {
+        if ((meta instanceof ArmorMeta) && ReflectionUtil.supports(20)) {
+            ((ArmorMeta) meta).setTrim(trim);
+        }
+        return this;
+    }
+
+    public ItemBuilder effect(PotionEffect effect) {
         if (legacySplash) {
             PotionType type = PotionType.getByEffect(effect.getType());
             new Potion(type, effect.getAmplifier() + 1, true, effect.getDuration() > 200).apply(item);
@@ -177,84 +186,80 @@ public final class ItemBuilder implements Cloneable {
             ((PotionMeta) meta).addCustomEffect(effect, true);
 
             if (ReflectionUtil.supports(11)) {
-                setPotionColor(effect.getType().getColor());
+                color(effect.getType().getColor());
             }
             if (!meta.hasDisplayName()) {
                 String material = TextUtil.formatEnumName(item.getType().toString());
                 String potion = EFFECT_NAMES.getOrDefault(effect.getType(), TextUtil.formatEnumName(effect.getType().getName()));
-                setDisplayName("&f" + material + " of " + potion);
+                name("&f" + material + " of " + potion);
             }
         }
         return this;
     }
 
-    public ItemBuilder setPotionColor(Color color) {
-        if (!ReflectionUtil.supports(11)) {
-            return this;
+    public ItemBuilder customModelData(int modelData) {
+        if (ReflectionUtil.supports(14)) {
+            meta.setCustomModelData(modelData);
         }
-        ((PotionMeta) meta).setColor(color);
         return this;
     }
 
-    public ItemBuilder setCustomModelData(int modelData) {
-        if (!ReflectionUtil.supports(14)) {
-            return this;
-        }
-        meta.setCustomModelData(modelData);
+    public ItemBuilder unbreakable() {
+        VersionUtil.setUnbreakable(meta, true);
         return this;
     }
 
-    public ItemBuilder setUnbreakable(boolean unbreakable) {
-        VersionUtil.setUnbreakable(meta, unbreakable);
+    public ItemBuilder glow() {
+        enchant(XEnchantment.UNBREAKING.getEnchant(), 1);
+        flags(ItemFlag.HIDE_ENCHANTS);
         return this;
     }
 
-    public ItemBuilder addEnchant(Enchantment enchantment, int level) {
-        item.addUnsafeEnchantment(enchantment, level);
+    public ItemBuilder enchant(Enchantment enchantment, int level) {
+        meta.addEnchant(enchantment, level, true);
         return this;
     }
 
-    public ItemBuilder addItemFlags(ItemFlag... itemFlags) {
+    public ItemBuilder flags(ItemFlag... itemFlags) {
         meta.addItemFlags(itemFlags);
         return this;
     }
 
-    public ItemBuilder setSkullTexture(String texture) {
+    public ItemBuilder texture(String texture) {
         XSkull.of(meta).profile(texture).apply();
         return this;
     }
 
-    public ItemBuilder setTag(String key, String value) {
+    public ItemBuilder modifier(Attribute attribute, AttributeModifier modifier) {
+        if (ReflectionUtil.supports(13)) {
+            meta.addAttributeModifier(attribute, modifier);
+        }
+        return this;
+    }
+
+    public ItemBuilder placeholder(String target, String replacement) {
+        placeholders.add(target, replacement);
+        return this;
+    }
+
+    public ItemBuilder placeholders(PlaceholderMap placeholders) {
+        this.placeholders = placeholders;
+        return this;
+    }
+
+    public ItemBuilder tag(String key, String value) {
         this.item.setItemMeta(meta);
         this.item = ItemUtil.setTag(item, key, value);
         this.meta = item.getItemMeta();
         return this;
     }
 
-    public ItemBuilder addAttributeModifier(Attribute attribute, AttributeModifier modifier) {
-        if (!ReflectionUtil.supports(13)) {
-            return this;
-        }
-        meta.addAttributeModifier(attribute, modifier);
-        return this;
-    }
-
-    public ItemBuilder addPlaceholder(String target, String replacement) {
-        placeholders.add(target, replacement);
-        return this;
-    }
-
-    public ItemBuilder setPlaceholders(PlaceholderMap placeholders) {
-        this.placeholders = placeholders;
-        return this;
-    }
-
     public ItemStack build() {
         if (meta.hasDisplayName()) {
-            setDisplayName(placeholders.parse(meta.getDisplayName()));
+            name(placeholders.parse(meta.getDisplayName()));
         }
         if (meta.hasLore()) {
-            setLore(placeholders.parse(meta.getLore()));
+            lore(placeholders.parse(meta.getLore()));
         }
         item.setItemMeta(meta);
         return item;
@@ -278,67 +283,76 @@ public final class ItemBuilder implements Cloneable {
         }
 
         if (section.isString("name")) {
-            builder.setDisplayName(section.getString("name"));
+            builder.name(section.getString("name"));
         }
         if (section.isList("lore")) {
-            builder.setLore(section.getStringList("lore"));
+            builder.lore(section.getStringList("lore"));
         }
-        if (section.isBoolean("glow")) {
-            builder.setGlow(section.getBoolean("glow"));
+        if (section.getBoolean("glow")) {
+            builder.glow();
         }
         if (section.isString("texture")) {
-            builder.setSkullTexture(section.getString("texture"));
+            builder.texture(section.getString("texture"));
         }
         if (section.isInt("amount")) {
-            builder.setAmount(section.getInt("amount"));
+            builder.amount(section.getInt("amount"));
         }
         if (section.isInt("custom-model-data")) {
-            builder.setCustomModelData(section.getInt("custom-model-data"));
+            builder.customModelData(section.getInt("custom-model-data"));
         }
-        if (section.isBoolean("unbreakable")) {
-            builder.setUnbreakable(section.getBoolean("unbreakable"));
+        if (section.getBoolean("unbreakable")) {
+            builder.unbreakable();
         }
         if (section.isInt("durability")) {
-            builder.setDurability((short) section.getInt("durability"));
+            builder.durability((short) section.getInt("durability"));
         }
-        if (section.isString("dye-color")) {
-            builder.setDyeColor(DyeColor.valueOf(section.getString("dye-color").toUpperCase()));
+        if (section.isString("color")) {
+            builder.color(TextUtil.parseColor(section.getString("color")));
         }
-        if (section.isString("armor-color")) {
-            builder.setArmorColor(TextUtil.parseColor(section.getString("armor-color")));
-        }
-        if (section.isString("potion-color")) {
-            builder.setPotionColor(TextUtil.parseColor(section.getString("potion-color")));
+        if (section.isString("armor-trim") && ReflectionUtil.supports(20)) {
+            String[] split = section.getString("armor-trim").split(",");
+
+            if (split.length < 2) {
+                throw new IllegalArgumentException("Invalid armor trim format: " + section.getString("armor-trim"));
+            }
+
+            builder.trim(new ArmorTrim(
+                    Registry.TRIM_MATERIAL.match(split[0]),
+                    Registry.TRIM_PATTERN.match(split[1])
+            ));
         }
         if (section.isList("flags")) {
             for (String flag : section.getStringList("flags")) {
-                builder.addItemFlags(ItemFlag.valueOf(flag.toUpperCase()));
+                builder.flags(ItemFlag.valueOf(flag.toUpperCase()));
             }
         }
         if (section.isList("effects")) {
             for (String effect : section.getStringList("effects")) {
-                builder.addPotionEffect(TextUtil.parseEffect(effect));
+                builder.effect(TextUtil.parseEffect(effect));
             }
         }
         if (section.isList("enchantments")) {
             for (String enchantment : section.getStringList("enchantments")) {
-                String[] split = enchantment.replace(" ", "").split(",");
+                String[] split = enchantment.split(",");
+
                 if (split.length < 1) {
                     throw new IllegalArgumentException("Invalid enchantment format: " + enchantment);
                 }
 
                 Enchantment enchant = XEnchantment.matchXEnchantment(split[0]).orElse(XEnchantment.UNBREAKING).getEnchant();
-                builder.addEnchant(enchant, split.length == 1 ? 1 : Integer.parseInt(split[1]));
+                builder.enchant(enchant, split.length == 1 ? 1 : Integer.parseInt(split[1]));
             }
         }
         if (section.isList("modifiers")) {
             for (String modifier : section.getStringList("modifiers")) {
-                String[] split = modifier.replace(" ", "").split(",");
+                String[] split = modifier.split(",");
+
                 if (split.length < 2) {
                     throw new IllegalArgumentException("Invalid attribute modifier format: " + modifier);
                 }
 
-                builder.addAttributeModifier(Attribute.valueOf(split[0].toUpperCase()),
+                builder.modifier(
+                        Attribute.valueOf(split[0].toUpperCase()),
                         new AttributeModifier(
                             UUID.randomUUID(),
                             "custom_modifier",

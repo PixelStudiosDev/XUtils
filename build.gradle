@@ -1,11 +1,12 @@
 plugins {
     id 'java'
+    id 'java-library'
     id 'maven-publish'
     id 'com.github.johnrengelman.shadow' version '8.1.1'
 }
 
 group = 'dev.pixelstudios'
-version = '1.8.5'
+version = '1.8.6'
 
 repositories {
     mavenCentral()
@@ -23,18 +24,19 @@ repositories {
 dependencies {
     compileOnly 'org.spigotmc:spigot-api:1.20.4-R0.1-SNAPSHOT'
 
-    compileOnly 'com.github.cryptomorin:XSeries:11.0.0'
+    api 'com.github.cryptomorin:XSeries:11.0.0'
     compileOnly 'com.mojang:authlib:3.16.29'
+
     compileOnly 'me.clip:placeholderapi:2.11.5'
-    compileOnly 'de.tr7zw:item-nbt-api:2.12.4'
-    compileOnly 'org.projectlombok:lombok:1.18.30'
+    compileOnly 'de.tr7zw:item-nbt-api:2.13.1'
+    compileOnly 'org.projectlombok:lombok:1.18.32'
 
     compileOnly 'net.Indyuce:MMOItems:6.7.3'
     compileOnly 'io.lumine:MythicLib-dist:1.4'
     compileOnly 'com.github.LoneDev6:API-ItemsAdder:3.6.3-beta-14'
     compileOnly 'io.th0rgal:oraxen:1.174.0'
 
-    annotationProcessor 'org.projectlombok:lombok:1.18.30'
+    annotationProcessor 'org.projectlombok:lombok:1.18.32'
 }
 
 shadowJar {
