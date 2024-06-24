@@ -10,6 +10,7 @@ import dev.pixelstudios.xutils.ReflectionUtil;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
+import org.bukkit.DyeColor;
 import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
@@ -271,7 +272,7 @@ public class TextUtil {
      * @throws IllegalArgumentException If the string is not in the correct format
      */
     public static PotionEffect parseEffect(String serialized) {
-        String[] effect = serialized.replace(" ", "").split(",");
+        String[] effect = serialized.split(",");
         if (effect.length < 1) {
             throw new IllegalArgumentException("Invalid effect format: " + serialized);
         }
@@ -283,13 +284,22 @@ public class TextUtil {
         return new PotionEffect(type, duration, amplifier);
     }
 
-    public static Color parseColor(String rgb) {
-        String[] split = rgb.replace(" ", "").split(",");
+    public static Color parseColor(String text) {
+        String[] split = text.split(",");
+
+        Color color;
+
         if (split.length != 3) {
-            throw new IllegalArgumentException("Invalid RGB format: " + rgb);
+            color = DyeColor.valueOf(text).getColor();
+        } else {
+            color = Color.fromRGB(
+                    Integer.parseInt(split[0]),
+                    Integer.parseInt(split[1]),
+                    Integer.parseInt(split[2])
+            );
         }
 
-        return Color.fromRGB(Integer.parseInt(split[0]), Integer.parseInt(split[1]), Integer.parseInt(split[2]));
+        return color;
     }
 
     public static CompletableFuture<String> getChatInput(Player player, String prompt, int timeout) {
