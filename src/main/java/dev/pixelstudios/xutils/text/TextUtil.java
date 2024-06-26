@@ -22,7 +22,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
-import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -365,18 +364,15 @@ public class TextUtil {
         String formatted = "";
 
         if (days > 0) {
-            formatted += daysFormat.replace("{days}", String.valueOf(days));
-            formatted += " ";
+            formatted += daysFormat.replace("{days}", String.valueOf(days)) + " ";
         }
         if (hours > 0) {
-            formatted += hoursFormat.replace("{hours}", String.valueOf(hours));
-            formatted += " ";
+            formatted += hoursFormat.replace("{hours}", String.valueOf(hours)) + " ";
         }
         if (minutes > 0) {
-            formatted += minutesFormat.replace("{minutes}", String.valueOf(minutes));
-            formatted += " ";
+            formatted += minutesFormat.replace("{minutes}", String.valueOf(minutes)) + " ";
         }
-        if (seconds > 0) {
+        if (seconds > 0 || formatted.isEmpty()) {
             formatted += secondsFormat.replace("{seconds}", String.valueOf(seconds));
         }
 
