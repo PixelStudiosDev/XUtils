@@ -6,7 +6,7 @@ plugins {
 }
 
 group = 'dev.pixelstudios'
-version = '1.8.8'
+version = '1.9.0'
 
 repositories {
     mavenCentral()
@@ -16,25 +16,23 @@ repositories {
     maven { url 'https://repo.extendedclip.com/content/repositories/placeholderapi/' }
     maven { url 'https://repo.codemc.org/repository/maven-public/' }
     maven { url 'https://jitpack.io' }
-
     maven { url 'https://mvn.lumine.io/repository/maven-public/' }
     maven { url 'https://repo.oraxen.com/releases' }
 }
 
 dependencies {
     compileOnly 'org.spigotmc:spigot-api:1.20.4-R0.1-SNAPSHOT'
-
-    api 'com.github.cryptomorin:XSeries:11.0.0'
-    compileOnly 'com.mojang:authlib:3.16.29'
-
     compileOnly 'me.clip:placeholderapi:2.11.5'
     compileOnly 'de.tr7zw:item-nbt-api:2.13.1'
     compileOnly 'org.projectlombok:lombok:1.18.32'
-
     compileOnly 'net.Indyuce:MMOItems:6.7.3'
     compileOnly 'io.lumine:MythicLib-dist:1.4'
     compileOnly 'com.github.LoneDev6:API-ItemsAdder:3.6.3-beta-14'
     compileOnly 'io.th0rgal:oraxen:1.174.0'
+
+    compileOnly fileTree(dir: 'libs', include: ['*.jar'])
+
+    api 'com.github.cryptomorin:XSeries:11.2.0'
 
     annotationProcessor 'org.projectlombok:lombok:1.18.32'
 }

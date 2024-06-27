@@ -3,7 +3,8 @@ package dev.pixelstudios.xutils.item;
 import com.cryptomorin.xseries.XEnchantment;
 import com.cryptomorin.xseries.XMaterial;
 import com.cryptomorin.xseries.XPotion;
-import com.cryptomorin.xseries.XSkull;
+import com.cryptomorin.xseries.profiles.builder.XSkull;
+import com.cryptomorin.xseries.profiles.objects.Profileable;
 import dev.lone.itemsadder.api.CustomStack;
 import dev.pixelstudios.xutils.ReflectionUtil;
 import dev.pixelstudios.xutils.VersionUtil;
@@ -226,7 +227,7 @@ public final class ItemBuilder implements Cloneable {
     }
 
     public ItemBuilder texture(String texture) {
-        XSkull.of(meta).profile(texture).apply();
+        XSkull.of(meta).profile(Profileable.detect(texture)).apply();
         return this;
     }
 
