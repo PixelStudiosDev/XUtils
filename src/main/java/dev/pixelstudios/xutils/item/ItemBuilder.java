@@ -5,6 +5,7 @@ import com.cryptomorin.xseries.XMaterial;
 import com.cryptomorin.xseries.XPotion;
 import com.cryptomorin.xseries.profiles.builder.XSkull;
 import com.cryptomorin.xseries.profiles.objects.Profileable;
+import com.willfp.eco.core.items.Items;
 import dev.lone.itemsadder.api.CustomStack;
 import dev.pixelstudios.xutils.ReflectionUtil;
 import dev.pixelstudios.xutils.VersionUtil;
@@ -98,6 +99,11 @@ public final class ItemBuilder implements Cloneable {
 
                     this.item = MMOItems.plugin.getItem(item[0], item[1]);
                     this.meta = this.item.getItemMeta();
+                    return;
+                case "ecoitems":
+                    this.item = Items.lookup("ecoitems:" + split[1]).getItem();
+                    this.meta = this.item.getItemMeta();
+
                     return;
                 default:
                     throw new IllegalArgumentException("Invalid material: " + material);
