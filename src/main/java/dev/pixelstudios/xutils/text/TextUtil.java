@@ -271,7 +271,7 @@ public class TextUtil {
      * @throws IllegalArgumentException If the string is not in the correct format
      */
     public static PotionEffect parseEffect(String serialized) {
-        String[] effect = serialized.split(",");
+        String[] effect = serialized.split(":");
         if (effect.length < 1) {
             throw new IllegalArgumentException("Invalid effect format: " + serialized);
         }
@@ -284,7 +284,7 @@ public class TextUtil {
     }
 
     public static Color parseColor(String text) {
-        String[] split = text.split(",");
+        String[] split = text.split(":");
 
         Color color;
 

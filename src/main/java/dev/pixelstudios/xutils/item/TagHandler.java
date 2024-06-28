@@ -18,10 +18,12 @@ public interface TagHandler {
 
             @Override
             public ItemStack set(ItemStack item, String key, String value) {
-                NamespacedKey namespacedKey = new NamespacedKey(XUtils.getPlugin(), key);
                 ItemMeta meta = item.getItemMeta();
+                NamespacedKey namespacedKey = new NamespacedKey(XUtils.getPlugin(), key);
+
                 meta.getPersistentDataContainer().set(namespacedKey, PersistentDataType.STRING, value);
                 item.setItemMeta(meta);
+
                 return item;
             }
 

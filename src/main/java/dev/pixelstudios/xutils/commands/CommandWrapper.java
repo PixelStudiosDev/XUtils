@@ -22,7 +22,6 @@ public final class CommandWrapper extends Command implements PluginIdentifiableC
     private final CommandHandler commandHandler = new CommandHandler(this);
 
     private final Map<String, CommandWrapper> subCommands = new HashMap<>();
-    private final Map<String, CommandWrapper> commandAliases = new HashMap<>();
 
     private final BiConsumer<CommandSender, String[]> executor;
     private final BiConsumer<ConsoleCommandSender, String[]> consoleExecutor;
@@ -58,7 +57,7 @@ public final class CommandWrapper extends Command implements PluginIdentifiableC
             this.subCommands.put(command.getName(), command);
 
             for (String alias : command.getAliases()) {
-                this.commandAliases.put(alias.toLowerCase(), command);
+                this.subCommands.put(alias, command);
             }
         }
 
@@ -67,11 +66,7 @@ public final class CommandWrapper extends Command implements PluginIdentifiableC
     }
 
     public CommandWrapper getSubCommand(String name) {
-        CommandWrapper command = this.subCommands.get(name.toLowerCase());
-        if (command == null) {
-            command = this.commandAliases.get(name.toLowerCase());
-        }
-        return command;
+        return this.subCommands.get(name.toLowerCase());
     }
 
     public Collection<CommandWrapper> getSubCommands() {
