@@ -1,5 +1,3 @@
-package dev.pixelstudios.xutils.scoreboard;
-
 /*
  * This file is part of FastBoard, licensed under the MIT License.
  *
@@ -23,6 +21,7 @@ package dev.pixelstudios.xutils.scoreboard;
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+package dev.pixelstudios.xutils.scoreboard;
 
 import org.bukkit.Bukkit;
 
@@ -41,10 +40,8 @@ import java.util.function.Predicate;
 public final class FastReflection {
 
     private static final String NM_PACKAGE = "net.minecraft";
-    public static final String OBC_PACKAGE = "org.bukkit.craftbukkit";
-    public static final String NMS_PACKAGE = NM_PACKAGE + ".server";
-
-    public static final String VERSION = Bukkit.getServer().getClass().getPackage().getName().substring(OBC_PACKAGE.length() + 1);
+    private static final String OBC_PACKAGE = Bukkit.getServer().getClass().getPackage().getName();
+    private static final String NMS_PACKAGE = OBC_PACKAGE.replace("org.bukkit.craftbukkit", NM_PACKAGE + ".server");
 
     private static final MethodType VOID_METHOD_TYPE = MethodType.methodType(void.class);
     private static final boolean NMS_REPACKAGED = optionalClass(NM_PACKAGE + ".network.protocol.Packet").isPresent();
@@ -62,9 +59,11 @@ public final class FastReflection {
     public static String nmsClassName(String post1_17package, String className) {
         if (NMS_REPACKAGED) {
             String classPackage = post1_17package == null ? NM_PACKAGE : NM_PACKAGE + '.' + post1_17package;
+
             return classPackage + '.' + className;
         }
-        return NMS_PACKAGE + '.' + VERSION + '.' + className;
+
+        return NMS_PACKAGE + '.' + className;
     }
 
     public static Class<?> nmsClass(String post1_17package, String className) throws ClassNotFoundException {
@@ -76,7 +75,7 @@ public final class FastReflection {
     }
 
     public static String obcClassName(String className) {
-        return OBC_PACKAGE + '.' + VERSION + '.' + className;
+        return OBC_PACKAGE + '.' + className;
     }
 
     public static Class<?> obcClass(String className) throws ClassNotFoundException {
@@ -120,6 +119,14 @@ public final class FastReflection {
         throw new ClassNotFoundException("No class in " + parentClass.getCanonicalName() + " matches the predicate.");
     }
 
+    static Optional<MethodHandle> optionalConstructor(Class<?> declaringClass, MethodHandles.Lookup lookup, MethodType type) throws IllegalAccessException {
+        try {
+            return Optional.of(lookup.findConstructor(declaringClass, type));
+        } catch (NoSuchMethodException e) {
+            return Optional.empty();
+        }
+    }
+
     public static PacketConstructor findPacketConstructor(Class<?> packetClass, MethodHandles.Lookup lookup) throws Exception {
         try {
             MethodHandle constructor = lookup.findConstructor(packetClass, VOID_METHOD_TYPE);
@@ -148,5 +155,4 @@ public final class FastReflection {
     interface PacketConstructor {
         Object invoke() throws Throwable;
     }
-
 }
