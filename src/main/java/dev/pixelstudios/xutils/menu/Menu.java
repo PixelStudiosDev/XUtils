@@ -1,6 +1,5 @@
 package dev.pixelstudios.xutils.menu;
 
-import dev.pixelstudios.xutils.item.ItemBuilder;
 import dev.pixelstudios.xutils.item.ItemUtil;
 import lombok.Getter;
 import lombok.Setter;
@@ -111,7 +110,7 @@ public abstract class Menu implements InventoryHolder {
         update();
 
         items.forEach((slot, item) -> {
-            ItemStack parsed = item.getItem().clone();
+            ItemStack parsed = item.getItem().build();
             
             ItemUtil.parsePlaceholders(parsed, placeholders);
 
@@ -127,7 +126,7 @@ public abstract class Menu implements InventoryHolder {
         draggableSlots.addAll(Arrays.asList(slots));
     }
 
-    public void addPlaceholder(String key, String value) {
+    public void placeholder(String key, String value) {
         placeholders.add(key, value);
     }
 
