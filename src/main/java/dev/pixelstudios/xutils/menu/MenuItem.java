@@ -58,11 +58,11 @@ public class MenuItem {
         return action(event -> action.run(), clickTypes);
     }
 
-    public MenuItem left(Runnable action) {
+    public MenuItem leftAction(Runnable action) {
         return action(action, ClickType.LEFT, ClickType.SHIFT_LEFT);
     }
 
-    public MenuItem right(Runnable action) {
+    public MenuItem rightAction(Runnable action) {
         return action(action, ClickType.RIGHT, ClickType.SHIFT_RIGHT);
     }
 

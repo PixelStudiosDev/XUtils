@@ -3,6 +3,7 @@ package dev.pixelstudios.xutils.menu;
 import dev.pixelstudios.xutils.SoundUtil;
 import lombok.Getter;
 import lombok.Setter;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 
 import java.util.List;
@@ -14,6 +15,10 @@ public abstract class PaginatedMenu<T> extends Menu {
 
     private int page;
     private boolean updateTitle;
+
+    public PaginatedMenu(Player player, ConfigurationSection section) {
+        super(player, section);
+    }
 
     public PaginatedMenu(Player player) {
         super(player);

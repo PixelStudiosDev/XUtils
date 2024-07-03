@@ -8,6 +8,7 @@ import dev.pixelstudios.xutils.Tasks;
 import dev.pixelstudios.xutils.objects.PlaceholderMap;
 import dev.pixelstudios.xutils.text.TextUtil;
 import org.bukkit.Bukkit;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
@@ -25,6 +26,7 @@ import java.util.Set;
 public abstract class Menu implements InventoryHolder {
 
     protected final Player player;
+    protected final ConfigurationSection config;
 
     private final Map<Integer, MenuItem> items = new HashMap<>();
 
@@ -38,10 +40,15 @@ public abstract class Menu implements InventoryHolder {
     private PlaceholderMap placeholders = new PlaceholderMap();
     private boolean parsePlaceholders = true;
 
-    public Menu(Player player) {
+    public Menu(Player player, ConfigurationSection section) {
         this.player = player;
+        this.config = section;
 
         MenuListener.register();
+    }
+
+    public Menu(Player player) {
+        this(player, null);
     }
 
     public MenuItem getItem(int slot) {
@@ -134,16 +141,21 @@ public abstract class Menu implements InventoryHolder {
         setTitle(getTitle());
     }
 
-    public void onClose() {
+    public int getRows() {
+        return config != null ? config.getInt("rows") : 6;
     }
+
+    public String getTitle() {
+        return config != null ? config.getString("title") : "Menu";
+    }
+
+    public void onClose() {}
+
+    public abstract void update();
 
     @Override
     public Inventory getInventory() {
         return inventory;
     }
-
-    public abstract void update();
-    public abstract int getRows();
-    public abstract String getTitle();
 
 }
