@@ -8,6 +8,10 @@ import lombok.experimental.UtilityClass;
 import me.clip.placeholderapi.PlaceholderAPI;
 import dev.pixelstudios.xutils.ReflectionUtil;
 import net.md_5.bungee.api.ChatColor;
+import net.md_5.bungee.api.chat.ClickEvent;
+import net.md_5.bungee.api.chat.ComponentBuilder;
+import net.md_5.bungee.api.chat.HoverEvent;
+import net.md_5.bungee.api.chat.hover.content.Content;
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.DyeColor;
@@ -120,6 +124,17 @@ public class TextUtil {
 
     public static void broadcast(List<String> messages) {
         Bukkit.getOnlinePlayers().forEach(player -> sendMessages(player, messages));
+    }
+
+    public static void sendMessage(Player player, List<String> message, List<String> hover, ClickEvent click) {
+        message.replaceAll(line -> color(parsePlaceholders(player, line)));
+        hover.replaceAll(line -> color(parsePlaceholders(player, line)));
+
+        ComponentBuilder builder = new ComponentBuilder(String.join("\n", message))
+                .event(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(String.join("\n", hover)).create()))
+                .event(click);
+
+        player.spigot().sendMessage(builder.create());
     }
 
     /**
