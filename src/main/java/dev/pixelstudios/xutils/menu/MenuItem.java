@@ -12,7 +12,9 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Consumer;
 
 @Getter
@@ -26,6 +28,7 @@ public class MenuItem {
     };
 
     private final ItemBuilder item;
+    private final Set<Integer> slots = new HashSet<>();
     private final Map<ClickType, Consumer<InventoryClickEvent>> actions = new HashMap<>();
 
     private boolean cancelClick = true;
@@ -40,7 +43,17 @@ public class MenuItem {
     }
 
     public MenuItem(ConfigurationSection section) {
-        this(ItemBuilder.fromConfig(section));
+        this(section, null);
+    }
+
+    public MenuItem(ConfigurationSection section, ItemBuilder defaultItem) {
+        this(ItemBuilder.fromConfig(section, defaultItem));
+
+        if (section.isList("slots")) {
+            slots.addAll(section.getIntegerList("slots"));
+        } else if (section.isInt("slot")) {
+            slots.add(section.getInt("slot"));
+        }
     }
 
     public MenuItem action(Consumer<InventoryClickEvent> action, ClickType... clickTypes) {
@@ -88,6 +101,13 @@ public class MenuItem {
 
     public MenuItem placeholder(String target, String replacement) {
         item.placeholder(target, replacement);
+        return this;
+    }
+
+    public MenuItem slots(int... slots) {
+        for (int slot : slots) {
+            this.slots.add(slot);
+        }
         return this;
     }
 

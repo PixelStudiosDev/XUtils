@@ -72,6 +72,13 @@ public class PlaceholderMap implements Cloneable {
         return TextUtil.color(parsed);
     }
 
+    public PlaceholderMap merge(PlaceholderMap map) {
+        placeholders.putAll(map.placeholders);
+        multiLinePlaceholders.putAll(map.multiLinePlaceholders);
+
+        return this;
+    }
+
     @Override
     public PlaceholderMap clone() {
         PlaceholderMap map = new PlaceholderMap();

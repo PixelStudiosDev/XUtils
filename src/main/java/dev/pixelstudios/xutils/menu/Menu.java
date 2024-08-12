@@ -1,5 +1,6 @@
 package dev.pixelstudios.xutils.menu;
 
+import dev.pixelstudios.xutils.item.ItemBuilder;
 import dev.pixelstudios.xutils.item.ItemUtil;
 import lombok.Getter;
 import lombok.Setter;
@@ -18,7 +19,6 @@ import org.bukkit.scheduler.BukkitTask;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -37,8 +37,10 @@ public abstract class Menu implements InventoryHolder {
     private boolean autoUpdate = true;
     private int updateInterval = 20;
 
-    private PlaceholderMap placeholders = new PlaceholderMap();
+    protected PlaceholderMap placeholders = new PlaceholderMap();
     private boolean parsePlaceholders = true;
+
+    private boolean allowCustomItems = true;
 
     public Menu(Player player, ConfigurationSection section) {
         this.player = player;
@@ -55,14 +57,29 @@ public abstract class Menu implements InventoryHolder {
         return items.get(slot);
     }
 
-    public void setItem(MenuItem item, List<Integer> slots) {
-        for (int slot : slots) {
+    public MenuItem setItem(MenuItem item) {
+        item.getSlots().forEach(slot -> {
+            if (slot < 0 || slot >= getRows() * 9) {
+                TextUtil.error("Slot " + slot + " is out of bounds for menu '" + getTitle() + "'");
+                return;
+            }
+
             items.put(slot, item);
-        }
+        });
+
+        return item;
     }
 
-    public void setItem(MenuItem item, Integer... slots) {
-        setItem(item, Arrays.asList(slots));
+    public MenuItem setItem(String key) {
+        return setItem(
+                new MenuItem(config.getConfigurationSection("items." + key))
+        );
+    }
+
+    public MenuItem setItem(String key, ItemBuilder defaultItem) {
+        return setItem(
+                new MenuItem(config.getConfigurationSection("items." + key), defaultItem)
+        );
     }
 
     public void fillBorders(MenuItem item) {
@@ -76,13 +93,12 @@ public abstract class Menu implements InventoryHolder {
     public void open() {
         Tasks.sync(() -> {
             if (inventory == null) {
-                String title = placeholders.parse(getTitle());
-
-                if (parsePlaceholders) {
-                    title = TextUtil.parsePlaceholders(player, title);
+                if (getRows() < 1 || getRows() > 6) {
+                    TextUtil.error("Invalid row count for menu '" + getTitle() + "' (" + getRows() + ")");
+                    return;
                 }
 
-                this.inventory = Bukkit.createInventory(this, getRows() * 9, TextUtil.color(title));
+                this.inventory = Bukkit.createInventory(this, getRows() * 9, processText(getTitle()));
             }
 
             if (autoUpdate) {
@@ -101,31 +117,20 @@ public abstract class Menu implements InventoryHolder {
     public void setTitle(String title) {
         if (!ReflectionUtil.supports(20)) return;
 
-        title = placeholders.parse(title);
-
-        if (parsePlaceholders) {
-            title = TextUtil.parsePlaceholders(player, title);
-        }
-
-        player.getOpenInventory().setTitle(TextUtil.color(title));
+        player.getOpenInventory().setTitle(processText(title));
     }
 
     public void updateInventory() {
         items.clear();
         inventory.clear();
 
+        // Custom items - lower priority
+        updateCustomItems();
+        // Default items - higher priority
         update();
 
         items.forEach((slot, item) -> {
-            ItemStack parsed = item.getItem().build();
-            
-            ItemUtil.parsePlaceholders(parsed, placeholders);
-
-            if (parsePlaceholders) {
-                ItemUtil.parsePlaceholders(parsed, player);
-            }
-
-            inventory.setItem(slot, parsed);
+            inventory.setItem(slot, processItem(item));
         });
     }
 
@@ -133,8 +138,12 @@ public abstract class Menu implements InventoryHolder {
         draggableSlots.addAll(Arrays.asList(slots));
     }
 
-    public void placeholder(String key, String value) {
+    public void addPlaceholder(String key, String value) {
         placeholders.add(key, value);
+    }
+
+    public void setPlaceholders(PlaceholderMap map) {
+        placeholders.merge(map);
     }
 
     public void updateTitle() {
@@ -156,6 +165,36 @@ public abstract class Menu implements InventoryHolder {
     @Override
     public Inventory getInventory() {
         return inventory;
+    }
+
+    private void updateCustomItems() {
+        if (!allowCustomItems || config == null || !config.isConfigurationSection("custom-items")) {
+            return;
+        }
+
+        for (String key : config.getConfigurationSection("custom-items").getKeys(false)) {
+            setItem(new MenuItem(config.getConfigurationSection("custom-items." + key)));
+        }
+    }
+
+    private ItemStack processItem(MenuItem item) {
+        ItemStack stack = item.getItem().build();
+
+        ItemUtil.parsePlaceholders(stack, placeholders);
+
+        if (parsePlaceholders) {
+            ItemUtil.parsePlaceholders(stack, player);
+        }
+
+        return stack;
+    }
+
+    private String processText(String text) {
+        if (parsePlaceholders) {
+            text = TextUtil.parsePlaceholders(player, text);
+        }
+
+        return placeholders.parse(text);
     }
 
 }

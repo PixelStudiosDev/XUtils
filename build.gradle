@@ -6,7 +6,7 @@ plugins {
 }
 
 group = 'dev.pixelstudios'
-version = '1.9.6'
+version = '1.9.7'
 
 repositories {
     mavenCentral()
@@ -24,7 +24,7 @@ repositories {
 dependencies {
     compileOnly 'org.spigotmc:spigot-api:1.20.4-R0.1-SNAPSHOT'
     compileOnly 'me.clip:placeholderapi:2.11.5'
-    compileOnly 'de.tr7zw:item-nbt-api:2.13.1'
+    compileOnly 'de.tr7zw:item-nbt-api:2.13.2'
     compileOnly 'org.projectlombok:lombok:1.18.32'
     compileOnly 'net.Indyuce:MMOItems:6.7.3'
     compileOnly 'io.lumine:MythicLib-dist:1.4'
@@ -34,7 +34,7 @@ dependencies {
 
     compileOnly fileTree(dir: 'libs', include: ['*.jar'])
 
-    api 'com.github.cryptomorin:XSeries:11.2.0'
+    api 'com.github.cryptomorin:XSeries:11.2.0.1'
 
     annotationProcessor 'org.projectlombok:lombok:1.18.32'
 }
