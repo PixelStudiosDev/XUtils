@@ -6,7 +6,7 @@ plugins {
 }
 
 group = 'dev.pixelstudios'
-version = '1.9.8'
+version = '1.9.9'
 
 repositories {
     mavenCentral()
@@ -32,7 +32,7 @@ dependencies {
     compileOnly 'io.th0rgal:oraxen:1.174.0'
     compileOnly 'com.willfp:eco:6.70.0'
 
-    compileOnly fileTree(dir: 'libs', include: ['*.jar'])
+    // compileOnly fileTree(dir: 'libs', include: ['*.jar'])
 
     api 'com.github.cryptomorin:XSeries:11.2.1'
 
