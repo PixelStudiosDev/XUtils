@@ -6,6 +6,7 @@ import com.cryptomorin.xseries.profiles.builder.XSkull;
 import com.cryptomorin.xseries.profiles.objects.Profileable;
 import dev.pixelstudios.xutils.ReflectionUtil;
 import dev.pixelstudios.xutils.VersionUtil;
+import dev.pixelstudios.xutils.config.Configuration;
 import dev.pixelstudios.xutils.item.provider.ItemProvider;
 import dev.pixelstudios.xutils.objects.PlaceholderMap;
 import dev.pixelstudios.xutils.text.TextUtil;
@@ -61,6 +62,8 @@ public final class ItemBuilder implements Cloneable {
     public ItemBuilder(ItemStack item) {
         this.item = item;
         this.meta = item.getItemMeta();
+
+        Configuration config = new Configuration("achievements", "items.yml");
     }
 
     public ItemBuilder(Material material) {
