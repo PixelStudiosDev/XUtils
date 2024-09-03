@@ -28,11 +28,15 @@ public class Configuration extends YamlConfiguration {
         this.file = new File(destination, this.name);
     }
 
-    public Configuration(String path) {
-        this.file = new File(XUtils.getPlugin().getDataFolder(), path);
+    public Configuration(File file) {
+        this.file = FileUtil.create(file);
         this.name = file.getName();
 
         this.load();
+    }
+
+    public Configuration(String path) {
+        this(new File(XUtils.getPlugin().getDataFolder(), path));
     }
 
     public void load() {
