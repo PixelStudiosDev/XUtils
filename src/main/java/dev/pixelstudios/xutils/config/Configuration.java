@@ -97,4 +97,8 @@ public class Configuration extends YamlConfiguration {
         return TextUtil.parseColor(getString(path));
     }
 
+    public ConfigNode getNode(String path) {
+        return new ConfigNode(this, path);
+    }
+
 }

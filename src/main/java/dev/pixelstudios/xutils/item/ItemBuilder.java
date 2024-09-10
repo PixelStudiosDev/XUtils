@@ -10,6 +10,7 @@ import dev.pixelstudios.xutils.config.Configuration;
 import dev.pixelstudios.xutils.item.provider.ItemProvider;
 import dev.pixelstudios.xutils.objects.PlaceholderMap;
 import dev.pixelstudios.xutils.text.TextUtil;
+import lombok.Setter;
 import org.bukkit.Color;
 import org.bukkit.DyeColor;
 import org.bukkit.FireworkEffect;
@@ -18,6 +19,7 @@ import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.enchantments.Enchantment;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ArmorMeta;
@@ -62,8 +64,6 @@ public final class ItemBuilder implements Cloneable {
     public ItemBuilder(ItemStack item) {
         this.item = item;
         this.meta = item.getItemMeta();
-
-        Configuration config = new Configuration("achievements", "items.yml");
     }
 
     public ItemBuilder(Material material) {
@@ -80,6 +80,10 @@ public final class ItemBuilder implements Cloneable {
 
     public static ItemBuilder fromConfig(ConfigurationSection section, ItemBuilder defaultItem) {
         return ItemProvider.fromConfig(section, defaultItem);
+    }
+
+    public static ItemBuilder fromConfig(ConfigurationSection section, ItemBuilder defaultItem, Player viewer) {
+        return ItemProvider.fromConfig(section, defaultItem, viewer);
     }
 
     public ItemBuilder legacySplash() {
@@ -200,7 +204,11 @@ public final class ItemBuilder implements Cloneable {
         return this;
     }
 
-    public ItemBuilder texture(String texture) {
+    public ItemBuilder texture(String texture, Player viewer) {
+        if (viewer != null && texture.equals("{player}")) {
+            texture = viewer.getName();
+        }
+
         XSkull.of(meta).profile(Profileable.detect(texture)).apply();
         return this;
     }

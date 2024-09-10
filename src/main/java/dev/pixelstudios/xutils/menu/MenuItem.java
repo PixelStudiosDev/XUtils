@@ -43,11 +43,15 @@ public class MenuItem {
     }
 
     public MenuItem(ConfigurationSection section) {
-        this(section, null);
+        this(section, null, null);
     }
 
     public MenuItem(ConfigurationSection section, ItemBuilder defaultItem) {
-        this(ItemBuilder.fromConfig(section, defaultItem));
+        this(section, defaultItem, null);
+    }
+
+    public MenuItem(ConfigurationSection section, ItemBuilder defaultItem, Player viewer) {
+        this(ItemBuilder.fromConfig(section, defaultItem, viewer));
 
         if (section.isList("slots")) {
             slots.addAll(section.getIntegerList("slots"));

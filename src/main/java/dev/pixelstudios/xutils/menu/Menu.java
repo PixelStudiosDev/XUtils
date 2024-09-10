@@ -71,14 +71,12 @@ public abstract class Menu implements InventoryHolder {
     }
 
     public MenuItem setItem(String key) {
-        return setItem(
-                new MenuItem(config.getConfigurationSection("items." + key))
-        );
+        return setItem(key, null);
     }
 
     public MenuItem setItem(String key, ItemBuilder defaultItem) {
         return setItem(
-                new MenuItem(config.getConfigurationSection("items." + key), defaultItem)
+                new MenuItem(config.getConfigurationSection("items." + key), defaultItem, player)
         );
     }
 
@@ -173,7 +171,7 @@ public abstract class Menu implements InventoryHolder {
         }
 
         for (String key : config.getConfigurationSection("custom-items").getKeys(false)) {
-            setItem(new MenuItem(config.getConfigurationSection("custom-items." + key)));
+            setItem(new MenuItem(config.getConfigurationSection("custom-items." + key), null, player));
         }
     }
 

@@ -12,6 +12,7 @@ import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.enchantments.Enchantment;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
@@ -90,6 +91,10 @@ public abstract class ItemProvider {
     }
 
     public static ItemBuilder fromConfig(ConfigurationSection section, ItemBuilder defaultItem) {
+        return fromConfig(section, defaultItem, null);
+    }
+
+    public static ItemBuilder fromConfig(ConfigurationSection section, ItemBuilder defaultItem, Player viewer) {
         if (!section.isString("material") && defaultItem == null) {
             throw new IllegalArgumentException("Missing material property");
         }
@@ -115,7 +120,7 @@ public abstract class ItemProvider {
         }
 
         if (section.isString("texture")) {
-            builder.texture(section.getString("texture"));
+            builder.texture(section.getString("texture"), viewer);
         }
 
         if (section.isInt("amount")) {
