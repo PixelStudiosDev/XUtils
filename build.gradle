@@ -30,8 +30,8 @@ dependencies {
     compileOnly 'net.Indyuce:MMOItems:6.7.3'
     compileOnly 'io.lumine:MythicLib-dist:1.4'
     compileOnly 'com.github.LoneDev6:API-ItemsAdder:3.6.3-beta-14'
-    compileOnly 'io.th0rgal:oraxen:1.174.0'
-    compileOnly 'com.willfp:eco:6.70.0'
+    compileOnly 'io.th0rgal:oraxen:1.181.0'
+    compileOnly 'com.willfp:eco:6.74.1'
     compileOnly 'com.sk89q:worldguard:6.1.1-SNAPSHOT'
     compileOnly 'com.sk89q.worldguard:worldguard-bukkit:7.0.5'
 
