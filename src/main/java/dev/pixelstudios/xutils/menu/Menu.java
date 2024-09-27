@@ -58,6 +58,10 @@ public abstract class Menu implements InventoryHolder {
     }
 
     public MenuItem setItem(MenuItem item) {
+        if (item.getSlots().contains(-1)) {
+            return item;
+        }
+
         item.getSlots().forEach(slot -> {
             if (slot < 0 || slot >= getRows() * 9) {
                 TextUtil.error("Slot " + slot + " is out of bounds for menu '" + getTitle() + "'");
