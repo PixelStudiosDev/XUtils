@@ -78,7 +78,7 @@ public class TextUtil {
      * @param message The message to send
      */
     public static void sendMessage(CommandSender sender, String message) {
-        if (message == null) return;
+        if (message == null || message.isEmpty()) return;
 
         if (message.startsWith("<center>") && message.endsWith("</center>")) {
             message = getCenteredMessage(message);
@@ -127,6 +127,8 @@ public class TextUtil {
     }
 
     public static void sendMessage(Player player, List<String> message, List<String> hover, ClickEvent click) {
+        if (message.isEmpty()) return;
+
         message.replaceAll(line -> color(parsePlaceholders(player, line)));
         hover.replaceAll(line -> color(parsePlaceholders(player, line)));
 

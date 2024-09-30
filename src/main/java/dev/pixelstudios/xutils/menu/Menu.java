@@ -79,9 +79,14 @@ public abstract class Menu implements InventoryHolder {
     }
 
     public MenuItem setItem(String key, ItemBuilder defaultItem) {
-        return setItem(
-                new MenuItem(config.getConfigurationSection("items." + key), defaultItem, player)
-        );
+        ConfigurationSection section = config.getConfigurationSection("items." + key);
+
+        if (section == null) {
+            TextUtil.error("Missing item '" + key + "' in menu '" + getTitle() + "'");
+            return null;
+        }
+
+        return setItem(new MenuItem(section, defaultItem, player));
     }
 
     public void fillBorders(MenuItem item) {
