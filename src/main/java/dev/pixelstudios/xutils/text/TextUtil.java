@@ -3,6 +3,7 @@ package dev.pixelstudios.xutils.text;
 import com.cryptomorin.xseries.XPotion;
 import com.cryptomorin.xseries.messages.ActionBar;
 import com.cryptomorin.xseries.messages.Titles;
+import dev.pixelstudios.xutils.NumberUtil;
 import dev.pixelstudios.xutils.XUtils;
 import lombok.experimental.UtilityClass;
 import me.clip.placeholderapi.PlaceholderAPI;
@@ -243,6 +244,11 @@ public class TextUtil {
         ActionBar.sendActionBarWhile(XUtils.getPlugin(), player, color(message), condition);
     }
 
+    /**
+     * Center a message
+     * @param message The message to center
+     * @return The centered message
+     */
     public static String getCenteredMessage(String message) {
         if (message == null || message.isEmpty()) return "";
 
@@ -282,7 +288,7 @@ public class TextUtil {
 
     /**
      * Parse a potion effect from a string
-     * Format: <type>,<duration>,<amplifier>
+     * Format: <type>:<duration>:<amplifier>
      * @param serialized The serialized string
      * @return The potion effect
      * @throws IllegalArgumentException If the string is not in the correct format
@@ -300,6 +306,12 @@ public class TextUtil {
         return new PotionEffect(type, duration, amplifier);
     }
 
+    /**
+     * Parse a color from a string
+     * Format: <r>:<g>:<b> or <dye>
+     * @param text The serialized color
+     * @return The color
+     */
     public static Color parseColor(String text) {
         String[] split = text.split(":");
 
@@ -318,6 +330,13 @@ public class TextUtil {
         return color;
     }
 
+    /**
+     * Get a chat input from a player
+     * @param player The player to get the input from
+     * @param prompt The prompt to display
+     * @param timeout The timeout in seconds
+     * @return The chat input
+     */
     public static CompletableFuture<String> getChatInput(Player player, String prompt, int timeout) {
         CompletableFuture<String> future = new CompletableFuture<>();
 
@@ -353,19 +372,35 @@ public class TextUtil {
         return future;
     }
 
+    /**
+     * Format a time in seconds to the format HH:MM:SS
+     * @param seconds The time in seconds
+     * @return The formatted time
+     */
     public static String formatTime(int seconds) {
         int hours = seconds / 3600;
         int minutes = (seconds % 3600) / 60;
         seconds = seconds % 60;
 
         String formatted = "";
+
         if (hours > 0) {
             formatted += hours > 9 ? hours : "0" + hours;
             formatted += ":";
         }
+
         return formatted + (minutes > 9 ? minutes : "0" + minutes) + ":" + (seconds > 9 ? seconds : "0" + seconds);
     }
 
+    /**
+     * Format a time in seconds to a human-readable format
+     * @param seconds The time in seconds
+     * @param daysFormat The format for days
+     * @param hoursFormat The format for hours
+     * @param minutesFormat The format for minutes
+     * @param secondsFormat The format for seconds
+     * @return The formatted time
+     */
     public static String formatTime(
             int seconds,
             String daysFormat,
@@ -394,6 +429,24 @@ public class TextUtil {
         }
 
         return formatted.trim();
+    }
+
+    public static String getProgressBar(
+            int percentage,
+            String filled,
+            String empty,
+            int length
+    ) {
+        percentage = NumberUtil.clamp(percentage, 0, 100);
+
+        int filledLength = Math.floorDiv(percentage * length, 100);
+        StringBuilder builder = new StringBuilder();
+
+        for (int i = 0; i < length; i++) {
+            builder.append(i < filledLength ? filled : empty);
+        }
+
+        return color(builder.toString());
     }
 
 }

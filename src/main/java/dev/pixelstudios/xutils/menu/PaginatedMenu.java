@@ -19,9 +19,9 @@ public abstract class PaginatedMenu<T> extends Menu {
     public PaginatedMenu(Player player, ConfigurationSection section) {
         super(player, section);
 
-        placeholders.addNumber("{previous_page}", () -> page);
-        placeholders.addNumber("{page}", () -> page + 1);
-        placeholders.addNumber("{next_page}", () -> page + 2);
+        placeholders.addNumber("previous_page", () -> page);
+        placeholders.addNumber("page", () -> page + 1);
+        placeholders.addNumber("next_page", () -> page + 2);
     }
 
     public PaginatedMenu(Player player) {

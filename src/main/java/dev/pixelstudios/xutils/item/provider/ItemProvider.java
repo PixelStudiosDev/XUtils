@@ -32,6 +32,7 @@ public abstract class ItemProvider {
         register(new EcoItemsProvider());
         register(new ItemsAdderProvider());
         register(new OraxenProvider());
+        register(new NexoProvider());
         register(new MMOItemsProvider());
     }
 

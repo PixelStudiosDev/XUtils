@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 public class Configuration extends YamlConfiguration {
 
@@ -97,8 +98,8 @@ public class Configuration extends YamlConfiguration {
         return TextUtil.parseColor(getString(path));
     }
 
-    public ConfigNode getNode(String path) {
-        return new ConfigNode(this, path);
+    public List<ConfigMap> getMaps(String path) {
+        return ConfigMap.loadList(this, path);
     }
 
 }

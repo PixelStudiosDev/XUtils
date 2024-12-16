@@ -44,20 +44,29 @@ public class PlaceholderMap implements Cloneable {
     }
 
     public String parse(String text) {
+        return parse(text, '{', '}');
+    }
+
+    public String parse(String text, char open, char close) {
         for (Map.Entry<String, Supplier<String>> entry : placeholders.entrySet()) {
-            text = text.replace(entry.getKey(), entry.getValue().get());
+            text = text.replace(open + entry.getKey() + close, entry.getValue().get());
         }
+
         return TextUtil.color(text);
     }
 
     public List<String> parse(List<String> text) {
+        return parse(text, '{', '}');
+    }
+
+    public List<String> parse(List<String> text, char open, char close) {
         List<String> parsed = new ArrayList<>();
 
         for (String line : text) {
             boolean found = false;
 
             for (Map.Entry<String, Supplier<List<String>>> entry : multiLinePlaceholders.entrySet()) {
-                if (line.contains(entry.getKey())) {
+                if (line.contains(open + entry.getKey() + close)) {
                     parsed.addAll(entry.getValue().get());
 
                     found = true;
@@ -66,9 +75,10 @@ public class PlaceholderMap implements Cloneable {
             }
 
             if (!found) {
-                parsed.add(parse(line));
+                parsed.add(parse(line, open, close));
             }
         }
+
         return TextUtil.color(parsed);
     }
 

@@ -69,7 +69,15 @@ public class NumberUtil {
 
     public static int getPercentage(int value, int max) {
         if (max == 0) return 0;
-        return (int) ((value / (double) max) * 100);
+
+        return NumberUtil.clamp(
+                (int) ((double) value / max * 100),
+                0, 100
+        );
+    }
+
+    public static int clamp(int value, int min, int max) {
+        return Math.max(min, Math.min(max, value));
     }
 
 }
