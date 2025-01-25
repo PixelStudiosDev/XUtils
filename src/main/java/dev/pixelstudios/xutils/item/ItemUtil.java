@@ -1,17 +1,18 @@
 package dev.pixelstudios.xutils.item;
 
 import com.cryptomorin.xseries.XMaterial;
-import dev.pixelstudios.xutils.item.provider.ItemProvider;
+import dev.pixelstudios.xutils.text.TextUtil;
 import lombok.experimental.UtilityClass;
 import me.clip.placeholderapi.PlaceholderAPI;
 import dev.pixelstudios.xutils.objects.PlaceholderMap;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.List;
-import java.util.Optional;
+import java.util.Map;
 import java.util.function.Function;
 
 @UtilityClass
@@ -54,10 +55,18 @@ public class ItemUtil {
 
         if (parts.length == 2) {
             String key = ItemProvider.lookupCustomId(item);
-            return key != null && key.equalsIgnoreCase(parts[1]);
+            return TextUtil.matchString(parts[1], key);
         } else {
-            Optional<XMaterial> material = XMaterial.matchXMaterial(match);
-            return material.isPresent() && material.get().isSimilar(item);
+            String material = XMaterial.matchXMaterial(item).name();
+            return TextUtil.matchString(match, material);
+        }
+    }
+
+    public static void give(Player player, ItemStack... items) {
+        Map<Integer, ItemStack> remaining = player.getInventory().addItem(items);
+
+        for (ItemStack item : remaining.values()) {
+            player.getWorld().dropItem(player.getLocation(), item);
         }
     }
 

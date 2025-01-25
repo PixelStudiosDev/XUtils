@@ -4,6 +4,7 @@ import com.willfp.eco.core.items.CustomItem;
 import com.willfp.eco.core.items.Items;
 import com.willfp.eco.core.items.TestableItem;
 import com.willfp.eco.core.recipe.parts.EmptyTestableItem;
+import dev.pixelstudios.xutils.item.ItemProvider;
 import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.ItemStack;
 

@@ -2,6 +2,7 @@ package dev.pixelstudios.xutils.item.provider;
 
 import com.nexomc.nexo.api.NexoItems;
 import com.nexomc.nexo.items.ItemBuilder;
+import dev.pixelstudios.xutils.item.ItemProvider;
 import org.bukkit.inventory.ItemStack;
 
 public class NexoProvider extends ItemProvider {

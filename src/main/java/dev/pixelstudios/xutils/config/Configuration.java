@@ -13,8 +13,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.Set;
 
 public class Configuration extends YamlConfiguration {
 
@@ -60,17 +59,19 @@ public class Configuration extends YamlConfiguration {
     }
 
     public boolean update() {
-        return update(Collections.emptyList());
+        return update(Collections.emptySet());
     }
 
-    public boolean update(List<String> ignoredKeys) {
+    public boolean update(Set<String> ignoredKeys) {
         InputStreamReader reader = new InputStreamReader(XUtils.getPlugin().getResource(name));
         YamlConfiguration defaultConfig = YamlConfiguration.loadConfiguration(reader);
 
         boolean updated = false;
+
         for (String key : defaultConfig.getKeys(true)) {
             if (!contains(key)) {
                 if (ignoredKeys.stream().anyMatch(key::startsWith)) continue;
+
                 set(key, defaultConfig.get(key));
                 updated = true;
             }
@@ -96,10 +97,6 @@ public class Configuration extends YamlConfiguration {
 
     public Color getColor(String path) {
         return TextUtil.parseColor(getString(path));
-    }
-
-    public List<ConfigMap> getMaps(String path) {
-        return ConfigMap.loadList(this, path);
     }
 
 }

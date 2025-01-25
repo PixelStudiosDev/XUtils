@@ -449,4 +449,34 @@ public class TextUtil {
         return color(builder.toString());
     }
 
+    public static boolean matchString(String pattern, String target) {
+        if (pattern == null || target == null) {
+            return false;
+        }
+        // Make the comparison case-insensitive
+        pattern = pattern.toLowerCase();
+        target = target.toLowerCase();
+
+        if (pattern.startsWith("*") && pattern.endsWith("*")) {
+            pattern = pattern.substring(1, pattern.length() - 1);
+            return target.contains(pattern);
+
+        } else if (pattern.startsWith("*")) {
+            pattern = pattern.substring(1);
+            return target.endsWith(pattern);
+
+        } else if (pattern.endsWith("*")) {
+            pattern = pattern.substring(0, pattern.length() - 1);
+            return target.startsWith(pattern);
+
+        } else {
+            return target.equals(pattern);
+        }
+    }
+
+    public static boolean matchString(List<String> patterns, String target) {
+        if (patterns == null) return false;
+        return patterns.stream().anyMatch(pattern -> matchString(pattern, target));
+    }
+
 }

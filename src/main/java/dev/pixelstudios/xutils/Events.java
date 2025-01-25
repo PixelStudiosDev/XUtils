@@ -13,22 +13,23 @@ import java.util.function.Consumer;
 @RequiredArgsConstructor
 public class Events<T extends Event> implements EventExecutor, Listener {
 
-    private final Consumer<? super T> handler;
+    private final Class<T> eventClass;
+    private final Consumer<T> handler;
 
-    public static <T extends Event> void subscribe(Class<T> eventClass, Consumer<? super T> handler) {
+    public static <T extends Event> void subscribe(Class<T> eventClass, Consumer<T> handler) {
         subscribe(eventClass, handler, EventPriority.NORMAL, false);
     }
 
-    public static <T extends Event> void subscribe(Class<T> eventClass, Consumer<? super T> handler, EventPriority priority) {
+    public static <T extends Event> void subscribe(Class<T> eventClass, Consumer<T> handler, EventPriority priority) {
         subscribe(eventClass, handler, priority, false);
     }
 
-    public static <T extends Event> void subscribe(Class<T> eventClass, Consumer<? super T> handler, boolean ignoreCancelled) {
+    public static <T extends Event> void subscribe(Class<T> eventClass, Consumer<T> handler, boolean ignoreCancelled) {
         subscribe(eventClass, handler, EventPriority.NORMAL, ignoreCancelled);
     }
 
-    public static <T extends Event> void subscribe(Class<T> eventClass, Consumer<? super T> handler, EventPriority priority, boolean ignoreCancelled) {
-        Events<T> executor = new Events<>(handler);
+    public static <T extends Event> void subscribe(Class<T> eventClass, Consumer<T> handler, EventPriority priority, boolean ignoreCancelled) {
+        Events<T> executor = new Events<>(eventClass, handler);
         Bukkit.getPluginManager().registerEvent(eventClass, executor, priority, executor, XUtils.getPlugin(), ignoreCancelled);
     }
 
@@ -46,7 +47,9 @@ public class Events<T extends Event> implements EventExecutor, Listener {
     @SuppressWarnings("unchecked")
     @Override
     public void execute(Listener listener, Event event) {
-        handler.accept((T) event);
+        if (eventClass.isInstance(event)) {
+            handler.accept((T) event);
+        }
     }
 
 }

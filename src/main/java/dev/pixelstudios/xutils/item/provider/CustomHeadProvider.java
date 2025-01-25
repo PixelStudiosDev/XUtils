@@ -2,6 +2,7 @@ package dev.pixelstudios.xutils.item.provider;
 
 import com.cryptomorin.xseries.profiles.builder.XSkull;
 import com.cryptomorin.xseries.profiles.objects.Profileable;
+import dev.pixelstudios.xutils.item.ItemProvider;
 import org.bukkit.inventory.ItemStack;
 
 public class CustomHeadProvider extends ItemProvider {

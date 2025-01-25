@@ -1,6 +1,7 @@
 package dev.pixelstudios.xutils.item.provider;
 
 import dev.lone.itemsadder.api.CustomStack;
+import dev.pixelstudios.xutils.item.ItemProvider;
 import org.bukkit.inventory.ItemStack;
 
 public class ItemsAdderProvider extends ItemProvider {

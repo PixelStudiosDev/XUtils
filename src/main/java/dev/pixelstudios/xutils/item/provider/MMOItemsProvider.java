@@ -1,5 +1,6 @@
 package dev.pixelstudios.xutils.item.provider;
 
+import dev.pixelstudios.xutils.item.ItemProvider;
 import net.Indyuce.mmoitems.MMOItems;
 import org.bukkit.inventory.ItemStack;
 

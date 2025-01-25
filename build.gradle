@@ -2,11 +2,11 @@ plugins {
     id 'java'
     id 'java-library'
     id 'maven-publish'
-    id 'com.github.johnrengelman.shadow' version '8.1.1'
+    id 'com.gradleup.shadow' version '8.3.5'
 }
 
 group = 'dev.pixelstudios'
-version = '1.10.0'
+version = '1.10.1'
 
 repositories {
     mavenCentral()
@@ -37,9 +37,9 @@ dependencies {
     compileOnly 'com.sk89q:worldguard:6.1.1-SNAPSHOT'
     compileOnly 'com.sk89q.worldguard:worldguard-bukkit:7.0.5'
 
-    compileOnly fileTree(dir: 'libs', include: ['*.jar'])
+    api 'com.github.cryptomorin:XSeries:13.0.0'
 
-    api 'com.github.cryptomorin:XSeries:12.1.0'
+    compileOnly fileTree(dir: 'libs', include: ['*.jar'])
 
     compileOnly 'org.projectlombok:lombok:1.18.34'
     annotationProcessor 'org.projectlombok:lombok:1.18.34'
@@ -55,16 +55,16 @@ java {
     targetCompatibility = JavaVersion.VERSION_1_8
 }
 
-tasks.withType(JavaCompile).configureEach {
-    options.encoding = 'UTF-8'
-}
-
 publishing {
     publications {
         maven(MavenPublication) {
             from components.java
         }
     }
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
 }
 
 processResources {

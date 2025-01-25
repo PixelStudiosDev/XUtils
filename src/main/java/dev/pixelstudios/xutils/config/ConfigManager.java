@@ -2,8 +2,8 @@ package dev.pixelstudios.xutils.config;
 
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public final class ConfigManager {
 
@@ -31,23 +31,23 @@ public final class ConfigManager {
         return load(name, null);
     }
 
-    public Configuration update(String name, String destination, List<String> ignoredKeys) {
+    public Configuration update(String name, String destination, Set<String> ignoredKeys) {
         Configuration config = load(name, destination);
         config.update(ignoredKeys);
 
         return config;
     }
 
-    public Configuration update(String name, List<String> ignoredKeys) {
+    public Configuration update(String name, Set<String> ignoredKeys) {
         return update(name, null, ignoredKeys);
     }
 
     public Configuration update(String name, String destination) {
-        return update(name, destination, Collections.emptyList());
+        return update(name, destination, Collections.emptySet());
     }
 
     public Configuration update(String name) {
-        return update(name, Collections.emptyList());
+        return update(name, Collections.emptySet());
     }
 
     public void invalidate(String path) {

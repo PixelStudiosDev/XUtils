@@ -1,5 +1,6 @@
 package dev.pixelstudios.xutils.item.provider;
 
+import dev.pixelstudios.xutils.item.ItemProvider;
 import io.th0rgal.oraxen.api.OraxenItems;
 import io.th0rgal.oraxen.items.ItemBuilder;
 import org.bukkit.inventory.ItemStack;
