@@ -1,9 +1,9 @@
 package dev.pixelstudios.xutils.menu;
 
-import dev.pixelstudios.xutils.XUtils;
-import org.bukkit.Bukkit;
+import dev.pixelstudios.xutils.Events;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
@@ -23,6 +23,10 @@ public class MenuListener implements Listener {
         int slot = event.getRawSlot();
 
         if (slot >= event.getInventory().getSize()) {
+            // Prevent moving items into the menu by shift-clicking
+            if (event.getAction() == InventoryAction.MOVE_TO_OTHER_INVENTORY) {
+                event.setCancelled(true);
+            }
             return;
         }
 
@@ -78,7 +82,7 @@ public class MenuListener implements Listener {
     public static void register() {
         if (instance == null) {
             instance = new MenuListener();
-            Bukkit.getPluginManager().registerEvents(instance, XUtils.getPlugin());
+            Events.register(instance);
         }
     }
 
