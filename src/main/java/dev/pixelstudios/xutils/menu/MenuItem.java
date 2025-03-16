@@ -2,7 +2,7 @@ package dev.pixelstudios.xutils.menu;
 
 import dev.pixelstudios.xutils.SoundUtil;
 import dev.pixelstudios.xutils.item.ItemBuilder;
-import dev.pixelstudios.xutils.objects.PlaceholderMap;
+import dev.pixelstudios.xutils.placeholder.PlaceholderMap;
 import lombok.Getter;
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;

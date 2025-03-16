@@ -4,7 +4,7 @@ import com.cryptomorin.xseries.XMaterial;
 import dev.pixelstudios.xutils.text.TextUtil;
 import lombok.experimental.UtilityClass;
 import me.clip.placeholderapi.PlaceholderAPI;
-import dev.pixelstudios.xutils.objects.PlaceholderMap;
+import dev.pixelstudios.xutils.placeholder.PlaceholderMap;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;

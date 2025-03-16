@@ -6,7 +6,7 @@ import com.cryptomorin.xseries.profiles.builder.XSkull;
 import com.cryptomorin.xseries.profiles.objects.Profileable;
 import dev.pixelstudios.xutils.ReflectionUtil;
 import dev.pixelstudios.xutils.VersionUtil;
-import dev.pixelstudios.xutils.objects.PlaceholderMap;
+import dev.pixelstudios.xutils.placeholder.PlaceholderMap;
 import dev.pixelstudios.xutils.text.TextUtil;
 import org.bukkit.Color;
 import org.bukkit.DyeColor;

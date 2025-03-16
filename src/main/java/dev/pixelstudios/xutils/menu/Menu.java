@@ -6,7 +6,7 @@ import lombok.Getter;
 import lombok.Setter;
 import dev.pixelstudios.xutils.ReflectionUtil;
 import dev.pixelstudios.xutils.Tasks;
-import dev.pixelstudios.xutils.objects.PlaceholderMap;
+import dev.pixelstudios.xutils.placeholder.PlaceholderMap;
 import dev.pixelstudios.xutils.text.TextUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;

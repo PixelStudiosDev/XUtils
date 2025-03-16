@@ -1,4 +1,4 @@
-package dev.pixelstudios.xutils.objects;
+package dev.pixelstudios.xutils.placeholder;
 
 import dev.pixelstudios.xutils.text.TextUtil;
 
@@ -48,6 +48,10 @@ public class PlaceholderMap implements Cloneable {
     }
 
     public String parse(String text, char open, char close) {
+        if (text == null) {
+            return null;
+        }
+
         for (Map.Entry<String, Supplier<String>> entry : placeholders.entrySet()) {
             text = text.replace(open + entry.getKey() + close, entry.getValue().get());
         }
@@ -60,6 +64,10 @@ public class PlaceholderMap implements Cloneable {
     }
 
     public List<String> parse(List<String> text, char open, char close) {
+        if (text == null) {
+            return null;
+        }
+
         List<String> parsed = new ArrayList<>();
 
         for (String line : text) {
