@@ -11,14 +11,20 @@ import java.lang.reflect.Method;
 public class ReflectionUtil {
 
     public static final int VERSION;
+    public static final int PATCH_VERSION;
 
     static {
         String[] parts = Bukkit.getBukkitVersion().split("-")[0].split("\\.");
         VERSION = Integer.parseInt(parts[1]);
+        PATCH_VERSION = Integer.parseInt(parts[2]);
     }
 
     public static boolean supports(int version) {
         return VERSION >= version;
+    }
+
+    public static boolean supports(int version, int patch) {
+        return VERSION > version || (VERSION == version && PATCH_VERSION >= patch);
     }
 
     public static Object getFieldValue(Class<?> clazz, String fieldName, Object instance) {

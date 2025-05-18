@@ -41,6 +41,7 @@ import java.util.Map;
 public final class ItemBuilder implements Cloneable {
 
     private static final Map<PotionEffectType, String> EFFECT_NAMES = new HashMap<>();
+    private static final Profileable FALLBACK_PROFILE = Profileable.username("MHF_Steve");
 
     static {
         EFFECT_NAMES.put(XPotion.INSTANT_DAMAGE.getPotionEffectType(), "Harming");
@@ -206,7 +207,10 @@ public final class ItemBuilder implements Cloneable {
             texture = viewer.getName();
         }
 
-        XSkull.of(meta).profile(Profileable.detect(texture)).apply();
+        XSkull.of(meta).profile(Profileable.detect(texture))
+                .fallback(FALLBACK_PROFILE)
+                .apply();
+
         return this;
     }
 
