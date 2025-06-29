@@ -3,12 +3,7 @@ package dev.pixelstudios.xutils.item;
 import com.cryptomorin.xseries.XEnchantment;
 import com.cryptomorin.xseries.XMaterial;
 import dev.pixelstudios.xutils.ReflectionUtil;
-import dev.pixelstudios.xutils.item.provider.CustomHeadProvider;
-import dev.pixelstudios.xutils.item.provider.EcoItemsProvider;
-import dev.pixelstudios.xutils.item.provider.ItemsAdderProvider;
-import dev.pixelstudios.xutils.item.provider.MMOItemsProvider;
-import dev.pixelstudios.xutils.item.provider.NexoProvider;
-import dev.pixelstudios.xutils.item.provider.OraxenProvider;
+import dev.pixelstudios.xutils.item.provider.*;
 import dev.pixelstudios.xutils.text.TextUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -39,6 +34,7 @@ public abstract class ItemProvider {
         register(new OraxenProvider());
         register(new NexoProvider());
         register(new MMOItemsProvider());
+        register(new CraftEngineProvider());
     }
 
     public static void register(ItemProvider provider) {

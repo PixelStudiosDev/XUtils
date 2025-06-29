@@ -9,6 +9,7 @@ import lombok.experimental.UtilityClass;
 import me.clip.placeholderapi.PlaceholderAPI;
 import dev.pixelstudios.xutils.ReflectionUtil;
 import net.md_5.bungee.api.ChatColor;
+import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
@@ -241,7 +242,8 @@ public class TextUtil {
     }
 
     public static void sendActionBarWhile(Player player, String message, Callable<Boolean> condition) {
-        ActionBar.sendActionBarWhile(XUtils.getPlugin(), player, color(message), condition);
+        BaseComponent component = new ComponentBuilder(color(message)).build();
+        ActionBar.sendActionBarWhile(XUtils.getPlugin(), player, component, condition);
     }
 
     /**
