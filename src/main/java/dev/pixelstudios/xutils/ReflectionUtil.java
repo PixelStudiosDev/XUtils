@@ -15,8 +15,9 @@ public class ReflectionUtil {
 
     static {
         String[] parts = Bukkit.getBukkitVersion().split("-")[0].split("\\.");
+
         VERSION = Integer.parseInt(parts[1]);
-        PATCH_VERSION = Integer.parseInt(parts[2]);
+        PATCH_VERSION = parts.length == 3 ? Integer.parseInt(parts[2]) : 0;
     }
 
     public static boolean supports(int version) {

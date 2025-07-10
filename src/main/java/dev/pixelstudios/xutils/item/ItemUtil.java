@@ -6,6 +6,7 @@ import lombok.experimental.UtilityClass;
 import me.clip.placeholderapi.PlaceholderAPI;
 import dev.pixelstudios.xutils.placeholder.PlaceholderMap;
 import org.bukkit.Bukkit;
+import org.bukkit.NamespacedKey;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -22,11 +23,24 @@ public class ItemUtil {
         return TagHandler.handler().get(item, key);
     }
 
+    public static String getTag(ItemStack item, NamespacedKey key) {
+        return TagHandler.handler().get(item, key);
+    }
+
     public static ItemStack setTag(ItemStack item, String key, String value) {
         return TagHandler.handler().set(item, key, value);
     }
 
+    public static ItemStack setTag(ItemStack item, NamespacedKey key, String value) {
+        return TagHandler.handler().set(item, key, value);
+    }
+
     public static boolean hasTag(ItemStack item, String key) {
+        String tag = getTag(item, key);
+        return tag != null && !tag.isEmpty();
+    }
+
+    public static boolean hasTag(ItemStack item, NamespacedKey key) {
         String tag = getTag(item, key);
         return tag != null && !tag.isEmpty();
     }

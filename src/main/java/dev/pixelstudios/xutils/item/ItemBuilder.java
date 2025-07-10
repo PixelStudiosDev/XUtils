@@ -8,10 +8,7 @@ import dev.pixelstudios.xutils.ReflectionUtil;
 import dev.pixelstudios.xutils.VersionUtil;
 import dev.pixelstudios.xutils.placeholder.PlaceholderMap;
 import dev.pixelstudios.xutils.text.TextUtil;
-import org.bukkit.Color;
-import org.bukkit.DyeColor;
-import org.bukkit.FireworkEffect;
-import org.bukkit.Material;
+import org.bukkit.*;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.configuration.ConfigurationSection;
@@ -232,6 +229,13 @@ public final class ItemBuilder implements Cloneable {
     }
 
     public ItemBuilder tag(String key, String value) {
+        this.item.setItemMeta(meta);
+        this.item = ItemUtil.setTag(item, key, value);
+        this.meta = item.getItemMeta();
+        return this;
+    }
+
+    public ItemBuilder tag(NamespacedKey key, String value) {
         this.item.setItemMeta(meta);
         this.item = ItemUtil.setTag(item, key, value);
         this.meta = item.getItemMeta();

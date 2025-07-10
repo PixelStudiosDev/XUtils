@@ -11,17 +11,24 @@ import org.bukkit.persistence.PersistentDataType;
 public interface TagHandler {
 
     ItemStack set(ItemStack item, String key, String value);
+    ItemStack set(ItemStack item, NamespacedKey key, String value);
+
     String get(ItemStack item, String key);
+    String get(ItemStack item, NamespacedKey key);
 
     static TagHandler modern() {
         return new TagHandler() {
 
             @Override
             public ItemStack set(ItemStack item, String key, String value) {
-                ItemMeta meta = item.getItemMeta();
                 NamespacedKey namespacedKey = new NamespacedKey(XUtils.getPlugin(), key);
+                return set(item, namespacedKey, value);
+            }
 
-                meta.getPersistentDataContainer().set(namespacedKey, PersistentDataType.STRING, value);
+            @Override
+            public ItemStack set(ItemStack item, NamespacedKey key, String value) {
+                ItemMeta meta = item.getItemMeta();
+                meta.getPersistentDataContainer().set(key, PersistentDataType.STRING, value);
                 item.setItemMeta(meta);
 
                 return item;
@@ -30,7 +37,12 @@ public interface TagHandler {
             @Override
             public String get(ItemStack item, String key) {
                 NamespacedKey namespacedKey = new NamespacedKey(XUtils.getPlugin(), key);
-                return item.getItemMeta().getPersistentDataContainer().get(namespacedKey, PersistentDataType.STRING);
+                return get(item, namespacedKey);
+            }
+
+            @Override
+            public String get(ItemStack item, NamespacedKey key) {
+                return item.getItemMeta().getPersistentDataContainer().get(key, PersistentDataType.STRING);
             }
 
         };
@@ -52,6 +64,16 @@ public interface TagHandler {
                 return NBT.get(item, nbt -> {
                     return nbt.getString(key);
                 });
+            }
+
+            @Override
+            public ItemStack set(ItemStack item, NamespacedKey key, String value) {
+                throw new UnsupportedOperationException("Legacy tag handler does not support NamespacedKey");
+            }
+
+            @Override
+            public String get(ItemStack item, NamespacedKey key) {
+                throw new UnsupportedOperationException("Legacy tag handler does not support NamespacedKey");
             }
 
         };
