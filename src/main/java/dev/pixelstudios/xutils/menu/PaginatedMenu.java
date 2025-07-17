@@ -22,6 +22,7 @@ public abstract class PaginatedMenu<T> extends Menu {
         placeholders.addNumber("previous_page", () -> page);
         placeholders.addNumber("page", () -> page + 1);
         placeholders.addNumber("next_page", () -> page + 2);
+        placeholders.addNumber("max_pages", this::getMaxPages);
     }
 
     public PaginatedMenu(Player player) {

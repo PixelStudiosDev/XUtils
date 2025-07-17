@@ -5,6 +5,9 @@ import org.bukkit.Bukkit;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 
+import java.util.Iterator;
+import java.util.concurrent.CompletableFuture;
+import java.util.function.BiConsumer;
 import java.util.function.Supplier;
 
 @UtilityClass
@@ -30,17 +33,23 @@ public class Tasks {
         return Bukkit.getScheduler().runTaskTimer(XUtils.getPlugin(), task, delay, period);
     }
 
-    public static void repeatTimes(Runnable task, long delay, long period, int times) {
+    public static CompletableFuture<Void> repeatTimes(Runnable task, long delay, long period, int times) {
+        CompletableFuture<Void> future = new CompletableFuture<>();
+
         new BukkitRunnable() {
             int remaining = times;
+
             @Override
             public void run() {
                 task.run();
                 if (--remaining == 0) {
+                    future.complete(null);
                     cancel();
                 }
             }
         }.runTaskTimer(XUtils.getPlugin(), delay, period);
+
+        return future;
     }
 
     public static BukkitTask repeatAsync(Runnable task, long delay, long period) {
@@ -88,6 +97,35 @@ public class Tasks {
 
     public static void cancelAll() {
         Bukkit.getScheduler().cancelTasks(XUtils.getPlugin());
+    }
+
+    public static <T> CompletableFuture<Void> forEach(Iterable<T> iterable, BiConsumer<Integer, T> consumer, long delay, long period) {
+        CompletableFuture<Void> future = new CompletableFuture<>();
+        Iterator<T> iterator = iterable.iterator();
+
+        new BukkitRunnable() {
+            int index = 0;
+
+            @Override
+            public void run() {
+                if (!iterator.hasNext()) {
+                    future.complete(null);
+                    cancel();
+                    return;
+                }
+
+                T item = iterator.next();
+                consumer.accept(index++, item);
+            }
+        }.runTaskTimer(XUtils.getPlugin(), delay, period);
+
+        return future;
+    }
+
+    public static CompletableFuture<Void> delay(long ticks) {
+        CompletableFuture<Void> future = new CompletableFuture<>();
+        Bukkit.getScheduler().runTaskLater(XUtils.getPlugin(), () -> future.complete(null), ticks);
+        return future;
     }
 
 }
