@@ -2,19 +2,17 @@ package dev.pixelstudios.xutils.menu;
 
 import dev.pixelstudios.xutils.SoundUtil;
 import lombok.Getter;
-import lombok.Setter;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 
 import java.util.List;
 
-@Getter @Setter
 public abstract class PaginatedMenu<T> extends Menu {
 
     private static String SWITCH_PAGE_SOUND = "UI_BUTTON_CLICK";
-
-    private int page;
-    private boolean updateTitle;
+    // Pages are 0-indexed
+    @Getter
+    private int page = 0;
 
     public PaginatedMenu(Player player, ConfigurationSection section) {
         super(player, section);
@@ -57,9 +55,6 @@ public abstract class PaginatedMenu<T> extends Menu {
             this.page = page;
             updateInventory();
 
-            if (updateTitle) {
-                updateTitle();
-            }
             return true;
         }
         return false;
@@ -71,10 +66,6 @@ public abstract class PaginatedMenu<T> extends Menu {
             updateInventory();
 
             SoundUtil.play(player, SWITCH_PAGE_SOUND);
-
-            if (updateTitle) {
-                updateTitle();
-            }
             return true;
         }
         return false;
@@ -86,10 +77,6 @@ public abstract class PaginatedMenu<T> extends Menu {
             updateInventory();
 
             SoundUtil.play(player, SWITCH_PAGE_SOUND);
-
-            if (updateTitle) {
-                updateTitle();
-            }
             return true;
         }
         return false;

@@ -1,15 +1,17 @@
-package dev.pixelstudios.xutils.placeholder;
+package dev.pixelstudios.xutils.placeholder.papi;
 
-import lombok.Value;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 
 import java.util.function.Function;
 
-@Value
+@Getter
+@AllArgsConstructor
 public class Argument {
 
-    String id;
-    Function<String, Object> function;
-    boolean required;
+    private final String id;
+    private final Function<String, Object> function;
+    private final boolean required;
 
     public static Argument required(String id) {
         return new Argument(id, string -> string, true);

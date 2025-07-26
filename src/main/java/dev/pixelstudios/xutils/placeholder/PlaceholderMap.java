@@ -43,6 +43,12 @@ public class PlaceholderMap implements Cloneable {
         return this;
     }
 
+    public PlaceholderMap clear() {
+        placeholders.clear();
+        multiLinePlaceholders.clear();
+        return this;
+    }
+
     public String parse(String text) {
         return parse(text, '{', '}');
     }

@@ -1,4 +1,4 @@
-package dev.pixelstudios.xutils.placeholder;
+package dev.pixelstudios.xutils.placeholder.papi;
 
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import org.bukkit.entity.Player;
@@ -13,7 +13,7 @@ public class PAPIExpansion extends PlaceholderExpansion {
     private final Plugin plugin;
     private final String identifier;
 
-    private final List<Placeholder> placeholders = new ArrayList<>();
+    private final List<PAPIPlaceholder> placeholders = new ArrayList<>();
 
     private PAPIExpansion(Plugin plugin, String identifier) {
         this.plugin = plugin;
@@ -47,7 +47,7 @@ public class PAPIExpansion extends PlaceholderExpansion {
 
     @Override
     public String onPlaceholderRequest(Player player, String params) {
-        for (Placeholder placeholder : placeholders) {
+        for (PAPIPlaceholder placeholder : placeholders) {
             String result = placeholder.parse(player, params);
 
             if (result != null) {
@@ -58,7 +58,7 @@ public class PAPIExpansion extends PlaceholderExpansion {
         return null;
     }
 
-    public PAPIExpansion addPlaceholders(Placeholder... placeholders) {
+    public PAPIExpansion addPlaceholders(PAPIPlaceholder... placeholders) {
         this.placeholders.addAll(Arrays.asList(placeholders));
         this.placeholders.sort((a, b) -> b.getId().length() - a.getId().length());
         return this;
