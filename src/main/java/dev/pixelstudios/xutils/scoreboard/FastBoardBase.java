@@ -43,7 +43,7 @@ import java.util.stream.Stream;
  * The project is on <a href="https://github.com/MrMicky-FR/FastBoard">GitHub</a>.
  *
  * @author MrMicky
- * @version 2.1.2
+ * @version 2.1.5
  */
 public abstract class FastBoardBase<T> {
 
@@ -72,11 +72,15 @@ public abstract class FastBoardBase<T> {
     private static final Class<?> DISPLAY_SLOT_TYPE;
     private static final Class<?> ENUM_SB_HEALTH_DISPLAY;
     private static final Class<?> ENUM_SB_ACTION;
+    private static final Class<?> ENUM_VISIBILITY;
+    private static final Class<?> ENUM_COLLISION_RULE;
     private static final Object BLANK_NUMBER_FORMAT;
     private static final Object SIDEBAR_DISPLAY_SLOT;
     private static final Object ENUM_SB_HEALTH_DISPLAY_INTEGER;
     private static final Object ENUM_SB_ACTION_CHANGE;
     private static final Object ENUM_SB_ACTION_REMOVE;
+    private static final Object ENUM_VISIBILITY_ALWAYS;
+    private static final Object ENUM_COLLISION_RULE_ALWAYS;
 
     static {
         try {
@@ -84,9 +88,11 @@ public abstract class FastBoardBase<T> {
 
             if (FastReflection.isRepackaged()) {
                 VERSION_TYPE = VersionType.V1_17;
-            } else if (FastReflection.nmsOptionalClass(null, "ScoreboardServer$Action").isPresent()) {
+            } else if (FastReflection.nmsOptionalClass(null, "ScoreboardServer$Action").isPresent()
+                    || FastReflection.nmsOptionalClass(null, "ServerScoreboard$Method").isPresent()) {
                 VERSION_TYPE = VersionType.V1_13;
-            } else if (FastReflection.nmsOptionalClass(null, "IScoreboardCriteria$EnumScoreboardHealthDisplay").isPresent()) {
+            } else if (FastReflection.nmsOptionalClass(null, "IScoreboardCriteria$EnumScoreboardHealthDisplay").isPresent()
+                    || FastReflection.nmsOptionalClass(null, "ObjectiveCriteria$RenderType").isPresent()) {
                 VERSION_TYPE = VersionType.V1_8;
             } else {
                 VERSION_TYPE = VersionType.V1_7;
@@ -94,13 +100,13 @@ public abstract class FastBoardBase<T> {
 
             String gameProtocolPackage = "network.protocol.game";
             Class<?> craftPlayerClass = FastReflection.obcClass("entity.CraftPlayer");
-            Class<?> entityPlayerClass = FastReflection.nmsClass("server.level", "EntityPlayer");
-            Class<?> playerConnectionClass = FastReflection.nmsClass("server.network", "PlayerConnection");
+            Class<?> entityPlayerClass = FastReflection.nmsClass("server.level", "EntityPlayer", "ServerPlayer");
+            Class<?> playerConnectionClass = FastReflection.nmsClass("server.network", "PlayerConnection", "ServerGamePacketListenerImpl");
             Class<?> packetClass = FastReflection.nmsClass("network.protocol", "Packet");
-            Class<?> packetSbObjClass = FastReflection.nmsClass(gameProtocolPackage, "PacketPlayOutScoreboardObjective");
-            Class<?> packetSbDisplayObjClass = FastReflection.nmsClass(gameProtocolPackage, "PacketPlayOutScoreboardDisplayObjective");
-            Class<?> packetSbScoreClass = FastReflection.nmsClass(gameProtocolPackage, "PacketPlayOutScoreboardScore");
-            Class<?> packetSbTeamClass = FastReflection.nmsClass(gameProtocolPackage, "PacketPlayOutScoreboardTeam");
+            Class<?> packetSbObjClass = FastReflection.nmsClass(gameProtocolPackage, "PacketPlayOutScoreboardObjective", "ClientboundSetObjectivePacket");
+            Class<?> packetSbDisplayObjClass = FastReflection.nmsClass(gameProtocolPackage, "PacketPlayOutScoreboardDisplayObjective", "ClientboundSetDisplayObjectivePacket");
+            Class<?> packetSbScoreClass = FastReflection.nmsClass(gameProtocolPackage, "PacketPlayOutScoreboardScore", "ClientboundSetScorePacket");
+            Class<?> packetSbTeamClass = FastReflection.nmsClass(gameProtocolPackage, "PacketPlayOutScoreboardTeam", "ClientboundSetPlayerTeamPacket");
             Class<?> sbTeamClass = VersionType.V1_17.isHigherOrEqual()
                     ? FastReflection.innerClass(packetSbTeamClass, innerClass -> !innerClass.isEnum()) : null;
             Field playerConnectionField = Arrays.stream(entityPlayerClass.getFields())
@@ -113,8 +119,8 @@ public abstract class FastBoardBase<T> {
                     .filter(m -> m.getParameterCount() == 1 && m.getParameterTypes()[0] == packetClass)
                     .findFirst().orElseThrow(NoSuchMethodException::new);
             Optional<Class<?>> displaySlotEnum = FastReflection.nmsOptionalClass("world.scores", "DisplaySlot");
-            CHAT_COMPONENT_CLASS = FastReflection.nmsClass("network.chat", "IChatBaseComponent");
-            CHAT_FORMAT_ENUM = FastReflection.nmsClass(null, "EnumChatFormat");
+            CHAT_COMPONENT_CLASS = FastReflection.nmsClass("network.chat", "IChatBaseComponent","Component");
+            CHAT_FORMAT_ENUM = FastReflection.nmsClass(null, "EnumChatFormat", "ChatFormatting");
             DISPLAY_SLOT_TYPE = displaySlotEnum.orElse(int.class);
             RESET_FORMATTING = FastReflection.enumValueOf(CHAT_FORMAT_ENUM, "RESET", 21);
             SIDEBAR_DISPLAY_SLOT = displaySlotEnum.isPresent() ? FastReflection.enumValueOf(DISPLAY_SLOT_TYPE, "SIDEBAR", 1) : 1;
@@ -149,7 +155,7 @@ public abstract class FastBoardBase<T> {
                 packetSbResetScore = lookup.findConstructor(resetScoreClass, removeScoreType);
                 blankNumberFormat = blankField.isPresent() ? blankField.get().get(null) : null;
             } else if (VersionType.V1_17.isHigherOrEqual()) {
-                Class<?> enumSbAction = FastReflection.nmsClass("server", "ScoreboardServer$Action");
+                Class<?> enumSbAction = FastReflection.nmsClass("server", "ScoreboardServer$Action", "ServerScoreboard$Method");
                 MethodType scoreType = MethodType.methodType(void.class, enumSbAction, String.class, String.class, int.class);
                 packetSbSetScore = lookup.findConstructor(packetSbScoreClass, scoreType);
             } else {
@@ -159,10 +165,22 @@ public abstract class FastBoardBase<T> {
             PACKET_SB_SET_SCORE = packetSbSetScore;
             PACKET_SB_RESET_SCORE = packetSbResetScore;
             PACKET_SB_TEAM = FastReflection.findPacketConstructor(packetSbTeamClass, lookup);
-            PACKET_SB_SERIALIZABLE_TEAM = sbTeamClass == null ? null : FastReflection.findPacketConstructor(sbTeamClass, lookup);
+            PACKET_SB_SERIALIZABLE_TEAM = sbTeamClass != null ? FastReflection.findPacketConstructor(sbTeamClass, lookup) : null;
             FIXED_NUMBER_FORMAT = fixedFormatConstructor;
             BLANK_NUMBER_FORMAT = blankNumberFormat;
             SCORE_OPTIONAL_COMPONENTS = scoreOptionalComponents;
+
+            if (VersionType.V1_17.isHigherOrEqual()) {
+                ENUM_VISIBILITY = FastReflection.nmsClass("world.scores", "ScoreboardTeamBase$EnumNameTagVisibility", "Team$Visibility");
+                ENUM_COLLISION_RULE = FastReflection.nmsClass("world.scores", "ScoreboardTeamBase$EnumTeamPush", "Team$CollisionRule");
+                ENUM_VISIBILITY_ALWAYS = FastReflection.enumValueOf(ENUM_VISIBILITY, "ALWAYS", 0);
+                ENUM_COLLISION_RULE_ALWAYS = FastReflection.enumValueOf(ENUM_COLLISION_RULE, "ALWAYS", 0);
+            } else {
+                ENUM_VISIBILITY = null;
+                ENUM_COLLISION_RULE = null;
+                ENUM_VISIBILITY_ALWAYS = null;
+                ENUM_COLLISION_RULE_ALWAYS = null;
+            }
 
             for (Class<?> clazz : Arrays.asList(packetSbObjClass, packetSbDisplayObjClass, packetSbScoreClass, packetSbTeamClass, sbTeamClass)) {
                 if (clazz == null) {
@@ -181,11 +199,11 @@ public abstract class FastBoardBase<T> {
                 String enumSbActionClass = VersionType.V1_13.isHigherOrEqual()
                         ? "ScoreboardServer$Action"
                         : "PacketPlayOutScoreboardScore$EnumScoreboardAction";
-                ENUM_SB_HEALTH_DISPLAY = FastReflection.nmsClass("world.scores.criteria", "IScoreboardCriteria$EnumScoreboardHealthDisplay");
-                ENUM_SB_ACTION = FastReflection.nmsClass("server", enumSbActionClass);
+                ENUM_SB_HEALTH_DISPLAY = FastReflection.nmsClass("world.scores.criteria", "IScoreboardCriteria$EnumScoreboardHealthDisplay", "ObjectiveCriteria$RenderType");
+                ENUM_SB_ACTION = FastReflection.nmsOptionalClass("server", enumSbActionClass, "ServerScoreboard$Method").orElse(null);
                 ENUM_SB_HEALTH_DISPLAY_INTEGER = FastReflection.enumValueOf(ENUM_SB_HEALTH_DISPLAY, "INTEGER", 0);
-                ENUM_SB_ACTION_CHANGE = FastReflection.enumValueOf(ENUM_SB_ACTION, "CHANGE", 0);
-                ENUM_SB_ACTION_REMOVE = FastReflection.enumValueOf(ENUM_SB_ACTION, "REMOVE", 1);
+                ENUM_SB_ACTION_CHANGE = ENUM_SB_ACTION != null ? FastReflection.enumValueOf(ENUM_SB_ACTION, "CHANGE", 0) : null;
+                ENUM_SB_ACTION_REMOVE = ENUM_SB_ACTION != null ? FastReflection.enumValueOf(ENUM_SB_ACTION, "REMOVE", 1) : null;
             } else {
                 ENUM_SB_HEALTH_DISPLAY = null;
                 ENUM_SB_ACTION = null;
@@ -731,8 +749,10 @@ public abstract class FastBoardBase<T> {
             setField(team, CHAT_FORMAT_ENUM, RESET_FORMATTING); // Color
             setComponentField(team, prefix, 1); // Prefix
             setComponentField(team, suffix, 2); // Suffix
-            setField(team, String.class, "always", 0); // Visibility
-            setField(team, String.class, "always", 1); // Collisions
+            setField(team, String.class, "always", 0); // Visibility before 1.21.5
+            setField(team, String.class, "always", 1); // Collisions before 1.21.5
+            setField(team, ENUM_VISIBILITY, ENUM_VISIBILITY_ALWAYS, 0); // 1.21.5+
+            setField(team, ENUM_COLLISION_RULE, ENUM_COLLISION_RULE_ALWAYS, 0); // 1.21.5+
             setField(packet, Optional.class, Optional.of(team));
         } else {
             setComponentField(packet, prefix, 2); // Prefix
