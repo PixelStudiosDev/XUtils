@@ -11,6 +11,7 @@ import dev.pixelstudios.xutils.text.TextUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
@@ -22,35 +23,44 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-@Getter @Setter
+@Getter
 public abstract class Menu implements InventoryHolder {
 
     protected final Player player;
-    protected final ConfigurationSection config;
+    protected ConfigurationSection config;
+    protected final PlaceholderMap placeholders = new PlaceholderMap();
 
+    private final InventoryType inventoryType;
     private final Map<Integer, MenuItem> items = new HashMap<>();
 
     private Inventory inventory;
     private BukkitTask updateTask;
+
+    @Setter
     private Set<Integer> draggableSlots = new HashSet<>();
-
+    @Setter
     private boolean autoUpdate = true;
+    @Setter
     private int updateInterval = 20;
-
-    protected PlaceholderMap placeholders = new PlaceholderMap();
+    @Setter
     private boolean parsePlaceholders = true;
-
+    @Setter
     private boolean allowCustomItems = true;
 
-    public Menu(Player player, ConfigurationSection section) {
+    public Menu(Player player, InventoryType type) {
         this.player = player;
-        this.config = section;
+        this.inventoryType = type;
 
         MenuListener.register();
     }
 
+    public Menu(Player player, ConfigurationSection section) {
+        this(player, InventoryType.CHEST);
+        this.config = section;
+    }
+
     public Menu(Player player) {
-        this(player, null);
+        this(player, InventoryType.CHEST);
     }
 
     public MenuItem getItem(int slot) {
@@ -105,7 +115,11 @@ public abstract class Menu implements InventoryHolder {
                     return;
                 }
 
-                this.inventory = Bukkit.createInventory(this, getRows() * 9, processText(getTitle()));
+                if (inventoryType != InventoryType.CHEST) {
+                    this.inventory = Bukkit.createInventory(this, inventoryType, processText(getTitle()));
+                } else {
+                    this.inventory = Bukkit.createInventory(this, getRows() * 9, processText(getTitle()));
+                }
             }
 
             if (autoUpdate) {
@@ -121,12 +135,6 @@ public abstract class Menu implements InventoryHolder {
         player.closeInventory();
     }
 
-    public void setTitle(String title) {
-        if (!ReflectionUtil.supports(20)) return;
-
-        player.getOpenInventory().setTitle(processText(title));
-    }
-
     public void updateInventory() {
         items.clear();
         inventory.clear();
@@ -139,30 +147,24 @@ public abstract class Menu implements InventoryHolder {
         items.forEach((slot, item) -> {
             inventory.setItem(slot, processItem(item));
         });
+
+        updateTitle();
     }
 
     public void addDraggableSlots(Integer... slots) {
         draggableSlots.addAll(Arrays.asList(slots));
     }
 
-    public void addPlaceholder(String key, String value) {
-        placeholders.add(key, value);
-    }
-
-    public void setPlaceholders(PlaceholderMap map) {
+    public void addPlaceholders(PlaceholderMap map) {
         placeholders.merge(map);
     }
 
-    public void updateTitle() {
-        setTitle(getTitle());
-    }
-
     public int getRows() {
-        return config != null ? config.getInt("rows") : 6;
+        return config != null ? config.getInt("rows", 6) : 6;
     }
 
     public String getTitle() {
-        return config != null ? config.getString("title") : "Menu";
+        return config != null ? config.getString("title", "Menu") : "Menu";
     }
 
     public void onClose() {}
@@ -182,6 +184,19 @@ public abstract class Menu implements InventoryHolder {
         for (String key : config.getConfigurationSection("custom-items").getKeys(false)) {
             setItem(new MenuItem(config.getConfigurationSection("custom-items." + key), null, player));
         }
+    }
+
+    private void updateTitle() {
+        if (!ReflectionUtil.supports(20)) {
+            return;
+        }
+
+        if (!inventory.getViewers().contains(player)) {
+            return;
+        }
+
+        String title = processText(getTitle());
+        player.getOpenInventory().setTitle(title);
     }
 
     private ItemStack processItem(MenuItem item) {

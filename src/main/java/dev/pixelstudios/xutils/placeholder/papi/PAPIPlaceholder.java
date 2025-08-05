@@ -1,4 +1,4 @@
-package dev.pixelstudios.xutils.placeholder;
+package dev.pixelstudios.xutils.placeholder.papi;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -10,7 +10,7 @@ import java.util.Map;
 import java.util.function.BiFunction;
 
 @RequiredArgsConstructor
-public class Placeholder {
+public class PAPIPlaceholder {
 
     @Getter
     private final String id;
@@ -19,17 +19,17 @@ public class Placeholder {
 
     private BiFunction<Player, Map<String, Object>, String> parser;
 
-    public Placeholder arguments(Argument... arguments) {
+    public PAPIPlaceholder arguments(Argument... arguments) {
         this.arguments = arguments;
         return this;
     }
 
-    public Placeholder parseString(BiFunction<Player, Map<String, Object>, String> parser) {
+    public PAPIPlaceholder parseString(BiFunction<Player, Map<String, Object>, String> parser) {
         this.parser = parser;
         return this;
     }
 
-    public Placeholder parseNumber(BiFunction<Player, Map<String, Object>, Number> parser) {
+    public PAPIPlaceholder parseNumber(BiFunction<Player, Map<String, Object>, Number> parser) {
         this.parser = (player, args) -> String.valueOf(parser.apply(player, args));
         return this;
     }

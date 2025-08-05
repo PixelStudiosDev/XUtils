@@ -6,7 +6,7 @@ plugins {
 }
 
 group = 'dev.pixelstudios'
-version = '1.10.8'
+version = '1.11.1'
 
 repositories {
     mavenCentral()
@@ -28,7 +28,7 @@ dependencies {
     compileOnly 'org.spigotmc:spigot-api:1.21.7-R0.1-SNAPSHOT'
 
     compileOnly 'me.clip:placeholderapi:2.11.5'
-    compileOnly 'de.tr7zw:item-nbt-api:2.15.0'
+    compileOnly 'de.tr7zw:item-nbt-api:2.15.1'
     compileOnly 'net.Indyuce:MMOItems-API:6.9.5-SNAPSHOT'
     compileOnly 'io.lumine:MythicLib-dist:1.6.2-SNAPSHOT'
     compileOnly 'com.github.LoneDev6:API-ItemsAdder:3.6.3-beta-14'
