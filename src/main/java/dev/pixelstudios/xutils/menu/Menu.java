@@ -17,6 +17,9 @@ import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitTask;
 
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
+import java.lang.invoke.MethodType;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -25,6 +28,20 @@ import java.util.Set;
 
 @Getter
 public abstract class Menu implements InventoryHolder {
+
+    private static MethodHandle SET_TITLE_1_20;
+
+    static {
+        if (ReflectionUtil.VERSION == 20) {
+            try {
+                SET_TITLE_1_20 = MethodHandles.publicLookup().findVirtual(
+                        Class.forName("org.bukkit.inventory.InventoryView"),
+                        "setTitle",
+                        MethodType.methodType(void.class, String.class)
+                );
+            } catch (Exception ignored) {}
+        }
+    }
 
     protected final Player player;
     protected ConfigurationSection config;
@@ -40,6 +57,8 @@ public abstract class Menu implements InventoryHolder {
     private Set<Integer> draggableSlots = new HashSet<>();
     @Setter
     private boolean autoUpdate = true;
+    @Setter
+    private boolean updateTitle = true;
     @Setter
     private int updateInterval = 20;
     @Setter
@@ -191,12 +210,19 @@ public abstract class Menu implements InventoryHolder {
             return;
         }
 
-        if (!inventory.getViewers().contains(player)) {
+        if (!updateTitle || !inventory.getViewers().contains(player)) {
             return;
         }
 
         String title = processText(getTitle());
-        player.getOpenInventory().setTitle(title);
+
+        if (SET_TITLE_1_20 != null) {
+            try {
+                SET_TITLE_1_20.invokeExact(player.getOpenInventory(), title);
+            } catch (Throwable ignored) {}
+        } else {
+            player.getOpenInventory().setTitle(title);
+        }
     }
 
     private ItemStack processItem(MenuItem item) {
