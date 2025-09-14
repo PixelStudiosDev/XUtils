@@ -13,7 +13,7 @@ public class Hooks {
     private final Set<String> HOOKS = new HashSet<>();
 
     public boolean register(String plugin, Runnable function) {
-        if (!Bukkit.getPluginManager().isPluginEnabled(plugin) || HOOKS.contains(plugin)) {
+        if (Bukkit.getPluginManager().getPlugin(plugin) == null || HOOKS.contains(plugin)) {
             return false;
         }
 

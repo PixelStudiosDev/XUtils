@@ -58,7 +58,7 @@ public abstract class Menu implements InventoryHolder {
     @Setter
     private boolean autoUpdate = true;
     @Setter
-    private boolean updateTitle = true;
+    private boolean updateTitle = false;
     @Setter
     private int updateInterval = 20;
     @Setter
