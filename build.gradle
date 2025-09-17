@@ -6,7 +6,7 @@ plugins {
 }
 
 group = 'dev.pixelstudios'
-version = '1.11.4'
+version = '1.11.5'
 
 repositories {
     mavenCentral()
@@ -38,7 +38,7 @@ dependencies {
     compileOnly 'com.sk89q:worldguard:6.1.1-SNAPSHOT'
     compileOnly 'com.sk89q.worldguard:worldguard-bukkit:7.0.5'
 
-    api 'com.github.cryptomorin:XSeries:13.3.3'
+    api 'com.github.cryptomorin:XSeries:13.4.0'
 
     compileOnly fileTree(dir: 'libs', include: ['*.jar'])
 
