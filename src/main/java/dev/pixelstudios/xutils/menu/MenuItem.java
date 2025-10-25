@@ -2,7 +2,7 @@ package dev.pixelstudios.xutils.menu;
 
 import dev.pixelstudios.xutils.SoundUtil;
 import dev.pixelstudios.xutils.item.ItemBuilder;
-import dev.pixelstudios.xutils.placeholder.PlaceholderMap;
+import dev.pixelstudios.xutils.text.placeholder.PlaceholderMap;
 import lombok.Getter;
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
@@ -43,15 +43,11 @@ public class MenuItem {
     }
 
     public MenuItem(ConfigurationSection section) {
-        this(section, null, null);
+        this(section, null);
     }
 
-    public MenuItem(ConfigurationSection section, ItemBuilder defaultItem) {
-        this(section, defaultItem, null);
-    }
-
-    public MenuItem(ConfigurationSection section, ItemBuilder defaultItem, Player viewer) {
-        this(ItemBuilder.fromConfig(section, defaultItem, viewer));
+    public MenuItem(ConfigurationSection section, ItemBuilder fallbackItem) {
+        this(ItemBuilder.fromConfig(section, fallbackItem));
 
         if (section.isList("slots")) {
             slots.addAll(section.getIntegerList("slots"));

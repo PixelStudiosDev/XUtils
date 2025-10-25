@@ -1,11 +1,8 @@
 package dev.pixelstudios.xutils.config;
 
 import dev.pixelstudios.xutils.FileUtil;
-import dev.pixelstudios.xutils.item.ItemBuilder;
+import dev.pixelstudios.xutils.config.serializer.ConfigSerializer;
 import dev.pixelstudios.xutils.XUtils;
-import dev.pixelstudios.xutils.text.TextUtil;
-import org.bukkit.Color;
-import org.bukkit.Location;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
 
@@ -87,16 +84,12 @@ public class Configuration extends YamlConfiguration {
         ConfigManager.get().invalidate(name);
     }
 
-    public Location getLocation(String path) {
-        return TextUtil.parseLocation(getString(path));
+    public <T> void serialize(String path, T object) {
+        ConfigSerializer.serialize(object, this, path);
     }
 
-    public ItemBuilder getItem(String path) {
-        return ItemBuilder.fromConfig(getConfigurationSection(path));
-    }
-
-    public Color getColor(String path) {
-        return TextUtil.parseColor(getString(path));
+    public <T> T deserialize(String path, Class<T> objectClass) {
+        return ConfigSerializer.deserialize(objectClass, this, path);
     }
 
 }

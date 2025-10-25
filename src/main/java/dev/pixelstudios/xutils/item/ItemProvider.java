@@ -1,27 +1,23 @@
 package dev.pixelstudios.xutils.item;
 
-import com.cryptomorin.xseries.XEnchantment;
 import com.cryptomorin.xseries.XMaterial;
-import dev.pixelstudios.xutils.ReflectionUtil;
+import dev.pixelstudios.xutils.config.serializer.AttributeModifierSerializer;
+import dev.pixelstudios.xutils.config.serializer.ConfigSerializer;
+import dev.pixelstudios.xutils.config.serializer.EnchantmentSerializer;
 import dev.pixelstudios.xutils.item.provider.*;
 import dev.pixelstudios.xutils.text.TextUtil;
 import org.bukkit.Bukkit;
+import org.bukkit.Color;
 import org.bukkit.Material;
-import org.bukkit.Registry;
-import org.bukkit.attribute.Attribute;
-import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.enchantments.Enchantment;
-import org.bukkit.entity.Player;
-import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.trim.ArmorTrim;
+import org.bukkit.potion.PotionEffect;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
-import java.util.UUID;
 
 public abstract class ItemProvider {
 
@@ -43,23 +39,18 @@ public abstract class ItemProvider {
         }
     }
 
-    @SuppressWarnings("ConstantConditions")
     public static ItemBuilder parse(String item) {
         String[] parts = item.split(":", 2);
 
         if (parts.length != 2) {
-            if (item.equalsIgnoreCase("SPLASH_POTION") && !XMaterial.SPLASH_POTION.isSupported()) {
-                return new ItemBuilder(XMaterial.POTION.parseItem()).legacySplash();
-            } else {
-                Optional<XMaterial> material = XMaterial.matchXMaterial(item);
+            Optional<XMaterial> material = XMaterial.matchXMaterial(item);
 
-                if (!material.isPresent()) {
-                    TextUtil.error("Invalid material: " + item);
-                    return new ItemBuilder(Material.STONE);
-                }
-
-                return new ItemBuilder(material.get().parseItem());
+            if (!material.isPresent()) {
+                TextUtil.error("Invalid material: " + item);
+                return new ItemBuilder(Material.STONE);
             }
+
+            return new ItemBuilder(material.get().parseItem());
         }
 
         ItemBuilder builder = getItem(parts[0].toLowerCase(), parts[1]);
@@ -92,22 +83,13 @@ public abstract class ItemProvider {
         return new ItemBuilder(stack);
     }
 
-    public static ItemBuilder fromConfig(ConfigurationSection section, ItemBuilder defaultItem) {
-        return fromConfig(section, defaultItem, null);
-    }
-
-    public static ItemBuilder fromConfig(ConfigurationSection section, ItemBuilder defaultItem, Player viewer) {
-        if (!section.isString("material") && defaultItem == null) {
+    public static ItemBuilder fromConfig(ConfigurationSection section, ItemBuilder fallbackItem) {
+        if (!section.isString("material") && fallbackItem == null) {
             throw new IllegalArgumentException("Missing material property");
         }
 
-        ItemBuilder builder;
-
-        if (section.isString("material")) {
-            builder = ItemBuilder.of(section.getString("material"));
-        } else {
-            builder = defaultItem.clone();
-        }
+        ItemBuilder builder = section.isString("material") ?
+                ItemBuilder.of(section.getString("material")) : fallbackItem.clone();
 
         if (section.isString("name")) {
             builder.name(section.getString("name"));
@@ -122,7 +104,7 @@ public abstract class ItemProvider {
         }
 
         if (section.isString("texture")) {
-            builder.texture(section.getString("texture"), viewer);
+            builder.texture(section.getString("texture"));
         }
 
         if (section.isInt("amount")) {
@@ -142,66 +124,29 @@ public abstract class ItemProvider {
         }
 
         if (section.isString("color")) {
-            builder.color(TextUtil.parseColor(section.getString("color")));
+            builder.color(ConfigSerializer.deserialize(section.getString("color"), Color.class));
         }
 
-        if (section.isString("armor-trim") && ReflectionUtil.supports(20)) {
-            String[] split = section.getString("armor-trim").split(":");
-
-            if (split.length < 2) {
-                throw new IllegalArgumentException("Invalid armor trim format: " + section.getString("armor-trim"));
-            }
-
-            builder.trim(new ArmorTrim(
-                    Registry.TRIM_MATERIAL.match(split[0]),
-                    Registry.TRIM_PATTERN.match(split[1])
-            ));
+        if (section.isString("armor-trim")) {
+            builder.trim(ConfigSerializer.deserialize(section.getString("armor-trim"), ArmorTrim.class));
         }
 
-        if (section.isList("flags")) {
-            for (String flag : section.getStringList("flags")) {
-                builder.flags(ItemFlag.valueOf(flag.toUpperCase()));
-            }
+        for (String flag : section.getStringList("flags")) {
+            builder.flags(ItemFlag.valueOf(flag.toUpperCase()));
         }
 
-        if (section.isList("effects")) {
-            for (String effect : section.getStringList("effects")) {
-                builder.effect(TextUtil.parseEffect(effect));
-            }
+        for (String effect : section.getStringList("effects")) {
+            builder.effect(ConfigSerializer.deserialize(effect, PotionEffect.class));
         }
 
-        if (section.isList("enchantments")) {
-            for (String enchantment : section.getStringList("enchantments")) {
-                String[] split = enchantment.split(":");
-
-                if (split.length < 1) {
-                    throw new IllegalArgumentException("Invalid enchantment format: " + enchantment);
-                }
-
-                Enchantment enchant = XEnchantment.matchXEnchantment(split[0]).orElse(XEnchantment.UNBREAKING).getEnchant();
-                builder.enchant(enchant, split.length == 1 ? 1 : Integer.parseInt(split[1]));
-            }
+        for (String enchantment : section.getStringList("enchantments")) {
+            EnchantmentSerializer.EnchantmentWrapper wrapper = ConfigSerializer.deserialize(enchantment, EnchantmentSerializer.EnchantmentWrapper.class);
+            builder.enchant(wrapper.getEnchantment(), wrapper.getLevel());
         }
 
-        if (section.isList("modifiers")) {
-            for (String modifier : section.getStringList("modifiers")) {
-                String[] split = modifier.split(":");
-
-                if (split.length < 2) {
-                    throw new IllegalArgumentException("Invalid attribute modifier format: " + modifier);
-                }
-
-                builder.modifier(
-                        Attribute.valueOf(split[0].toUpperCase()),
-                        new AttributeModifier(
-                                UUID.randomUUID(),
-                                "custom_modifier",
-                                Double.parseDouble(split[1]),
-                                AttributeModifier.Operation.ADD_NUMBER,
-                                split.length == 3 ? EquipmentSlot.valueOf(split[2].toUpperCase()) : null
-                        )
-                );
-            }
+        for (String modifier : section.getStringList("modifiers")) {
+            AttributeModifierSerializer.AttributeModifierWrapper wrapper = ConfigSerializer.deserialize(modifier, AttributeModifierSerializer.AttributeModifierWrapper.class);
+            builder.modifier(wrapper.getAttribute(), wrapper.getModifier());
         }
 
         return builder;

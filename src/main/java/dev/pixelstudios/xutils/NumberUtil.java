@@ -28,9 +28,11 @@ public class NumberUtil {
 
     public static String toRoman(int number) {
         int l = ROMAN_NUMERALS.floorKey(number);
+
         if (number == l) {
             return ROMAN_NUMERALS.get(number);
         }
+
         return ROMAN_NUMERALS.get(l) + toRoman(number - l);
     }
     
@@ -50,13 +52,14 @@ public class NumberUtil {
 
     /**
      * This method tests whether a given chance succeeds.
-     * @param chance the chance to be tested, from 0 to 100.
+     * @param chancePercent the chance percentage (0-100%)
      * @return true if the chance succeeds, false otherwise.
      */
-    public static boolean testChance(int chance) {
-        if (chance <= 0) return false;
-        if (chance >= 100) return true;
-        return ThreadLocalRandom.current().nextInt(100) < chance;
+    public static boolean testChance(int chancePercent) {
+        if (chancePercent <= 0) return false;
+        if (chancePercent >= 100) return true;
+
+        return ThreadLocalRandom.current().nextInt(100) < chancePercent;
     }
 
     public static String format(int number, char separator) {

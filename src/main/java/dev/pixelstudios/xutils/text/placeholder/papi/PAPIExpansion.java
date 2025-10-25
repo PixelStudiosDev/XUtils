@@ -1,4 +1,4 @@
-package dev.pixelstudios.xutils.placeholder.papi;
+package dev.pixelstudios.xutils.text.placeholder.papi;
 
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import org.bukkit.entity.Player;

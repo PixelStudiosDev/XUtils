@@ -205,26 +205,6 @@ public class TextUtil {
         return ChatColor.stripColor(color(text));
     }
 
-    public static String serializeLocation(Location location) {
-        StringBuilder builder = new StringBuilder();
-        builder.append(location.getWorld().getName()).append(":").append(location.getX()).append(":").append(location.getY()).append(":").append(location.getZ());
-        if (location.getYaw() != 0 && location.getPitch() != 0) {
-            builder.append(":").append(location.getYaw()).append(":").append(location.getPitch());
-        }
-        return builder.toString();
-    }
-
-    public static Location parseLocation(String serialized) {
-        String[] split = serialized.replace(" ", "").split(":");
-        if (split.length != 4 && split.length != 6) {
-            throw new IllegalArgumentException("Invalid location format: " + serialized);
-        }
-        if (split.length == 4) {
-            return new Location(Bukkit.getWorld(split[0]), Double.parseDouble(split[1]), Double.parseDouble(split[2]), Double.parseDouble(split[3]));
-        }
-        return new Location(Bukkit.getWorld(split[0]), Double.parseDouble(split[1]), Double.parseDouble(split[2]), Double.parseDouble(split[3]), Float.parseFloat(split[4]), Float.parseFloat(split[5]));
-    }
-
     public static String formatLocation(Location location) {
         return location.getWorld().getName() + ", x: " + location.getBlockX() + ", y: " + location.getBlockY() + ", z: " + location.getBlockZ();
     }
@@ -286,50 +266,6 @@ public class TextUtil {
         }
 
         return builder + message;
-    }
-
-    /**
-     * Parse a potion effect from a string
-     * Format: <type>:<duration>:<amplifier>
-     * @param serialized The serialized string
-     * @return The potion effect
-     * @throws IllegalArgumentException If the string is not in the correct format
-     */
-    public static PotionEffect parseEffect(String serialized) {
-        String[] effect = serialized.split(":");
-        if (effect.length < 1) {
-            throw new IllegalArgumentException("Invalid effect format: " + serialized);
-        }
-
-        PotionEffectType type = XPotion.matchXPotion(effect[0]).orElse(XPotion.SPEED).getPotionEffectType();
-        int duration = effect.length > 1 ? Integer.parseInt(effect[1]) * 20 : 10 * 20;
-        int amplifier = effect.length > 2 ? Integer.parseInt(effect[2]) - 1 : 0;
-
-        return new PotionEffect(type, duration, amplifier);
-    }
-
-    /**
-     * Parse a color from a string
-     * Format: <r>:<g>:<b> or <dye>
-     * @param text The serialized color
-     * @return The color
-     */
-    public static Color parseColor(String text) {
-        String[] split = text.split(":");
-
-        Color color;
-
-        if (split.length != 3) {
-            color = DyeColor.valueOf(text).getColor();
-        } else {
-            color = Color.fromRGB(
-                    Integer.parseInt(split[0]),
-                    Integer.parseInt(split[1]),
-                    Integer.parseInt(split[2])
-            );
-        }
-
-        return color;
     }
 
     /**

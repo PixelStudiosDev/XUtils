@@ -1,4 +1,4 @@
-package dev.pixelstudios.xutils.placeholder;
+package dev.pixelstudios.xutils.text.placeholder;
 
 import dev.pixelstudios.xutils.text.TextUtil;
 
@@ -7,8 +7,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Supplier;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class PlaceholderMap implements Cloneable {
+
+    private static final Pattern PLACEHOLDER_PATTERN = Pattern.compile("\\{(.*?)}");
 
     private final Map<String, Supplier<String>> placeholders = new HashMap<>();
     private final Map<String, Supplier<List<String>>> multiLinePlaceholders = new HashMap<>();
@@ -50,47 +54,51 @@ public class PlaceholderMap implements Cloneable {
     }
 
     public String parse(String text) {
-        return parse(text, '{', '}');
-    }
-
-    public String parse(String text, char open, char close) {
         if (text == null) {
             return null;
         }
 
-        for (Map.Entry<String, Supplier<String>> entry : placeholders.entrySet()) {
-            text = text.replace(open + entry.getKey() + close, entry.getValue().get());
+        if (placeholders.isEmpty()) {
+            return text;
         }
 
-        return TextUtil.color(text);
+        Matcher matcher = PLACEHOLDER_PATTERN.matcher(text);
+        StringBuffer builder = new StringBuffer();
+
+        while (matcher.find()) {
+            String key = matcher.group(1);
+            String replacement = placeholders.containsKey(key) ? placeholders.get(key).get() : matcher.group();
+            matcher.appendReplacement(builder, Matcher.quoteReplacement(replacement));
+        }
+
+        matcher.appendTail(builder);
+        return TextUtil.color(builder.toString());
     }
 
     public List<String> parse(List<String> text) {
-        return parse(text, '{', '}');
-    }
-
-    public List<String> parse(List<String> text, char open, char close) {
         if (text == null) {
             return null;
+        }
+
+        if (placeholders.isEmpty() && multiLinePlaceholders.isEmpty()) {
+            return text;
         }
 
         List<String> parsed = new ArrayList<>();
 
         for (String line : text) {
-            boolean found = false;
+            Matcher matcher = PLACEHOLDER_PATTERN.matcher(line);
 
-            for (Map.Entry<String, Supplier<List<String>>> entry : multiLinePlaceholders.entrySet()) {
-                if (line.contains(open + entry.getKey() + close)) {
-                    parsed.addAll(entry.getValue().get());
+            if (matcher.find()) {
+                String key = matcher.group(1);
 
-                    found = true;
-                    break;
+                if (multiLinePlaceholders.containsKey(key)) {
+                    parsed.addAll(multiLinePlaceholders.get(key).get());
+                    continue;
                 }
             }
 
-            if (!found) {
-                parsed.add(parse(line, open, close));
-            }
+            parsed.add(parse(line));
         }
 
         return TextUtil.color(parsed);

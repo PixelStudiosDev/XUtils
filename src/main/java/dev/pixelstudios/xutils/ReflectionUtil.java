@@ -35,8 +35,8 @@ public class ReflectionUtil {
             return field.get(instance);
         } catch (NoSuchFieldException | IllegalAccessException e) {
             e.printStackTrace();
+            return null;
         }
-        return null;
     }
 
     public static Object invokeMethod(Method method, Object instance, Object... args) {
@@ -45,8 +45,8 @@ public class ReflectionUtil {
             return method.invoke(instance, args);
         } catch (IllegalAccessException | InvocationTargetException e) {
             e.printStackTrace();
+            return null;
         }
-        return null;
     }
 
     public static Method getMethod(Class<?> clazz, String methodName, Class<?>... parameterTypes) {
@@ -56,18 +56,23 @@ public class ReflectionUtil {
             return method;
         } catch (NoSuchMethodException e) {
             e.printStackTrace();
+            return null;
         }
-        return null;
     }
 
     public static Class<?> getClass(String className) {
         try {
             return Class.forName(className);
-        } catch (ClassNotFoundException ignored) {}
-        return null;
+        } catch (ClassNotFoundException ignored) {
+            return null;
+        }
     }
 
-    public static boolean isMethodPresent(Class<?> clazz, String methodName, Class<?>... parameterTypes) {
+    public static boolean classExists(String className) {
+        return getClass(className) != null;
+    }
+
+    public static boolean methodExists(Class<?> clazz, String methodName, Class<?>... parameterTypes) {
         try {
             clazz.getDeclaredMethod(methodName, parameterTypes);
             return true;

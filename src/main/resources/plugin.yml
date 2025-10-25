@@ -1,5 +1,5 @@
 name: XUtils
 main: dev.pixelstudios.xutils.XUtils
 version: ${version}
-api-version: "1.20"
+api-version: "1.21"
 author: PixelStudios

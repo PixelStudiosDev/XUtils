@@ -6,7 +6,7 @@ import lombok.Getter;
 import lombok.Setter;
 import dev.pixelstudios.xutils.ReflectionUtil;
 import dev.pixelstudios.xutils.Tasks;
-import dev.pixelstudios.xutils.placeholder.PlaceholderMap;
+import dev.pixelstudios.xutils.text.placeholder.PlaceholderMap;
 import dev.pixelstudios.xutils.text.TextUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
@@ -107,15 +107,15 @@ public abstract class Menu implements InventoryHolder {
         return setItem(key, null);
     }
 
-    public MenuItem setItem(String key, ItemBuilder defaultItem) {
+    public MenuItem setItem(String key, ItemBuilder fallbackItem) {
         ConfigurationSection section = config.getConfigurationSection("items." + key);
 
         if (section == null) {
-            TextUtil.error("Missing item '" + key + "' in menu '" + getTitle() + "'");
+            TextUtil.error("Missing item '" + key + "' in menu '" + getTitle() + "'. To hide this item, set 'slot' to -1 instead.");
             return null;
         }
 
-        return setItem(new MenuItem(section, defaultItem, player));
+        return setItem(new MenuItem(section, fallbackItem));
     }
 
     public void fillBorders(MenuItem item) {
@@ -201,7 +201,7 @@ public abstract class Menu implements InventoryHolder {
         }
 
         for (String key : config.getConfigurationSection("custom-items").getKeys(false)) {
-            setItem(new MenuItem(config.getConfigurationSection("custom-items." + key), null, player));
+            setItem(new MenuItem(config.getConfigurationSection("custom-items." + key), null));
         }
     }
 
@@ -226,7 +226,13 @@ public abstract class Menu implements InventoryHolder {
     }
 
     private ItemStack processItem(MenuItem item) {
-        ItemStack stack = item.getItem().build();
+        ItemBuilder builder = item.getItem();
+
+        if (builder.getTexture() != null && builder.getTexture().equalsIgnoreCase("{player}")) {
+            builder.texture(player.getName());
+        }
+
+        ItemStack stack = builder.build();
 
         ItemUtil.parsePlaceholders(stack, placeholders);
 

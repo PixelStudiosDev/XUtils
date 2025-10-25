@@ -6,14 +6,14 @@ import com.cryptomorin.xseries.profiles.builder.XSkull;
 import com.cryptomorin.xseries.profiles.objects.Profileable;
 import dev.pixelstudios.xutils.ReflectionUtil;
 import dev.pixelstudios.xutils.VersionUtil;
-import dev.pixelstudios.xutils.placeholder.PlaceholderMap;
 import dev.pixelstudios.xutils.text.TextUtil;
+import dev.pixelstudios.xutils.text.placeholder.PlaceholderMap;
+import lombok.Getter;
 import org.bukkit.*;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.enchantments.Enchantment;
-import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ArmorMeta;
@@ -54,6 +54,8 @@ public final class ItemBuilder implements Cloneable {
 
     private PlaceholderMap placeholders = new PlaceholderMap();
 
+    @Getter
+    private String texture;
     private boolean legacySplash;
 
     public ItemBuilder(ItemStack item) {
@@ -73,12 +75,8 @@ public final class ItemBuilder implements Cloneable {
         return ItemProvider.fromConfig(section, null);
     }
 
-    public static ItemBuilder fromConfig(ConfigurationSection section, ItemBuilder defaultItem) {
-        return ItemProvider.fromConfig(section, defaultItem);
-    }
-
-    public static ItemBuilder fromConfig(ConfigurationSection section, ItemBuilder defaultItem, Player viewer) {
-        return ItemProvider.fromConfig(section, defaultItem, viewer);
+    public static ItemBuilder fromConfig(ConfigurationSection section, ItemBuilder fallbackItem) {
+        return ItemProvider.fromConfig(section, fallbackItem);
     }
 
     public ItemBuilder legacySplash() {
@@ -137,10 +135,15 @@ public final class ItemBuilder implements Cloneable {
         } else if (meta instanceof FireworkMeta) {
             ((FireworkMeta) meta).addEffect(FireworkEffect.builder().withColor(color).build());
 
-        } else if (meta instanceof PotionMeta) {
-            if (ReflectionUtil.supports(11)) {
-                ((PotionMeta) meta).setColor(color);
-            }
+        } else if (meta instanceof PotionMeta && ReflectionUtil.supports(11)) {
+            ((PotionMeta) meta).setColor(color);
+        }
+        return this;
+    }
+
+    public ItemBuilder fireworkEffect(FireworkEffect effect) {
+        if (meta instanceof FireworkMeta) {
+            ((FireworkMeta) meta).addEffect(effect);
         }
         return this;
     }
@@ -199,15 +202,12 @@ public final class ItemBuilder implements Cloneable {
         return this;
     }
 
-    public ItemBuilder texture(String texture, Player viewer) {
-        if (viewer != null && texture.equals("{player}")) {
-            texture = viewer.getName();
-        }
+    public ItemBuilder texture(String texture) {
+        this.texture = texture;
 
         XSkull.of(meta).profile(Profileable.detect(texture))
                 .fallback(FALLBACK_PROFILE)
                 .apply();
-
         return this;
     }
 
@@ -259,6 +259,7 @@ public final class ItemBuilder implements Cloneable {
 
         clone.meta = this.meta.clone();
         clone.placeholders = this.placeholders.clone();
+        clone.texture = this.texture;
         clone.legacySplash = this.legacySplash;
 
         return clone;
