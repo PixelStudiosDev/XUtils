@@ -38,7 +38,7 @@ dependencies {
     compileOnly 'io.lumine:MythicLib-dist:1.6.2-SNAPSHOT'
     compileOnly 'com.github.LoneDev6:API-ItemsAdder:3.6.3-beta-14'
     // compileOnly 'com.nexomc:nexo:1.13.0'
-    compileOnly 'io.th0rgal:oraxen:1.181.0'
+    // compileOnly 'io.th0rgal:oraxen:1.181.0'
     compileOnly 'com.willfp:eco:6.74.1'
     // compileOnly 'net.momirealms:craft-engine-core:0.0.64'
     // compileOnly 'net.momirealms:craft-engine-bukkit:0.0.64'
