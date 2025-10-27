@@ -1,5 +1,6 @@
 package dev.pixelstudios.xutils.config.serializer;
 
+import dev.pixelstudios.xutils.ReflectionUtil;
 import dev.pixelstudios.xutils.config.Configuration;
 import org.bukkit.Color;
 import org.bukkit.Location;
@@ -8,6 +9,7 @@ import org.bukkit.potion.PotionEffect;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Supplier;
 
 @SuppressWarnings("unchecked")
 public final class ConfigSerializer {
@@ -15,16 +17,23 @@ public final class ConfigSerializer {
     private static final Map<Class<?>, Serializer<?>> SERIALIZERS = new HashMap<>();
 
     static {
-        SERIALIZERS.put(Location.class, new LocationSerializer());
-        SERIALIZERS.put(Color.class, new ColorSerializer());
-        SERIALIZERS.put(PotionEffect.class, new PotionEffectSerializer());
-        SERIALIZERS.put(ArmorTrim.class, new ArmorTrimSerializer());
-        SERIALIZERS.put(EnchantmentSerializer.EnchantmentWrapper.class, new EnchantmentSerializer());
-        SERIALIZERS.put(AttributeModifierSerializer.AttributeModifierWrapper.class, new AttributeModifierSerializer());
+        register(Location.class, new LocationSerializer());
+        register(Color.class, new ColorSerializer());
+        register(PotionEffect.class, new PotionEffectSerializer());
+        register(EnchantmentSerializer.EnchantmentWrapper.class, new EnchantmentSerializer());
+
+        register(ArmorTrim.class, ArmorTrimSerializer::new, 20);
+        register(AttributeModifierSerializer.AttributeModifierWrapper.class, AttributeModifierSerializer::new, 9);
     }
 
     public static <T> void register(Class<T> clazz, Serializer<T> serializer) {
         SERIALIZERS.put(clazz, serializer);
+    }
+
+    public static <T> void register(Class<T> clazz, Supplier<Serializer<T>> serializer, int requiredVersion) {
+        if (ReflectionUtil.supports(requiredVersion)) {
+            register(clazz, serializer.get());
+        }
     }
 
     public static <T> String serialize(T object) {
