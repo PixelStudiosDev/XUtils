@@ -4,7 +4,6 @@ import dev.pixelstudios.xutils.ReflectionUtil;
 import dev.pixelstudios.xutils.config.Configuration;
 import org.bukkit.Color;
 import org.bukkit.Location;
-import org.bukkit.inventory.meta.trim.ArmorTrim;
 import org.bukkit.potion.PotionEffect;
 
 import java.util.HashMap;
@@ -22,17 +21,17 @@ public final class ConfigSerializer {
         register(PotionEffect.class, new PotionEffectSerializer());
         register(EnchantmentSerializer.EnchantmentWrapper.class, new EnchantmentSerializer());
 
-        register(ArmorTrim.class, ArmorTrimSerializer::new, 20);
-        register(AttributeModifierSerializer.AttributeModifierWrapper.class, AttributeModifierSerializer::new, 9);
+        register("org.bukkit.inventory.meta.trim.ArmorTrim", ArmorTrimSerializer::new, 20);
+        register("dev.pixelstudios.xutils.config.serializer.AttributeModifierSerializer.AttributeModifierWrapper", AttributeModifierSerializer::new, 9);
     }
 
     public static <T> void register(Class<T> clazz, Serializer<T> serializer) {
         SERIALIZERS.put(clazz, serializer);
     }
 
-    public static <T> void register(Class<T> clazz, Supplier<Serializer<T>> serializer, int requiredVersion) {
+    public static <T> void register(String className, Supplier<Serializer<T>> serializer, int requiredVersion) {
         if (ReflectionUtil.supports(requiredVersion)) {
-            register(clazz, serializer.get());
+            register((Class<T>) ReflectionUtil.getClass(className), serializer.get());
         }
     }
 
