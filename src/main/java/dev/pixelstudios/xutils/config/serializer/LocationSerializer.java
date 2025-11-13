@@ -3,20 +3,24 @@ package dev.pixelstudios.xutils.config.serializer;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 
+import java.text.DecimalFormat;
+
 public class LocationSerializer implements Serializer<Location> {
+
+    private final DecimalFormat formatter = new DecimalFormat("#.##");
 
     @Override
     public String serialize(Location location) {
         StringBuilder builder = new StringBuilder();
 
         builder.append(location.getWorld().getName())
-                .append(":").append(location.getX())
-                .append(":").append(location.getY())
-                .append(":").append(location.getZ());
+                .append(":").append(formatter.format(location.getX()))
+                .append(":").append(formatter.format(location.getY()))
+                .append(":").append(formatter.format(location.getZ()));
 
         if (location.getYaw() != 0 && location.getPitch() != 0) {
-            builder.append(":").append(location.getYaw())
-                    .append(":").append(location.getPitch());
+            builder.append(":").append(formatter.format(location.getYaw()))
+                    .append(":").append(formatter.format(location.getPitch()));
         }
 
         return builder.toString();

@@ -69,9 +69,10 @@ public class PAPIPlaceholder {
                 arguments.put(argument.getId(), value);
             } else {
                 if (split.length <= i) {
-                    break;
+                    arguments.put(argument.getId(), argument.getDefaultValue());
+                } else {
+                    arguments.put(argument.getId(), argument.getFunction().apply(split[i]));
                 }
-                arguments.put(argument.getId(), argument.getFunction().apply(split[i]));
             }
         }
 

@@ -244,11 +244,13 @@ public abstract class Menu implements InventoryHolder {
     }
 
     private String processText(String text) {
+        text = placeholders.parse(text);
+
         if (parsePlaceholders) {
             text = TextUtil.parsePlaceholders(player, text);
         }
 
-        return placeholders.parse(text);
+        return TextUtil.color(text);
     }
 
 }

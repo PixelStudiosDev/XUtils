@@ -3,6 +3,7 @@ package dev.pixelstudios.xutils.config;
 import dev.pixelstudios.xutils.FileUtil;
 import dev.pixelstudios.xutils.config.serializer.ConfigSerializer;
 import dev.pixelstudios.xutils.XUtils;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
 
@@ -10,6 +11,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Collections;
+import java.util.List;
 import java.util.Set;
 
 public class Configuration extends YamlConfiguration {
@@ -90,6 +92,10 @@ public class Configuration extends YamlConfiguration {
 
     public <T> T deserialize(String path, Class<T> objectClass) {
         return ConfigSerializer.deserialize(objectClass, this, path);
+    }
+
+    public List<ConfigurationSection> getSubSections(String path) {
+        return ConfigUtil.getSubSections(getConfigurationSection(path));
     }
 
 }

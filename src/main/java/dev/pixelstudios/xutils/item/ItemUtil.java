@@ -49,8 +49,8 @@ public class ItemUtil {
         if (Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI")) {
             return setNameAndLore(
                     item,
-                    text -> PlaceholderAPI.setPlaceholders(player, text),
-                    lines -> PlaceholderAPI.setPlaceholders(player, lines)
+                    text -> TextUtil.color(PlaceholderAPI.setPlaceholders(player, text)),
+                    lines -> TextUtil.color(PlaceholderAPI.setPlaceholders(player, lines))
             );
         }
         return item;

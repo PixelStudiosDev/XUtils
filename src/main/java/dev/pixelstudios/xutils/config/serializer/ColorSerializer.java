@@ -7,21 +7,29 @@ public class ColorSerializer implements Serializer<Color> {
 
     @Override
     public Color deserialize(String serialized) {
+        serialized = serialized.trim();
+
+        // Hex format
+        if (serialized.startsWith("#") && serialized.length() == 7) {
+            return Color.fromRGB(Integer.parseInt(serialized.substring(1), 16));
+        }
+
+        // RGB format
         String[] split = serialized.split(":");
-
-        Color color;
-
-        if (split.length != 3) {
-            color = DyeColor.valueOf(serialized).getColor();
-        } else {
-            color = Color.fromRGB(
+        if (split.length == 3) {
+            return Color.fromRGB(
                     Integer.parseInt(split[0]),
                     Integer.parseInt(split[1]),
                     Integer.parseInt(split[2])
             );
         }
 
-        return color;
+        // Bukkit DyeColor
+        try {
+            return DyeColor.valueOf(serialized.toUpperCase()).getColor();
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("Invalid color: " + serialized);
+        }
     }
 
 }

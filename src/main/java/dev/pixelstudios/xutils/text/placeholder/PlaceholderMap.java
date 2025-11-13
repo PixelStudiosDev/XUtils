@@ -22,8 +22,21 @@ public class PlaceholderMap implements Cloneable {
         return this;
     }
 
+    public PlaceholderMap add(String key, Supplier<String> value, String defaultValue) {
+        placeholders.put(key, () -> {
+            String val = value.get();
+            return val != null ? val : defaultValue;
+        });
+        return this;
+    }
+
     public PlaceholderMap add(String key, String value) {
         placeholders.put(key, () -> value);
+        return this;
+    }
+
+    public PlaceholderMap add(String key, String value, String defaultValue) {
+        placeholders.put(key, () -> value != null ? value : defaultValue);
         return this;
     }
 
