@@ -187,7 +187,7 @@ public final class ItemBuilder implements Cloneable {
     }
 
     public ItemBuilder glow() {
-        enchant(XEnchantment.UNBREAKING.getEnchant(), 1);
+        enchant(XEnchantment.UNBREAKING.get(), 1);
         flags(ItemFlag.HIDE_ENCHANTS);
         return this;
     }
