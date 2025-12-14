@@ -126,10 +126,7 @@ public final class ItemBuilder implements Cloneable {
     }
 
     public ItemBuilder color(Color color) {
-        if (item.getData() instanceof Colorable) {
-            ((Colorable) item.getData()).setColor(DyeColor.getByColor(color));
-
-        } else if (meta instanceof LeatherArmorMeta) {
+        if (meta instanceof LeatherArmorMeta) {
             ((LeatherArmorMeta) meta).setColor(color);
 
         } else if (meta instanceof FireworkMeta) {
@@ -187,7 +184,7 @@ public final class ItemBuilder implements Cloneable {
     }
 
     public ItemBuilder glow() {
-        enchant(XEnchantment.UNBREAKING.getEnchant(), 1);
+        enchant(XEnchantment.UNBREAKING.get(), 1);
         flags(ItemFlag.HIDE_ENCHANTS);
         return this;
     }
