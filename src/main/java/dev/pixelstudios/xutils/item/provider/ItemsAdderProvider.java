@@ -27,7 +27,7 @@ public class ItemsAdderProvider extends ItemProvider {
     @Override
     public String getItemKey(ItemStack item) {
         CustomStack stack = CustomStack.byItemStack(item);
-        return stack == null ? null : stack.getId();
+        return stack == null ? null : stack.getNamespacedID();
     }
 
 }
