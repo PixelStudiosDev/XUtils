@@ -33,7 +33,7 @@ public class MenuListener implements Listener {
         MenuItem item = menu.getItem(slot);
 
         if (item != null) {
-            item.onClick(event);
+            item.onClick(event, menu);
             menu.updateInventory();
         } else {
             event.setCancelled(!menu.getDraggableSlots().contains(slot));

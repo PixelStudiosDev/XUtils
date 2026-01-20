@@ -2,11 +2,12 @@ package dev.pixelstudios.xutils.menu;
 
 import dev.pixelstudios.xutils.SoundUtil;
 import dev.pixelstudios.xutils.item.ItemBuilder;
+import dev.pixelstudios.xutils.objects.MultiMap;
+import dev.pixelstudios.xutils.text.TextUtil;
 import dev.pixelstudios.xutils.text.placeholder.PlaceholderMap;
 import lombok.Getter;
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
@@ -15,7 +16,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.function.Consumer;
 
 @Getter
 public class MenuItem {
@@ -27,9 +27,18 @@ public class MenuItem {
             ClickType.SHIFT_RIGHT
     };
 
+    private static final Map<String, ClickType> CLICK_TYPES = new HashMap<>();
+
+    static {
+        CLICK_TYPES.put("left", ClickType.LEFT);
+        CLICK_TYPES.put("right", ClickType.RIGHT);
+        CLICK_TYPES.put("shift-left", ClickType.SHIFT_LEFT);
+        CLICK_TYPES.put("shift-right", ClickType.SHIFT_RIGHT);
+    }
+
     private final ItemBuilder item;
     private final Set<Integer> slots = new HashSet<>();
-    private final Map<ClickType, Consumer<InventoryClickEvent>> actions = new HashMap<>();
+    private final MultiMap<ClickType, MenuAction> actions = new MultiMap<>();
 
     private boolean cancelClick = true;
     private String sound;
@@ -54,21 +63,51 @@ public class MenuItem {
         } else if (section.isInt("slot")) {
             slots.add(section.getInt("slot"));
         }
+
+        if (section.isList("actions")) {
+            section.getStringList("actions").forEach(this::action);
+        } else if (section.isConfigurationSection("actions")) {
+            ConfigurationSection actionsSection = section.getConfigurationSection("actions");
+
+            for (String key : actionsSection.getKeys(false)) {
+                ClickType clickType = CLICK_TYPES.get(key.toLowerCase());
+
+                if (clickType != null) {
+                    actionsSection.getStringList(key).forEach(string -> {
+                        action(string, clickType);
+                    });
+                } else {
+                    TextUtil.error("Invalid click type for menu action: " + key);
+                }
+            }
+        }
     }
 
-    public MenuItem action(Consumer<InventoryClickEvent> action, ClickType... clickTypes) {
+    public MenuItem action(MenuAction action, ClickType... clickTypes) {
         if (clickTypes.length == 0) {
             clickTypes = DEFAULT_CLICK_TYPES;
         }
 
         for (ClickType clickType : clickTypes) {
-            actions.put(clickType, action);
+            actions.add(clickType, action);
         }
+
         return this;
     }
 
+    public MenuItem action(String actionString, ClickType... clickTypes) {
+        MenuAction action = MenuAction.parse(actionString);
+
+        if (action == null) {
+            TextUtil.error("Invalid menu action: " + actionString);
+            return this;
+        }
+
+        return action(action, clickTypes);
+    }
+
     public MenuItem action(Runnable action, ClickType... clickTypes) {
-        return action(event -> action.run(), clickTypes);
+        return action(MenuAction.run(action), clickTypes);
     }
 
     public MenuItem leftAction(Runnable action) {
@@ -111,13 +150,15 @@ public class MenuItem {
         return this;
     }
 
-    public void onClick(InventoryClickEvent event) {
+    public void onClick(InventoryClickEvent event, Menu menu) {
         ClickType clickType = event.getClick();
 
         if (actions.containsKey(clickType)) {
-            actions.get(clickType).accept(event);
+            actions.forEach(clickType, action -> {
+                action.execute(event, menu);
+            });
 
-            SoundUtil.play((Player) event.getWhoClicked(), sound);
+            SoundUtil.play(menu.getPlayer(), sound);
         }
 
         event.setCancelled(cancelClick);

@@ -1,6 +1,8 @@
 package dev.pixelstudios.xutils.item;
 
 import com.cryptomorin.xseries.XMaterial;
+import dev.pixelstudios.xutils.ReflectionUtil;
+import dev.pixelstudios.xutils.VersionUtil;
 import dev.pixelstudios.xutils.text.TextUtil;
 import lombok.experimental.UtilityClass;
 import me.clip.placeholderapi.PlaceholderAPI;
@@ -9,6 +11,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
@@ -84,7 +87,31 @@ public class ItemUtil {
         }
     }
 
-    private static ItemStack setNameAndLore(
+    public static void removeItemInHand(Player player, int amount, EquipmentSlot hand) {
+        ItemStack item = ReflectionUtil.supports(9) ?
+                (hand == EquipmentSlot.HAND ? player.getInventory().getItemInMainHand() : player.getInventory().getItemInOffHand()) :
+                player.getInventory().getItemInHand();
+
+        if (item.getAmount() <= amount) {
+            if (ReflectionUtil.supports(9)) {
+                if (hand == EquipmentSlot.HAND) {
+                    player.getInventory().setItemInMainHand(null);
+                } else {
+                    player.getInventory().setItemInOffHand(null);
+                }
+            } else {
+                player.getInventory().setItemInHand(null);
+            }
+        } else {
+            item.setAmount(item.getAmount() - amount);
+        }
+    }
+
+    public static void removeItemInHand(Player player, int amount) {
+        removeItemInHand(player, amount, EquipmentSlot.HAND);
+    }
+
+    public static ItemStack setNameAndLore(
             ItemStack item,
             Function<String, String> name,
             Function<List<String>, List<String>> lore

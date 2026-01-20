@@ -48,7 +48,9 @@ public abstract class Menu implements InventoryHolder {
     protected final PlaceholderMap placeholders = new PlaceholderMap();
 
     private final InventoryType inventoryType;
+
     private final Map<Integer, MenuItem> items = new HashMap<>();
+    private final Map<String, MenuItem> itemCache = new HashMap<>();
 
     private Inventory inventory;
     private BukkitTask updateTask;
@@ -69,6 +71,9 @@ public abstract class Menu implements InventoryHolder {
     public Menu(Player player, InventoryType type) {
         this.player = player;
         this.inventoryType = type;
+
+        this.placeholders.add("player", player.getName());
+        this.placeholders.add("uuid", player.getUniqueId().toString());
 
         MenuListener.register();
     }
@@ -108,6 +113,10 @@ public abstract class Menu implements InventoryHolder {
     }
 
     public MenuItem setItem(String key, ItemBuilder fallbackItem) {
+        if (itemCache.containsKey(key)) {
+            return setItem(itemCache.get(key));
+        }
+
         ConfigurationSection section = config.getConfigurationSection("items." + key);
 
         if (section == null) {
@@ -115,7 +124,10 @@ public abstract class Menu implements InventoryHolder {
             return null;
         }
 
-        return setItem(new MenuItem(section, fallbackItem));
+        MenuItem item = new MenuItem(section, fallbackItem);
+        itemCache.put(key, item);
+
+        return setItem(item);
     }
 
     public void fillBorders(MenuItem item) {
@@ -201,7 +213,15 @@ public abstract class Menu implements InventoryHolder {
         }
 
         for (String key : config.getConfigurationSection("custom-items").getKeys(false)) {
-            setItem(new MenuItem(config.getConfigurationSection("custom-items." + key), null));
+            if (itemCache.containsKey("custom:" + key)) {
+                setItem(itemCache.get("custom:" + key));
+                continue;
+            }
+
+            MenuItem item = new MenuItem(config.getConfigurationSection("custom-items." + key));
+            itemCache.put("custom:" + key, item);
+
+            setItem(item);
         }
     }
 

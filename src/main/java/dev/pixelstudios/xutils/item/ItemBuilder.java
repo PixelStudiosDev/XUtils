@@ -14,6 +14,7 @@ import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.enchantments.Enchantment;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ArmorMeta;
@@ -23,7 +24,6 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
 import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.inventory.meta.trim.ArmorTrim;
-import org.bukkit.material.Colorable;
 import org.bukkit.potion.Potion;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -240,14 +240,20 @@ public final class ItemBuilder implements Cloneable {
     }
 
     public ItemStack build() {
-        if (meta.hasDisplayName()) {
-            name(placeholders.parse(meta.getDisplayName()));
-        }
-        if (meta.hasLore()) {
-            lore(placeholders.parse(meta.getLore()));
-        }
-        item.setItemMeta(meta);
-        return item;
+        ItemStack result = item.clone();
+        result.setItemMeta(meta);
+
+        ItemUtil.setNameAndLore(
+                result,
+                placeholders::parse,
+                placeholders::parse
+        );
+
+        return result;
+    }
+
+    public void give(Player player) {
+        ItemUtil.give(player, build());
     }
 
     @Override

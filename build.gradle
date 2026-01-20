@@ -2,11 +2,11 @@ plugins {
     id 'java'
     id 'java-library'
     id 'maven-publish'
-    id 'com.gradleup.shadow' version '8.3.5'
+    id 'com.gradleup.shadow' version '9.3.0'
 }
 
 group = 'dev.pixelstudios'
-version = '1.12.4'
+version = '1.13.0'
 
 repositories {
     mavenCentral()

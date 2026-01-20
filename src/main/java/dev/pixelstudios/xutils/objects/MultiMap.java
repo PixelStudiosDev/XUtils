@@ -8,8 +8,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Consumer;
 
-public class MapList<K, V> implements Map<K, List<V>>, Iterable<Pair<K, V>> {
+public class MultiMap<K, V> implements Map<K, List<V>>, Iterable<Pair<K, V>> {
 
     private final Map<K, List<V>> map = new HashMap<>();
 
@@ -23,6 +24,12 @@ public class MapList<K, V> implements Map<K, List<V>>, Iterable<Pair<K, V>> {
 
     public List<V> getOrEmpty(K key) {
         return map.getOrDefault(key, Collections.emptyList());
+    }
+
+    public void forEach(K key, Consumer<V> action) {
+        for (V value : getOrEmpty(key)) {
+            action.accept(value);
+        }
     }
 
     @Override
