@@ -38,6 +38,22 @@ public interface MenuAction {
         };
     }
 
+    static MenuAction previousPage() {
+        return (event, menu) -> {
+            if (menu instanceof PaginatedMenu) {
+                ((PaginatedMenu<?>) menu).previousPage();
+            }
+        };
+    }
+
+    static MenuAction nextPage() {
+        return (event, menu) -> {
+            if (menu instanceof PaginatedMenu) {
+                ((PaginatedMenu<?>) menu).nextPage();
+            }
+        };
+    }
+
     static MenuAction close() {
         return (event, menu) -> {
             menu.close();
@@ -49,8 +65,13 @@ public interface MenuAction {
         String type = parts[0].toLowerCase().trim();
 
         if (parts.length == 1) {
-            if (type.equals("close")) {
-                return MenuAction.close();
+            switch (type) {
+                case "next-page":
+                    return MenuAction.nextPage();
+                case "previous-page":
+                    return MenuAction.previousPage();
+                case "close":
+                    return MenuAction.close();
             }
         } else if (parts.length == 2) {
             String args = parts[1].trim();
