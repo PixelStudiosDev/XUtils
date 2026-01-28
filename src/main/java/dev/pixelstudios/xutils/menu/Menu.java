@@ -114,7 +114,7 @@ public abstract class Menu implements InventoryHolder {
 
     public MenuItem setItem(String key, ItemBuilder fallbackItem) {
         if (itemCache.containsKey(key)) {
-            return setItem(itemCache.get(key));
+            return setItem(itemCache.get(key).clone());
         }
 
         ConfigurationSection section = config.getConfigurationSection("items." + key);
@@ -127,7 +127,7 @@ public abstract class Menu implements InventoryHolder {
         MenuItem item = new MenuItem(section, fallbackItem);
         itemCache.put(key, item);
 
-        return setItem(item);
+        return setItem(item.clone());
     }
 
     public void fillBorders(MenuItem item) {
@@ -214,14 +214,14 @@ public abstract class Menu implements InventoryHolder {
 
         for (String key : config.getConfigurationSection("custom-items").getKeys(false)) {
             if (itemCache.containsKey("custom:" + key)) {
-                setItem(itemCache.get("custom:" + key));
+                setItem(itemCache.get("custom:" + key).clone());
                 continue;
             }
 
             MenuItem item = new MenuItem(config.getConfigurationSection("custom-items." + key));
             itemCache.put("custom:" + key, item);
 
-            setItem(item);
+            setItem(item.clone());
         }
     }
 

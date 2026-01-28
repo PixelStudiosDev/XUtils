@@ -18,7 +18,7 @@ import java.util.Map;
 import java.util.Set;
 
 @Getter
-public class MenuItem {
+public class MenuItem implements Cloneable {
 
     private static final ClickType[] DEFAULT_CLICK_TYPES = {
             ClickType.LEFT,
@@ -164,4 +164,17 @@ public class MenuItem {
         event.setCancelled(cancelClick);
     }
 
+    @Override
+    public MenuItem clone() {
+        MenuItem clone = new MenuItem(this.item.clone());
+
+        clone.actions.putAll(this.actions);
+        clone.slots.addAll(this.slots);
+        clone.cancelClick = this.cancelClick;
+        clone.sound = this.sound;
+
+        return clone;
+    }
+
 }
+

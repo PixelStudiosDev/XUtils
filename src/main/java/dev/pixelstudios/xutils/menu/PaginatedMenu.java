@@ -117,11 +117,11 @@ public abstract class PaginatedMenu<T> extends Menu {
         if (config == null) return;
 
         if (!isFirstPage() && config.isConfigurationSection("items.previous-page")) {
-            setItem("previous-page").action(this::previousPage);
+            setItem("previous-page").action(MenuAction.previousPage());
         }
 
         if (!isLastPage() && config.isConfigurationSection("items.next-page")) {
-            setItem("next-page").action(this::nextPage);
+            setItem("next-page").action(MenuAction.nextPage());
         }
     }
 

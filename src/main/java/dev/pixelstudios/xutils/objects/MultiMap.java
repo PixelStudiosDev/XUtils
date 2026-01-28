@@ -32,6 +32,22 @@ public class MultiMap<K, V> implements Map<K, List<V>>, Iterable<Pair<K, V>> {
         }
     }
 
+    public void putAll(MultiMap<K, V> other) {
+        for (Entry<K, List<V>> entry : other.entrySet()) {
+            addAll(entry.getKey(), entry.getValue());
+        }
+    }
+
+    public MultiMap<K, V> copy() {
+        MultiMap<K, V> copy = new MultiMap<>();
+
+        for (Entry<K, List<V>> entry : map.entrySet()) {
+            copy.put(entry.getKey(), new ArrayList<>(entry.getValue()));
+        }
+
+        return copy;
+    }
+
     @Override
     public int size() {
         return map.size();
