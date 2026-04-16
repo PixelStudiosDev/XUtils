@@ -1,22 +1,18 @@
 package dev.pixelstudios.xutils.text;
 
-import com.cryptomorin.xseries.XPotion;
 import com.cryptomorin.xseries.messages.ActionBar;
 import com.cryptomorin.xseries.messages.Titles;
 import dev.pixelstudios.xutils.NumberUtil;
+import dev.pixelstudios.xutils.VersionUtil;
 import dev.pixelstudios.xutils.XUtils;
 import lombok.experimental.UtilityClass;
 import me.clip.placeholderapi.PlaceholderAPI;
-import dev.pixelstudios.xutils.ReflectionUtil;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
-import net.md_5.bungee.api.chat.hover.content.Content;
 import org.bukkit.Bukkit;
-import org.bukkit.Color;
-import org.bukkit.DyeColor;
 import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
@@ -25,8 +21,6 @@ import org.bukkit.conversations.ConversationFactory;
 import org.bukkit.conversations.Prompt;
 import org.bukkit.conversations.StringPrompt;
 import org.bukkit.entity.Player;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -52,7 +46,7 @@ public class TextUtil {
      * @return The colorized text
      */
     public static String color(String text) {
-        if (ReflectionUtil.supports(16)) {
+        if (VersionUtil.supports(16)) {
             Matcher matcher = HEX_PATTERN.matcher(text);
             while (matcher.find()) {
                 String color = matcher.group();
@@ -210,7 +204,7 @@ public class TextUtil {
     }
 
     public static void sendTitle(Player player, String title, String subtitle, int fadeIn, int stay, int fadeOut) {
-        if (ReflectionUtil.supports(11)) {
+        if (VersionUtil.supports(11)) {
             player.sendTitle(color(title), color(subtitle), fadeIn, stay, fadeOut);
         } else {
             Titles.sendTitle(player, fadeIn, stay, fadeOut, color(title), color(subtitle));

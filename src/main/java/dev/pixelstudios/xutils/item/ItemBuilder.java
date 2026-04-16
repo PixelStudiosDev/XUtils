@@ -117,7 +117,7 @@ public final class ItemBuilder implements Cloneable {
     }
 
     public ItemBuilder durability(short durability) {
-        if (ReflectionUtil.supports(13)) {
+        if (VersionUtil.supports(13)) {
             ((Damageable) meta).setDamage(durability);
         } else {
             item.setDurability(durability);
@@ -132,7 +132,7 @@ public final class ItemBuilder implements Cloneable {
         } else if (meta instanceof FireworkMeta) {
             ((FireworkMeta) meta).addEffect(FireworkEffect.builder().withColor(color).build());
 
-        } else if (meta instanceof PotionMeta && ReflectionUtil.supports(11)) {
+        } else if (meta instanceof PotionMeta && VersionUtil.supports(11)) {
             ((PotionMeta) meta).setColor(color);
         }
         return this;
@@ -146,7 +146,7 @@ public final class ItemBuilder implements Cloneable {
     }
 
     public ItemBuilder trim(ArmorTrim trim) {
-        if ((meta instanceof ArmorMeta) && ReflectionUtil.supports(20)) {
+        if ((meta instanceof ArmorMeta) && VersionUtil.supports(20)) {
             ((ArmorMeta) meta).setTrim(trim);
         }
         return this;
@@ -159,7 +159,7 @@ public final class ItemBuilder implements Cloneable {
         } else {
             ((PotionMeta) meta).addCustomEffect(effect, true);
 
-            if (ReflectionUtil.supports(11)) {
+            if (VersionUtil.supports(11)) {
                 color(effect.getType().getColor());
             }
             if (!meta.hasDisplayName()) {
@@ -172,7 +172,7 @@ public final class ItemBuilder implements Cloneable {
     }
 
     public ItemBuilder customModelData(int modelData) {
-        if (ReflectionUtil.supports(14)) {
+        if (VersionUtil.supports(14)) {
             meta.setCustomModelData(modelData);
         }
         return this;
@@ -209,7 +209,7 @@ public final class ItemBuilder implements Cloneable {
     }
 
     public ItemBuilder modifier(Attribute attribute, AttributeModifier modifier) {
-        if (ReflectionUtil.supports(13)) {
+        if (VersionUtil.supports(13)) {
             meta.addAttributeModifier(attribute, modifier);
         }
         return this;

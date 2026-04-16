@@ -35,7 +35,7 @@ public class BlockUtil {
      * @return the direction the player is facing
      */
     public static BlockFace getFacing(Player player) {
-        if (ReflectionUtil.supports(13)) {
+        if (VersionUtil.supports(13)) {
             return player.getFacing();
         } else {
             return AXIS[Math.round(player.getLocation().getYaw() / 90f) & 0x3].getOppositeFace();

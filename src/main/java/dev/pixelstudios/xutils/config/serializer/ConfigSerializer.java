@@ -1,6 +1,7 @@
 package dev.pixelstudios.xutils.config.serializer;
 
 import dev.pixelstudios.xutils.ReflectionUtil;
+import dev.pixelstudios.xutils.VersionUtil;
 import dev.pixelstudios.xutils.config.Configuration;
 import org.bukkit.Color;
 import org.bukkit.Location;
@@ -30,7 +31,7 @@ public final class ConfigSerializer {
     }
 
     public static <T> void register(String className, Supplier<Serializer<T>> serializer, int requiredVersion) {
-        if (ReflectionUtil.supports(requiredVersion)) {
+        if (VersionUtil.supports(requiredVersion)) {
             register((Class<T>) ReflectionUtil.getClass(className), serializer.get());
         }
     }

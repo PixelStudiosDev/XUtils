@@ -88,12 +88,12 @@ public class ItemUtil {
     }
 
     public static void removeItemInHand(Player player, int amount, EquipmentSlot hand) {
-        ItemStack item = ReflectionUtil.supports(9) ?
+        ItemStack item = VersionUtil.supports(9) ?
                 (hand == EquipmentSlot.HAND ? player.getInventory().getItemInMainHand() : player.getInventory().getItemInOffHand()) :
                 player.getInventory().getItemInHand();
 
         if (item.getAmount() <= amount) {
-            if (ReflectionUtil.supports(9)) {
+            if (VersionUtil.supports(9)) {
                 if (hand == EquipmentSlot.HAND) {
                     player.getInventory().setItemInMainHand(null);
                 } else {

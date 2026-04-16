@@ -12,10 +12,7 @@ import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 @Getter
 public class MenuItem implements Cloneable {
@@ -147,6 +144,11 @@ public class MenuItem implements Cloneable {
         for (int slot : slots) {
             this.slots.add(slot);
         }
+        return this;
+    }
+
+    public MenuItem slots(Collection<Integer> slots) {
+        this.slots.addAll(slots);
         return this;
     }
 

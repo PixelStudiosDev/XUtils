@@ -1,7 +1,7 @@
 package dev.pixelstudios.xutils.item;
 
 import de.tr7zw.changeme.nbtapi.NBT;
-import dev.pixelstudios.xutils.ReflectionUtil;
+import dev.pixelstudios.xutils.VersionUtil;
 import dev.pixelstudios.xutils.XUtils;
 import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.ItemStack;
@@ -83,7 +83,7 @@ public interface TagHandler {
         if (XUtils.getCustomTagHandler() != null) {
             return XUtils.getCustomTagHandler();
         } else {
-            return ReflectionUtil.supports(14) ? modern() : legacy();
+            return VersionUtil.supports(14) ? modern() : legacy();
         }
     }
 

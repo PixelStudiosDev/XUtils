@@ -1,5 +1,6 @@
 package dev.pixelstudios.xutils.menu;
 
+import dev.pixelstudios.xutils.VersionUtil;
 import dev.pixelstudios.xutils.item.ItemBuilder;
 import dev.pixelstudios.xutils.item.ItemUtil;
 import lombok.Getter;
@@ -32,7 +33,7 @@ public abstract class Menu implements InventoryHolder {
     private static MethodHandle SET_TITLE_1_20;
 
     static {
-        if (ReflectionUtil.VERSION == 20) {
+        if (VersionUtil.MAJOR_VERSION == 20) {
             try {
                 SET_TITLE_1_20 = MethodHandles.publicLookup().findVirtual(
                         Class.forName("org.bukkit.inventory.InventoryView"),
@@ -226,7 +227,7 @@ public abstract class Menu implements InventoryHolder {
     }
 
     private void updateTitle() {
-        if (!ReflectionUtil.supports(20)) {
+        if (!VersionUtil.supports(20)) {
             return;
         }
 
