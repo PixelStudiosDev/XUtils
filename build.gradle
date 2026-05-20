@@ -6,7 +6,7 @@ plugins {
 }
 
 group = 'dev.pixelstudios'
-version = '1.15.0'
+version = '1.15.1'
 
 repositories {
     mavenCentral()
@@ -45,8 +45,7 @@ dependencies {
 
     compileOnly fileTree(dir: 'libs', include: ['*.jar'])
 
-    // api 'com.github.cryptomorin:XSeries:13.6.0'
-    api 'io.github.almighty-satan:XSeries:13.6.0+26.1' // Temporary 26.1 support
+    api 'com.github.cryptomorin:XSeries:13.7.0'
 
     compileOnly 'org.projectlombok:lombok:1.18.42'
     annotationProcessor 'org.projectlombok:lombok:1.18.42'
