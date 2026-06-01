@@ -14,7 +14,7 @@ import java.util.regex.Pattern;
 @SuppressWarnings("deprecation")
 public class VersionUtil {
 
-    public static int MAJOR_VERSION, MINOR_VERSION;
+    public static int MAJOR_VERSION, MINOR_VERSION, PATCH_VERSION;
 
     private static Method SPIGOT, SET_UNBREAKABLE;
 
@@ -30,7 +30,7 @@ public class VersionUtil {
             MAJOR_VERSION = MINOR_VERSION = -1;
         }
 
-        if (!supports(12)) {
+        if (!supports(1, 12, 0)) {
             SPIGOT = ReflectionUtil.getMethod(ItemMeta.class, "spigot");
             SET_UNBREAKABLE = ReflectionUtil.getMethod(SPIGOT.getReturnType(), "setUnbreakable", boolean.class);
         }
@@ -44,8 +44,19 @@ public class VersionUtil {
         return MAJOR_VERSION > major || (MAJOR_VERSION == major && MINOR_VERSION >= minor);
     }
 
+    public static boolean supports(int major, int minor, int patch) {
+        if (major != 1 && major < 26)
+            throw new IllegalArgumentException("Unexpected major version: " + major + "." + minor + "." + patch);
+        if (major == 1 && minor > 21)
+            throw new IllegalArgumentException("Unexpected minor version: " + major + "." + minor + "." + patch);
+        if (major == 1 && patch > 11)
+            throw new IllegalArgumentException("Unexpected patch version: " + major + "." + minor + "." + patch);
+
+        return MAJOR_VERSION == major ? MINOR_VERSION == minor ? PATCH_VERSION >= patch : MINOR_VERSION > minor : MAJOR_VERSION > major;
+    }
+
     public static void setUnbreakable(ItemMeta meta, boolean unbreakable) {
-        if (supports(12)) {
+        if (supports(1, 12, 0)) {
             meta.setUnbreakable(unbreakable);
         } else {
             Object spigot = ReflectionUtil.invokeMethod(SPIGOT, meta);
@@ -54,7 +65,7 @@ public class VersionUtil {
     }
 
     public static void showPlayer(Player viewer, Player target) {
-        if (supports(12)) {
+        if (supports(1, 12, 0)) {
             viewer.showPlayer(XUtils.getPlugin(), target);
         } else {
             viewer.showPlayer(target);
@@ -62,7 +73,7 @@ public class VersionUtil {
     }
 
     public static void hidePlayer(Player viewer, Player target) {
-        if (supports(12)) {
+        if (supports(1, 12, 0)) {
             viewer.hidePlayer(XUtils.getPlugin(), target);
         } else {
             viewer.hidePlayer(target);
