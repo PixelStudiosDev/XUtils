@@ -11,9 +11,11 @@ import org.bukkit.persistence.PersistentDataType;
 public interface TagHandler {
 
     ItemStack set(ItemStack item, String key, String value);
+
     ItemStack set(ItemStack item, NamespacedKey key, String value);
 
     String get(ItemStack item, String key);
+
     String get(ItemStack item, NamespacedKey key);
 
     static TagHandler modern() {
@@ -83,7 +85,7 @@ public interface TagHandler {
         if (XUtils.getCustomTagHandler() != null) {
             return XUtils.getCustomTagHandler();
         } else {
-            return VersionUtil.supports(14) ? modern() : legacy();
+            return VersionUtil.supports(1, 14, 0) ? modern() : legacy();
         }
     }
 

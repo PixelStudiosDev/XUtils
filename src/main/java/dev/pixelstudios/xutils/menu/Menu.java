@@ -33,14 +33,15 @@ public abstract class Menu implements InventoryHolder {
     private static MethodHandle SET_TITLE_1_20;
 
     static {
-        if (VersionUtil.MAJOR_VERSION == 20) {
+        if (VersionUtil.supports(1, 20, 0)) {
             try {
                 SET_TITLE_1_20 = MethodHandles.publicLookup().findVirtual(
                         Class.forName("org.bukkit.inventory.InventoryView"),
                         "setTitle",
                         MethodType.methodType(void.class, String.class)
                 );
-            } catch (Exception ignored) {}
+            } catch (Exception ignored) {
+            }
         }
     }
 
@@ -199,7 +200,8 @@ public abstract class Menu implements InventoryHolder {
         return config != null ? config.getString("title", "Menu") : "Menu";
     }
 
-    public void onClose() {}
+    public void onClose() {
+    }
 
     public abstract void update();
 
@@ -227,7 +229,7 @@ public abstract class Menu implements InventoryHolder {
     }
 
     private void updateTitle() {
-        if (!VersionUtil.supports(20)) {
+        if (!VersionUtil.supports(1, 20, 0)) {
             return;
         }
 
@@ -240,7 +242,8 @@ public abstract class Menu implements InventoryHolder {
         if (SET_TITLE_1_20 != null) {
             try {
                 SET_TITLE_1_20.invokeExact(player.getOpenInventory(), title);
-            } catch (Throwable ignored) {}
+            } catch (Throwable ignored) {
+            }
         } else {
             player.getOpenInventory().setTitle(title);
         }

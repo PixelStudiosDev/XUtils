@@ -46,7 +46,7 @@ public class TextUtil {
      * @return The colorized text
      */
     public static String color(String text) {
-        if (VersionUtil.supports(16)) {
+        if (VersionUtil.supports(1, 16, 0)) {
             Matcher matcher = HEX_PATTERN.matcher(text);
             while (matcher.find()) {
                 String color = matcher.group();
@@ -204,7 +204,7 @@ public class TextUtil {
     }
 
     public static void sendTitle(Player player, String title, String subtitle, int fadeIn, int stay, int fadeOut) {
-        if (VersionUtil.supports(11)) {
+        if (VersionUtil.supports(1, 11, 0)) {
             player.sendTitle(color(title), color(subtitle), fadeIn, stay, fadeOut);
         } else {
             Titles.sendTitle(player, fadeIn, stay, fadeOut, color(title), color(subtitle));
