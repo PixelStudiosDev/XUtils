@@ -12,10 +12,11 @@ import java.util.Set;
 @UtilityClass
 public class BlockUtil {
 
-    private static final BlockFace[] AXIS = { BlockFace.NORTH, BlockFace.EAST, BlockFace.SOUTH, BlockFace.WEST };
+    private static final BlockFace[] AXIS = {BlockFace.NORTH, BlockFace.EAST, BlockFace.SOUTH, BlockFace.WEST};
 
     /**
      * Get the BlockFace targeted by a player.
+     *
      * @param player the player
      * @return the targeted BlockFace, or null if the block isn't occluding
      */
@@ -31,11 +32,12 @@ public class BlockUtil {
 
     /**
      * Get the closest cardinal direction a player is facing.
+     *
      * @param player the player
      * @return the direction the player is facing
      */
     public static BlockFace getFacing(Player player) {
-        if (VersionUtil.supports(13)) {
+        if (VersionUtil.supports(1, 13, 0)) {
             return player.getFacing();
         } else {
             return AXIS[Math.round(player.getLocation().getYaw() / 90f) & 0x3].getOppositeFace();

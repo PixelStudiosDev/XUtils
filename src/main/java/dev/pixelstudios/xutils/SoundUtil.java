@@ -22,8 +22,15 @@ public class SoundUtil {
         player.playSound(player, sound, 1, 1);
     }
 
+    public static void play(Player player, Sound sound, float volume, float pitch) {
+        player.playSound(player, sound, volume, pitch);
+    }
+
     public static void play(List<Player> players, Sound sound) {
         players.forEach(player -> play(player, sound));
     }
 
+    public static void play(List<Player> players, Sound sound, float volume, float pitch) {
+        players.forEach(player -> play(player, sound, volume, pitch));
+    }
 }
