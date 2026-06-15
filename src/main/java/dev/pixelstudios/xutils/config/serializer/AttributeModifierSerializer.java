@@ -1,11 +1,15 @@
 package dev.pixelstudios.xutils.config.serializer;
 
+import dev.pixelstudios.xutils.VersionUtil;
+import dev.pixelstudios.xutils.XUtils;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.bukkit.NamespacedKey;
 import org.bukkit.Registry;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.inventory.EquipmentSlot;
+import org.bukkit.inventory.EquipmentSlotGroup;
 
 import java.util.UUID;
 
@@ -20,13 +24,23 @@ public class AttributeModifierSerializer implements Serializer<AttributeModifier
         }
 
         Attribute attribute = Registry.ATTRIBUTE.match(split[0].toUpperCase());
-        AttributeModifier modifier = new AttributeModifier(
-                UUID.randomUUID(),
-                "custom_modifier",
-                Double.parseDouble(split[1]),
-                AttributeModifier.Operation.ADD_NUMBER,
-                split.length == 3 ? EquipmentSlot.valueOf(split[2].toUpperCase()) : null
-        );
+        AttributeModifier modifier;
+        if (VersionUtil.supports(21)) {
+            NamespacedKey key = new NamespacedKey(XUtils.getPlugin(), "custom_modifier");
+            modifier = new AttributeModifier(key,
+                    Double.parseDouble(split[1]),
+                    AttributeModifier.Operation.ADD_NUMBER,
+                    split.length == 3 ? EquipmentSlotGroup.getByName(split[2].toUpperCase()) : null
+            );
+        } else {
+            modifier = new AttributeModifier(
+                    UUID.randomUUID(),
+                    "custom_modifier",
+                    Double.parseDouble(split[1]),
+                    AttributeModifier.Operation.ADD_NUMBER,
+                    split.length == 3 ? EquipmentSlot.valueOf(split[2].toUpperCase()) : null
+            );
+        }
 
         return new AttributeModifierWrapper(attribute, modifier);
     }
