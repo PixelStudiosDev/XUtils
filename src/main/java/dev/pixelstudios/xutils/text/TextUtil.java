@@ -28,6 +28,7 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Collection;
 import java.util.List;
+import java.util.Locale;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CompletableFuture;
 import java.util.regex.Matcher;
@@ -164,7 +165,11 @@ public class TextUtil {
     }
 
     public static String formatDate(String format, Instant instant) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(format);
+        return formatDate(format, instant, Locale.getDefault());
+    }
+
+    public static String formatDate(String format, Instant instant, Locale locale) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(format, locale);
         return LocalDateTime.ofInstant(instant, ZoneId.systemDefault()).format(formatter);
     }
 
