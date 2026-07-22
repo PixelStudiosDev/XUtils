@@ -32,7 +32,7 @@ import java.lang.reflect.Array;
 import java.util.Objects;
 
 /**
- * {@inheritDoc}
+ * String-based implementation of {@link FastBoardBase}.
  */
 public class FastBoard extends FastBoardBase<String> {
 
@@ -59,6 +59,8 @@ public class FastBoard extends FastBoardBase<String> {
 
     /**
      * {@inheritDoc}
+     *
+     * @throws NullPointerException if title is null
      */
     @Override
     public void updateTitle(String title) {
@@ -73,6 +75,8 @@ public class FastBoard extends FastBoardBase<String> {
 
     /**
      * {@inheritDoc}
+     *
+     * @throws NullPointerException if lines is null
      */
     @Override
     public void updateLines(String... lines) {
@@ -149,11 +153,11 @@ public class FastBoard extends FastBoardBase<String> {
     }
 
     /**
-     * Return if the player has a prefix/suffix characters limit.
-     * By default, it returns true only in 1.12 or lower.
-     * This method can be overridden to fix compatibility with some versions support plugin.
+     * Returns whether scoreboard lines should use the legacy prefix/suffix character limit.
+     * By default, this is true only on Minecraft 1.12 and earlier.
+     * Override this method for compatibility with plugins that provide multi-version support.
      *
-     * @return max length
+     * @return true if scoreboard lines are limited by the legacy prefix/suffix length
      */
     protected boolean hasLinesMaxLength() {
         return !VersionType.V1_13.isHigherOrEqual();
